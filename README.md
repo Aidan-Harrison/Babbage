@@ -1,6 +1,6 @@
 # Babbage
 Custom C/C++ library
-Line Count: 400+
+Line Count: 500+
 
 A general purpose, mostly typeless library. Intending to include most langauge features and beyond
 
