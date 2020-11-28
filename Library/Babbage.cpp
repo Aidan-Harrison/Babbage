@@ -12,8 +12,6 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <thread>
-#include <chrono>
 #include <unordered_map>
 // Header
 #include "Babbage.h" // Definitions & namespaces
@@ -300,18 +298,25 @@ namespace babbageList {
 template<typename L>
 class SinglyLinkedList {
 private:
+    struct Node {
+        L data; // Allow user to implement custom data of any type
+        Node* next;
+    };
+
     void Linsert(int key, node* node);
-    void search(int key, node* node);
+    void lsearch(int key, node* node);
+    void lPrint(Node* node);
+    void ldestroyList(Node* node);
 
     L dataInput;
 public:
-        struct Node {
-            L data; // Allow user to implement custom data of any type
-            Node* next;
-        };
-
         SinglyLinkedList(); // Constructor
         ~SinglyLinkedList();
+
+        // Possibly add print somewhere
+        void linsert(int key);
+        void lsearch(int key);
+        void ldestroyList(Node* node);
 
         // Initialise
         Node* head = nullptr; // No idea why this doesn't work
@@ -325,7 +330,7 @@ public:
         tail->next = nullptr; // End
 
         SinglyLinkedList::~SinglyLinkedList() { // May not need to treat this like a binary tree. Although similair. Study more
-            return; // Add deletion
+            return ldestroyList(); // Add deletion
         }
 
         void Lcreate(L userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
@@ -339,8 +344,16 @@ public:
         }
 
         void Lsearch(int key, node* node) {
-            
+
         }
+
+        void lprint(Node* node) {
+            while(n != nullptr) {
+                std::cout << node << ", ";
+                node = node->next;
+            }
+        }
+
     };
 }
 
@@ -475,3 +488,19 @@ class Complex {
         }
     };
 }
+
+// Babbage's Graphics library
+namespace babbageG {
+template<typename G>
+class Graphics {
+    private:
+        // Built in movement enumeration
+        enum direction {STOP = 0, LEFT, RIGHT, FORWARD, BACK};
+        direction bDir;
+    public:
+        // Unicode implementation
+        std::wstring symbol; // Used for representing unicode chars
+        // Vector components
+        std::vector<unsigned int> vec4{}, vec3{}, vec2{}, vec1{}; // May work?
+    };
+};
