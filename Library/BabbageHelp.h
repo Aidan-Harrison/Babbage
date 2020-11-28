@@ -7,6 +7,8 @@ void Commands() {
     std::cout << "nl() // Creates new line";
     std::cout << "line() // Prints a line of '-' based on input size (amount)";
     std::cout << "box() // Prints a box based on input size (width, height)";
+    std::cout << "pArray() // Prints an array (Vector)";
+    std::cout << "pArray2D() // Prints a 2D array (Vector)";
 }
 
 void Help() {

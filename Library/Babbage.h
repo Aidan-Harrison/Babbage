@@ -13,3 +13,4 @@ std::string stringInput = "";
 #define CLEAR system("cls")
 
 // Function Prototypes
+// REFER TO UE4 FOR BETTER UNDERSTANDING OF IMPLEMENTATION

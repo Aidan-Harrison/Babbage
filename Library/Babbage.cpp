@@ -17,6 +17,16 @@
 #include "Babbage.h" // Definitions & namespaces
 #include "BabbageHelp.h" // Help file
 
+// General
+namespace babbageGen {
+    class General {
+        int Asize(int array[]) {
+            int size = sizeof(array) / sizeof(array[0]);
+            return size;
+        }
+    };
+};
+
 // Geometry
 namespace babbageGeo { // May or may not want to use namespaces like this??
 template<class G> // int (including variations), float and double
@@ -220,7 +230,11 @@ struct DSA {
         bool anag(std::string s, std::string t) {
             int n1 = s.length();
             int n2 = t.length();
-            if(n1 != n2) return false;
+            if(n1 != n2) {
+                std::cout << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << AND << t.length() << " FOR |ANAGRAM|";
+                std::cout << "Both must be equal in length\n";
+                return false;
+            }
             std::map<char,int> mapS; // Two map method (Possibly change)
             std::map<char,int> mapT;
             for(auto i : s)
@@ -232,6 +246,11 @@ struct DSA {
         }
 
         std::string revStr(std::string str) {
+            if(str.length() <= 1) {
+                std::cout << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";
+                std::cout << "Must be greater than '1'\n";
+                return str;
+            }
             int start = str[0];
             int end = str.length()-1;
             while(start < end) {
@@ -242,6 +261,36 @@ struct DSA {
                 end--;
             }
             return str;
+        }
+
+        // CHECK THIS NOT WORKING AS INTENDED --------------------------------------------
+        // Bubble Sort (Two-Pointer)
+        void Swap(int* a, int* b) {
+            int temp = *a;
+            *a = *b;
+            *b = temp;
+        }
+
+        std::vector<int> bubbleSort(std::vector<int>& arr) { // Avoid nested for loop
+            int p1 = 1;
+            if(arr.size() <= 1) {
+                std::cout << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << arr.size() << " FOR |SORT|";
+                std::cout << "Must be greater than '1'\n";
+                return arr;
+            }
+            else {
+                for(int p2 = 0; p2 < arr.size(); p2++) {
+                    if(arr[p2] > arr[p1]) {
+                        Swap(&arr[p2], &arr[p1]);
+                        p1++;
+                    }
+                    else { // Reset, should work??
+                        p1 = 0;
+                        p2 = 0;
+                    }
+                }
+            }
+            return arr;
         }
 
         // Stack ----------------------------------------------------------------------------------
@@ -501,6 +550,6 @@ class Graphics {
         // Unicode implementation
         std::wstring symbol; // Used for representing unicode chars
         // Vector components
-        std::vector<unsigned int> vec4{}, vec3{}, vec2{}, vec1{}; // May work?
+        int vec4[4], vec3[3], vec2[2], vec1[1]; // Should work?
     };
 };
