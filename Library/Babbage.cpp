@@ -13,19 +13,17 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
+#include <typeinfo> // Compare to datatype
 // Header
 #include "Babbage.h" // Definitions & namespaces
 #include "BabbageHelp.h" // Help file
-#include "BabbageGraphics.h"
-#include "BabbageThread.h"
+#include "BabbageGraphics.h" // Custom Graphics library
+#include "BabbageThread.h" // Threading simplification
 // General
-namespace babbageGen {
-    class General {
-        int Asize(int array[]) {
-            int size = sizeof(array) / sizeof(array[0]);
-            return size;
-        }
-    };
+// Function prototype
+int General::Asize(int array[]) {
+    int size = sizeof(array) / sizeof(array[0]);
+    return size;
 };
 
 // Geometry
@@ -37,11 +35,35 @@ class Geometry {
         G width;
         G height;
     public:
-        Geometry operator+ (Geometry geo) { // Overide + for geo calculations
+        Geometry operator+ (Geometry geo) { // Override + for geo calculations | May only work on volumes | Research overloading more
             Geometry newVal;
             newVal.length = length + geo.length; // Last operand equal to right hand side operand
             newVal.width = width + geo.width;
             newVal.height = height + geo.height;
+            return newVal;
+        }
+
+        Geometry operator-(Geometry geo) {
+            Geometry newVal;
+            newVal.length = length - geo.length;
+            newVal.width = width - geo.width;
+            newVal.height = height - geo.height;
+            return newVal;
+        }
+
+        Geometry operator*(Geometry geo) {
+            Geometry newVal;
+            newVal.length = length * geo.length;
+            newVal.width = width * geo.width;
+            newVal.height = height * geo.height;
+            return newVal;
+        }
+
+        Geometry operator/(Geometry geo) {
+            Geometry newVal;
+            newVal.length = length / geo.length;
+            newVal.width = width / geo.width;
+            newVal.height = height / geo.height;
             return newVal;
         }
 
@@ -102,7 +124,7 @@ class Geometry {
 namespace babbagePrint {
 template<typename T>
 struct Printing{
-        T print(T a) { // Single
+        T print(T a) { // Single, allow for multiple
             std::cout << a; 
         }
 
@@ -111,7 +133,7 @@ struct Printing{
         }
 
         void line(int amount) {
-            std::cout << '-' + char(amount, '-') << '\n'; // If 'char' does not work. Use string. Char is less memory
+            std::cout << '-' + char(amount, '-') << '\n';
         }
 
         void box(int height, int width) {
@@ -166,6 +188,7 @@ public:
         F Multiply(F a, F b) {
             return a * b;
         }
+
         // Comparisons
         const F Max(F const& a, F const& b) { // Possibly delete reference
             return a < b ? b : a;
@@ -178,6 +201,15 @@ public:
         bool Same(F a, F b) {
             if(a == b) return true;
             else return false;
+        }
+
+        F random(F range) {
+            if(sizeof(range) != sizeof(int) || sizeof(range) != sizeof(float) || sizeof(range) != sizeof(double)) {
+                std::cout << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(range).name() << '\n';
+                std::cout << "Both must be; int, float or double\n";
+                return -1;
+            }
+            return rand() % range; // Check if 'rand()' can do more than int
         }
 
         // Conversions
@@ -201,6 +233,34 @@ public:
         
         double convFahToCel(double f) {
             return (f - 32) * 5 / 9;
+        }
+
+        std::vector<int> getDigits(F number) { // Returns digits of number in vector format
+            int digit;
+            std::vector<int> result;
+            if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) { // Check datatypes using 'sizeof' function
+                std::cout << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(number).name() << '\n';
+                std::cout << "Both must be; int, float or double\n";
+                return result;
+            }
+            else {
+                while(number) { // Flag
+                    digit = number % 10; // Get right-most digit
+                    result.push_back(digit);
+                    digit = number /= 10; // Move to next digit
+                }
+            }
+            // Reverse, would have been added right to left (Could also use 'insert' function and decrement) | Insert universal function/s
+            int start = 0;
+            int end = result.size();
+            while(start < end) {
+                int temp = result[start];
+                result[start] = result[end];
+                result[end] = temp;
+                start++;
+                end--;
+            }
+            return result;
         }
     };
 }
@@ -257,6 +317,7 @@ struct DSA {
             else return false;
         }
 
+        // Reverse String | Could be universal ???
         std::string revStr(std::string str) {
             if(str.length() <= 1) {
                 std::cout << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";

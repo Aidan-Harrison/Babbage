@@ -16,3 +16,8 @@ std::string stringInput = "";
 // Function Prototypes
 // REFER TO UE4 FOR BETTER UNDERSTANDING OF IMPLEMENTATION
 // CANNOT HAVE TEMPLATES IN THIS FILE. SPECIFIED ONLY
+class General {
+    private:
+    public:
+        int Asize(int array[]);
+};
