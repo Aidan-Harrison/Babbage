@@ -16,7 +16,8 @@
 // Header
 #include "Babbage.h" // Definitions & namespaces
 #include "BabbageHelp.h" // Help file
-
+#include "BabbageGraphics.h"
+#include "BabbageThread.h"
 // General
 namespace babbageGen {
     class General {
@@ -70,11 +71,11 @@ class Geometry {
 
         // Not sure about nesting these structs
         struct CircleTheorem {
-            static double Circumfrence(double radius) { // Test how 'static' affects function
+            static auto Circumfrence(auto radius) { // Test how 'static' affects function
                 return 2 * PI * radius;
             }
 
-            double  CircleArea(double radius) {
+            auto CircleArea(auto radius) {
                 return PI * radius * radius;
             }
 
@@ -192,6 +193,15 @@ public:
         double convDegToRad(double degrees) {
             return degrees PI/180;
         }
+
+        // Possibly incorrect
+        double convCelToFah(double c) {
+            return (c * 9 / 5) + 32;
+        }
+        
+        double convFahToCel(double f) {
+            return (f - 32) * 5 / 9;
+        }
     };
 }
 
@@ -217,8 +227,10 @@ struct DSA {
                     p1++;
                 else if(!isalnum(str[p2]))
                     p2--;
-                else if(tolower(str[p1]) != tolower(str[p2]))
+                else if(tolower(str[p1]) != tolower(str[p2])) {
+                    std::cout << "Babbage:-\nNOT PALINDROME!";
                     return false;
+                }
                 else {
                     p2++;
                     p1--;
@@ -263,32 +275,26 @@ struct DSA {
             return str;
         }
 
+        // Sorting
         // CHECK THIS NOT WORKING AS INTENDED --------------------------------------------
-        // Bubble Sort (Two-Pointer)
+        // Bubble Sort
         void Swap(int* a, int* b) {
             int temp = *a;
             *a = *b;
             *b = temp;
         }
 
-        std::vector<int> bubbleSort(std::vector<int>& arr) { // Avoid nested for loop
-            int p1 = 1;
+        std::vector<int> bubbleSort(std::vector<int>& arr) {
             if(arr.size() <= 1) {
                 std::cout << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << arr.size() << " FOR |SORT|";
                 std::cout << "Must be greater than '1'\n";
                 return arr;
             }
             else {
-                for(int p2 = 0; p2 < arr.size(); p2++) {
-                    if(arr[p2] > arr[p1]) {
-                        Swap(&arr[p2], &arr[p1]);
-                        p1++;
-                    }
-                    else { // Reset, should work??
-                        p1 = 0;
-                        p2 = 0;
-                    }
-                }
+                for(int i = 0; i < arr.size(); i++)
+                    for(int j = 0; j < arr.size() - i - 1; j++)
+                        if(arr[j] > arr[j + 1])
+                            Swap(&arr[j], &arr[j + 1]);
             }
             return arr;
         }
@@ -299,7 +305,7 @@ struct DSA {
             stack[stackSize]; // Wrong
             n = stackSize;
             if(top >= n - 1) { 
-                std::cout << "Stack Overflow!\n";
+                std::cout << "Babbage Error:-\nSTACK OVERFLOW!";
                 return;
             }
             else {
@@ -310,7 +316,7 @@ struct DSA {
 
         void popStack() {
             if(top <= - 1) {
-                std::cout << "Stack Underflow!\n";
+                std::cout << "Babbage Error:-\nSTACK UNDERFLOW!";
                 return;
             }
             else {
@@ -325,7 +331,7 @@ struct DSA {
                     std::cout << stack[i] << " "; // No new line for users sake
             }
             else
-                std::cout << "Stack is empty!\n";
+                std::cout << "Babbage:-\nSTACK IS EMPTY!";
         }
         // End of stack ---------------------------------------------------------------------------
     };
@@ -407,6 +413,7 @@ public:
 }
 
 // Binary Tree ------------------------------------------------------------------------------------------------------------------
+// Allow for user input, add template
 struct node { // Has to be visible in entire scope for function definitions
     int keyValue;
     node* left;
@@ -496,7 +503,6 @@ node* bTree::search(int key) {
 void bTree::destroyTree() {
     return destroyTree(root);
 }
-
 // End of bTree ------------------------------------------------------------------------------------------------------------------
 
 // Complex
@@ -517,6 +523,7 @@ class Complex {
             return matrix;
         }
 
+        // These are both pointless
         std::map<C,int> cMap(std::vector<int>& input) {
             std::map<C,int> map;
             for(int i = 0; i < input.size(); i++)
@@ -537,19 +544,3 @@ class Complex {
         }
     };
 }
-
-// Babbage's Graphics library
-namespace babbageG {
-template<typename G>
-class Graphics {
-    private:
-        // Built in movement enumeration
-        enum direction {STOP = 0, LEFT, RIGHT, FORWARD, BACK};
-        direction bDir;
-    public:
-        // Unicode implementation
-        std::wstring symbol; // Used for representing unicode chars
-        // Vector components
-        int vec4[4], vec3[3], vec2[2], vec1[1]; // Should work?
-    };
-};
