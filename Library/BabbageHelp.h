@@ -1,8 +1,8 @@
 // Help | Allow use to select sections (Interactive menu essentially)
 #include <iostream>
 
-void Commands() {
-    std::cout << "List of commands:\n";
+void PrintCommands() {
+    std::cout << "List of commands: Printing\n";
     std::cout << "print() // Prints input";
     std::cout << "nl() // Creates new line";
     std::cout << "line() // Prints a line of '-' based on input size (amount)";
@@ -11,18 +11,25 @@ void Commands() {
     std::cout << "pArray2D() // Prints a 2D array (Vector)";
 }
 
+void MathCommands() {
+    std::cout << "List of commands: Maths\n";
+}
+
 void Help() {
     int userInput{0};
     std::cout << "Babbage Library Help\n";
     std::cout << "1) General\n";
-    std::cout << "2) Commands\n";
+    std::cout << "2) Printing\n";
+    std::cout << "3) Maths\n";
     std::cout << "Enter: "; std::cin >> userInput;
     switch (userInput)
     {
     case 1:
-        std::cout << "Babbage is a general purpose, typeless library to be used for learning purposes\n";
+        std::cout << "Babbage is a general purpose, typeless library\n";
         break;
     case 2:
-        return Commands();
+        return PrintCommands();
+    case 3:
+        return MathCommands();
     }
 }

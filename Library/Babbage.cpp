@@ -5,11 +5,13 @@
 * Find way to remove the need for '()' for certain functions. Low level C?
 * Use function prototypes and the header file far more in general
 * Use the 'static' keyword for performance reasons (RESEARCH)
+* Implement both vector and array versions of functions, with some exceptions
 * Compile into a library file along with 'Babbage.h'
 */
 
 // Avoid using other headers!! Replace their functions
 #include <iostream>
+#include <string>
 #include <vector>
 #include <map>
 #include <unordered_map>
@@ -93,11 +95,11 @@ class Geometry {
 
         // Not sure about nesting these structs
         struct CircleTheorem {
-            static auto Circumfrence(auto radius) { // Test how 'static' affects function
+            static double Circumfrence(double radius) { // Test how 'static' affects function
                 return 2 * PI * radius;
             }
 
-            auto CircleArea(auto radius) {
+            double CircleArea(double radius) {
                 return PI * radius * radius;
             }
 
@@ -124,7 +126,7 @@ class Geometry {
 namespace babbagePrint {
 template<typename T>
 struct Printing{
-        T print(T a) { // Single, allow for multiple
+        T print(T a) { // Single argument, allow for multiple
             std::cout << a; 
         }
 
@@ -223,7 +225,7 @@ public:
         }
 
         double convDegToRad(double degrees) {
-            return degrees PI/180;
+            return degrees = PI/180;
         }
 
         // Possibly incorrect
@@ -262,6 +264,39 @@ public:
             }
             return result;
         }
+
+        /*
+        class vectorMath { // Implement graphics library into this, properly implement function arguments
+            private:
+                Graphics::Vector2::vec2::vec2[] vec1; // Objects
+                Graphics::Vector2::vec2::vec2[] vec2;
+            public:
+                // Vector 2
+                void vecMag() { // Magnitude
+                    float magnitude = sqrt((vec1.x - vec1.y) + (vec2.x - vec2.y)); // Check!
+                    return magnitude;
+                }
+
+                void addVec() {
+                    return (vec1.x + vec2.x), (vec1.y + vec2.y); // Will ',' work?
+                }
+
+                void subVec() {
+                    return ;
+                }
+
+                int dotProd() { // Produces 'scalar'
+                    return vec1.x * vec2.x + vec1.y * vec2.y;
+                }
+
+                void crossProd() { // Produces 'vector'
+                    Vector2 crossVec; // Result
+                    return; // Implement
+                }
+                // Vector3
+            
+        };
+        */
     };
 }
 
@@ -303,7 +338,7 @@ struct DSA {
             int n1 = s.length();
             int n2 = t.length();
             if(n1 != n2) {
-                std::cout << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << AND << t.length() << " FOR |ANAGRAM|";
+                std::cout << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|";
                 std::cout << "Both must be equal in length\n";
                 return false;
             }
@@ -317,7 +352,7 @@ struct DSA {
             else return false;
         }
 
-        // Reverse String | Could be universal ???
+        // Reverse String | Could be universal ??? | Do it recursively
         std::string revStr(std::string str) {
             if(str.length() <= 1) {
                 std::cout << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";
@@ -339,23 +374,63 @@ struct DSA {
         // Sorting
         // CHECK THIS NOT WORKING AS INTENDED --------------------------------------------
         // Bubble Sort
-        void Swap(int* a, int* b) {
+        void Swap(int* a, int* b) { // Make universal
             int temp = *a;
             *a = *b;
             *b = temp;
         }
 
-        std::vector<int> bubbleSort(std::vector<int>& arr) {
+        std::vector<int> bSortV(std::vector<int>& arr) { // Implement recursive version
             if(arr.size() <= 1) {
-                std::cout << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << arr.size() << " FOR |SORT|";
+                std::cout << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
                 std::cout << "Must be greater than '1'\n";
                 return arr;
             }
             else {
-                for(int i = 0; i < arr.size(); i++)
+                for(int i = 0; i < arr.size(); i++) // Nested implementation
                     for(int j = 0; j < arr.size() - i - 1; j++)
                         if(arr[j] > arr[j + 1])
                             Swap(&arr[j], &arr[j + 1]);
+            }
+            return arr;
+        }
+
+        void bSortA(A arr[]) { // Find correct return type
+            int size = sizeof(arr) / sizeof(arr[0]);
+            if(size <= 1) {
+                std::cout << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
+                std::cout << "Must be greater than '1'\n";
+            }
+            else {
+                for(int i = 0; i < size; i++)
+                    for(int j = 0; j < size - i - 1; j++)
+                        if(arr[j] > arr[j + 1])
+                            Swap(&arr[j], &arr[j + 1]);
+            }   
+            return;
+        }
+
+        // Quick Sort (DO A LOT OF WORK AND STUDY ON THIS)
+        int Partition(std::vector<A>& arr, int low, int high) {
+            int pivot = arr[high];
+            int i = arr[low];
+
+            for(int j = low; j < high; j++) {
+                if(arr[j] <= pivot)
+                    Swap(&arr[i], &arr[j]);
+            }
+            Swap(&arr[i + 1], &arr[high]); // Move pivot to 1 in front of 'i'
+            return (i + 1); // Return pivot
+        }
+
+        std::vector<A> qSortV(std::vector<A>& arr, int leftIndex, int rightIndex) { // Allows user input
+            if(leftIndex < rightIndex) {
+                int pivot = Partition(arr, leftIndex, rightIndex);
+                qSortV(arr, leftIndex, pivot - 1);
+                aSortV(arr, pivot + 1, rightIndex);
+            }
+            else {
+                std::cout << "Babbage Error:-\nINVALID INPUT OF: " << "Left index: " << leftIndex << " OR " << "Right index: " << rightIndex << " FOR |QUICK SORT|"; // Add better error handling
             }
             return arr;
         }
@@ -402,7 +477,7 @@ struct DSA {
 namespace babbageMem {
 template<typename M>
 class Memory {
-        M memPrint(M std::vector<M>& input) { // Print x amount of memory adresses in sequence, possibly have 2D version
+        void memPrint(std::vector<M>& input) { // Print x amount of memory adresses in sequence, possibly have 2D version
             for(int i = 0; i < input; i++)
                 std::cout << &input << '\n';
         }
@@ -410,7 +485,6 @@ class Memory {
 }
 
 // List Creation
-namespace babbageList {
 template<typename L>
 class SinglyLinkedList {
 private:
@@ -419,8 +493,8 @@ private:
         Node* next;
     };
 
-    void Linsert(int key, node* node);
-    void lsearch(int key, node* node);
+    void linsert(int key, Node* node);
+    void lsearch(int key, Node* node);
     void lPrint(Node* node);
     void ldestroyList(Node* node);
 
@@ -445,33 +519,32 @@ public:
         tail->data = 0;
         tail->next = nullptr; // End
 
-        SinglyLinkedList::~SinglyLinkedList() { // May not need to treat this like a binary tree. Although similair. Study more
+        ~SinglyLinkedList() { // May not need to treat this like a binary tree. Although similair. Study more
             return ldestroyList(); // Add deletion
         }
 
-        void Lcreate(L userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
+        void lcreate(L userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
             dataInput = userInput;
             head->data = dataInput;
             tail->data = dataInput;
         }
 
-        void Linsert(int key, node* node) { // Add functionallity, similair to tree implementation
+        void linsert(int key, Node* node) { // Add functionallity, similair to tree implementation
             
         }
 
-        void Lsearch(int key, node* node) {
+        void lsearch(int key, Node* node) {
 
         }
 
         void lprint(Node* node) {
-            while(n != nullptr) {
+            while(node != nullptr) {
                 std::cout << node << ", ";
                 node = node->next;
             }
         }
 
-    };
-}
+};
 
 // Binary Tree ------------------------------------------------------------------------------------------------------------------
 // Allow for user input, add template
@@ -566,7 +639,8 @@ void bTree::destroyTree() {
 }
 // End of bTree ------------------------------------------------------------------------------------------------------------------
 
-// Complex
+// Complex | Probably going to get rid of this
+/*
 namespace babbageC {
 template<typename C>
 class Complex {
@@ -605,3 +679,4 @@ class Complex {
         }
     };
 }
+*/

@@ -10,14 +10,47 @@ class Graphics {
     public:
         // Unicode implementation
         std::wstring symbol; // Used for representing unicode chars
-        // Vector components
-        static int vec4[4], vec3[3], vec2[2], vec1[1]; // Should work? | Static not needed?
+
+    class Vector1 {
+        private:
+            float x;
+        public:
+            float vec1[1]{x};
+    };
+
+    class Vector2 {
+        private:
+            float x;
+            float y;
+        public:
+            float vec2[2]{x,y};
+    };
+
+    class Vector3 {
+        private:
+            float x;
+            float y;
+            float z;
+        public:
+            float vec3[3]{x,y,z};
+    };
+
+    class Vector4 {
+        private:
+            float x;
+            float y;
+            float z;
+            float w;
+        public:
+            float vec4[4]{1,2,3,4};
+    };  
 };
 
-class Vector2 {
+class matrix {
 private:
-    float x;
-    float y;
+    std::vector<std::vector<int>> matrix{{}};
+    int rows;
+    int colums;
 public:
-    
+    std::vector<std::vector<int>> fillMatrix(std::vector<std::vector<int>>& matrix); // Overload AND/OR Type pun, too long
 };
