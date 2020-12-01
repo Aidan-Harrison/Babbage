@@ -265,11 +265,10 @@ public:
             return result;
         }
 
-        /*
         class vectorMath { // Implement graphics library into this, properly implement function arguments
             private:
-                Graphics::Vector2::vec2::vec2[] vec1; // Objects
-                Graphics::Vector2::vec2::vec2[] vec2;
+                Vector2 vec1; // Incorrect but prevents errors
+                Vector2 vec2;
             public:
                 // Vector 2
                 void vecMag() { // Magnitude
@@ -296,7 +295,6 @@ public:
                 // Vector3
             
         };
-        */
     };
 }
 
@@ -436,6 +434,7 @@ struct DSA {
         }
 
         // Stack ----------------------------------------------------------------------------------
+        // Custom, not using <stack> header
         int stack[0], n = 0, top = -1;
         void stackCreate(int stackSize, int value) {
             stack[stackSize]; // Wrong
@@ -500,50 +499,52 @@ private:
 
     L dataInput;
 public:
-        SinglyLinkedList(); // Constructor
-        ~SinglyLinkedList();
+    SinglyLinkedList(); // Constructor
+    ~SinglyLinkedList();
 
-        // Possibly add print somewhere
-        void linsert(int key);
-        void lsearch(int key);
-        void ldestroyList(Node* node);
+    // Possibly add print somewhere
+    void linsert(int key);
+    void lsearch(int key);
+    void ldestroyList(Node* node);
 
-        // Initialise
-        Node* head = nullptr; // No idea why this doesn't work
-        Node* tail = nullptr;
+    // Initialise
+    Node* head = nullptr; // No idea why this doesn't work
+    Node* tail = nullptr;
 
-        // CONTINUE
-        head->data = 0; // Start (Initialise)
-        head->next = tail;
+    // CONTINUE
+    head = new Node();
+    tail = new Node();
 
-        tail->data = 0;
-        tail->next = nullptr; // End
+    head->data = 0; // Start (Initialise)
+    head->next = tail;
 
-        ~SinglyLinkedList() { // May not need to treat this like a binary tree. Although similair. Study more
-            return ldestroyList(); // Add deletion
+    tail->data = 0;
+    tail->next = nullptr; // End
+
+    ~SinglyLinkedList() { // May not need to treat this like a binary tree. Although similair. Study more
+        return ldestroyList(); // Add deletion
+    }
+
+    void lcreate(L userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
+        dataInput = userInput;
+        head->data = dataInput;
+        tail->data = dataInput;
+    }
+
+    void linsert(int key, Node* node) { // Add functionallity, similair to tree implementation
+        return;
+    }
+
+    void lsearch(int key, Node* node) {
+        return;
+    }
+
+    void lprint(Node* node) {
+        while(node != nullptr) {
+            std::cout << node << ", ";
+            node = node->next;
         }
-
-        void lcreate(L userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
-            dataInput = userInput;
-            head->data = dataInput;
-            tail->data = dataInput;
-        }
-
-        void linsert(int key, Node* node) { // Add functionallity, similair to tree implementation
-            
-        }
-
-        void lsearch(int key, Node* node) {
-
-        }
-
-        void lprint(Node* node) {
-            while(node != nullptr) {
-                std::cout << node << ", ";
-                node = node->next;
-            }
-        }
-
+    }
 };
 
 // Binary Tree ------------------------------------------------------------------------------------------------------------------
@@ -638,6 +639,19 @@ void bTree::destroyTree() {
     return destroyTree(root);
 }
 // End of bTree ------------------------------------------------------------------------------------------------------------------
+
+// Threading (BabbageThread.h)
+namespace babbageThread {
+    class thread {
+        void thread::threadCreate(std::string name) {
+            std::thread name(); // Figure out custom name, doesn't appear to work
+        }
+
+        void delay(int seconds) {
+            std::chrono::seconds(seconds); // Also not appearing to want to insert parameter
+        }
+    };
+};
 
 // Complex | Probably going to get rid of this
 /*

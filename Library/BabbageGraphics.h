@@ -10,6 +10,7 @@ class Graphics {
     public:
         // Unicode implementation
         std::wstring symbol; // Used for representing unicode chars
+        wchar_t charSym; // Used for unicode as well??
 
     class Vector1 {
         private:
