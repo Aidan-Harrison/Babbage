@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Babbage.h"
+#include "Babbage.h" // ?
 #include "BabbageMath.h"
 
 // Maths re-write----------------------------------------------------------------------------------------------
@@ -96,35 +96,33 @@ std::vector<int> BabbageMath::getDigits(int number) { // Returns digits of numbe
     return result;
 }
 
-// Vector Math | Come back to this
-// Vector 2
-/*
+// Vector Math | Partially working
+// Calling errors in an odd manner, sometimes it does sometimes it doesn't
+VectorMath vectorM; // Initialize
+// Vector 2 | Get correct returns and utilise vec[] array
 float VectorMath::vecMag(Vector2 vec1, Vector2 vec2) { // Magnitude
-    float magnitude = sqrt((vec1.vecX - vec1.vecY) + (vec2.vecX - vec2.vecY)); // Check!
+    float magnitude = sqrt((vec1.x - vec1.y) + (vec2.x - vec2.y)); 
     return magnitude;
 }
-
-void VectorMath::addVec(Vector2 vec1, Vector2 vec2) {
-    return (vec1.vecX + vec2.vecX), (vec1.vecY + vec2.vecY); // Will ',' work?
+float VectorMath::addVec(Vector2 vec1, Vector2 vec2) { // Works!
+    return vec1.x + vec2.x * vec1.y + vec2.y;
 }
-
-void VectorMath::subVec() {
-    return;
+float VectorMath::subVec(Vector2 vec1, Vector2 vec2) {
+    return vec1.x + vec2.x * -vec1.y + -vec2.y; // Incorrect formula?
 }
-
-int VectorMath::dotProd(Vector2 vec1, Vector2 vec2) { // Produces 'scalar'
-    return vec1.vecX * vec2.vecX + vec1.vecY * vec2.vecY;
-}
-
-void crossProd() { // Produces 'vector'
-    return;
+float VectorMath::dotProd(Vector2 vec1, Vector2 vec2) { // Produces 'scalar'
+    return vec1.x * vec2.x + vec1.y * vec2.y;
 }
 
 // Vector3
 void addVec3() {
     return;
 }
-*/
+
+void crossProd() { // Produces 'vector'
+    // Get magnitude
+    return;
+}
 
 // Matrix Math
 std::vector<std::vector<int>> MatrixMath::fillMatrix(std::vector<std::vector<int>>& matrix, int input) {
@@ -174,3 +172,5 @@ double GeometryMath::Trigonometry::gCos(double hypotenuse, double adjacent) {
 double GeometryMath::Trigonometry::gTan(double opposite, double hypotenuse, double adjacent) {
     return opposite / adjacent; // Continue
 }
+
+// Quarternion Math

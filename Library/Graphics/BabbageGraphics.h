@@ -1,9 +1,13 @@
+#pragma once
 #include <iostream>
 #include "Babbage.h"
 
 // Babbage's Graphics library
+// To-Do-List:
+    // Heavily incorporate BabbageMath here for the users sake, do as much raw as possible
+    // for performance (system) sake
 // Changes:
-    // Vectors moved to math library
+    // Moved portion to math library
 class Graphics {
     private:
         // Built in movement enumeration

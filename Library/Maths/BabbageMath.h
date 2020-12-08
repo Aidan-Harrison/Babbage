@@ -1,3 +1,4 @@
+#pragma once
 // Maths library
 // Research use of doubles
 class BabbageMath {
@@ -68,13 +69,13 @@ private: // Possibly do not have structs in private access
 public:
         // Vector 2
         float vecMag(Vector2 vec1, Vector2 vec2);
-        void addVec(Vector2 vec1, Vector2 vec2);
-        void subVec();
-        int dotProd(Vector2 vec1, Vector2 vec2);
-        void crossProd();
+        float addVec(Vector2 vec1, Vector2 vec2);
+        float subVec(Vector2 vec1, Vector2 vec2);
+        float dotProd(Vector2 vec1, Vector2 vec2);
 
         // Vector3
         void addVec3();
+        void crossProd();
 };
 
 class MatrixMath {
