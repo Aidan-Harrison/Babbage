@@ -2,7 +2,7 @@
 Custom C/C++ library
 Line Count: 1000+
 
-A general purpose, mostly typeless library (Generic). Intending to include most langauge features and beyond
+A general purpose library/language. Intending to include most langauge features and beyond with the hope to be able to implement assembly overrides (x86) for certain features. High performance with vast documentation to be used for small projects.
 
 To-Do-List:
 > List and Tree creation with multiple functions and complete user control
