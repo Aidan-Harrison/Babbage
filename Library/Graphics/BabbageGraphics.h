@@ -1,6 +1,4 @@
-#pragma once
 #include <iostream>
-#include "Babbage.h"
 
 // Babbage's Graphics library
 // To-Do-List:

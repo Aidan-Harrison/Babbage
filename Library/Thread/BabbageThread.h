@@ -1,11 +1,17 @@
-#pragma once
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include "Babbage.h"
+
+// Heavy overriding of headers necessary
 
 // Definitions do not appear to work <-- check this
-class BabbageThread {
-    void threadCreate(std::string name); // std::thread
-    void delay(int seconds); // 'chrono::seconds()' 
-}; 
+namespace BabbageThread {
+    void threadCreate(std::string name) { 
+        std::thread name(); // Figure out custom name, doesn't appear to work
+    }
+    /*
+        void delay(int seconds) {
+            std::chrono::seconds(seconds); // Also not appearing to want to insert parameter | do float and double as well
+        }
+    */
+}

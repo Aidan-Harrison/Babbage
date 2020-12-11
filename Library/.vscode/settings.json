@@ -49,6 +49,8 @@
         "xstring": "cpp",
         "cctype": "cpp",
         "string": "cpp",
-        "algorithm": "cpp"
+        "algorithm": "cpp",
+        "deque": "cpp",
+        "stack": "cpp"
     }
 }
