@@ -1,3 +1,6 @@
+#ifndef BabbagePrint_h
+#define BabbagePrint_h
+
 #include <vector>
 #include <iostream>
 
@@ -32,3 +35,5 @@ namespace BabbagePrint {
             return arr;
     }
 }
+
+#endif

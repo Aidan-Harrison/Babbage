@@ -1,5 +1,6 @@
 #ifndef BabbageDSA_h
 #define BabbageDSA_h
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -190,51 +191,54 @@ namespace BabbageDSA {
     };
 };
 
-// Linked List (Single)
-namespace BabbageLinkedList { // Numbers only for now
+// Review everything extensively
+namespace BabbageSLinkedList { // Numbers only for now
     struct Node {
         int data; // Allow user to implement custom data of any type
         Node* next;
+        Node(int x) : data(x), next(nullptr) {} // Initialization list
     };
 
-    void linsert(int key, Node* node);
-    void lsearch(int key, Node* node);
-    void lPrint(Node* node);
-    void ldestroyList(Node* node);
-
-    int dataInput;
-
-    // Possibly add print somewhere
-    void linsert(int key);
-    void lsearch(int key);
-    void ldestroyList(Node* node);
-
-    // Initialise
-    Node* head = nullptr; // No idea why this doesn't work
-    Node* tail = nullptr;
-
-    // Move to .cpp file
     void lcreate(int userInput) { // Allow for custom amount of nodes as well custom input per node. Leave head and tail for now
-        dataInput = userInput;
-        head->data = dataInput;
-        tail->data = dataInput;
+        return;
     }
-
     void linsert(int key, Node* node) { // Add functionallity, similair to tree implementation
+        
         return;
     }
-
-    void lsearch(int key, Node* node) {
-        return;
+    Node* lsearch(int key, Node* node) {
+        if(key == node->data)
+            return node;
+        else {
+            std::cout << "Babbage Error:-\nSpecified value does not exist in list";
+            Node* empty; return empty; // Return null node
+        }
     }
-
+    void ldelete(Node* node) {
+        // Review this?
+        Node* del = node->next;
+        node->data = node->next->data;
+        node->next = node->next->next;
+        delete del;
+    }
     void lprint(Node* node) {
         while(node != nullptr) {
             std::cout << node << ", ";
             node = node->next;
         }
     }
+
+    // Deconstructor instead??? | Or both??
+    void ldestroyList(Node* node);
 };
+
+namespace BabbageDLinkedList {
+    struct Node {
+        int data;
+        Node* previous;
+        Node* next;
+    };
+}
 
 // Binary Tree
 struct node { // Has to be visible in entire scope for function definitions

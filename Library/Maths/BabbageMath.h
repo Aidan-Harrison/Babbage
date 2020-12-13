@@ -8,20 +8,16 @@
 
 #define PI 3.14159
 #define Euler 2.71828
-#define Radian 57.2958 // Pointless ???
+#define Radian 57.2958
 
 // Maths library
 // Research use of doubles
 namespace BabbageMath {
-    struct values {
-        double x{0}; // Make use of these in functions?
-        double y{0};
-        double z{0};
-    };
+    // Definitions | typedef's here
+
     // Overloads
 
-    // Can template now as no longer using classes and seperate files | Test first
-    template<typename T>
+    template<typename T> // Find way to template namespace
     // Basic
     T Add(T a, T b) {
         return a + b;
@@ -38,7 +34,7 @@ namespace BabbageMath {
 
     // Comparisons
     const double Max(double a, double b) {
-    return a < b ? b : a;
+        return a < b ? b : a;
     }
     const double Min(double a, double b) {
         return a > b ? a : b;
@@ -50,9 +46,9 @@ namespace BabbageMath {
 
     // Conversions
     int toASC(char value) { // Char only? | Try 'char*'
-        return (int)value; // Type-cast to int (ASCII)
+        return static_cast<int>(value); // Type-cast to int (ASCII)
     }
-    // Both of these are probably the wrong formula. Everything else is correct
+    // Both of these are probably the wrong formula
     double convRadToDeg(double radians) {
         return radians = 180/PI; 
     }
@@ -71,12 +67,12 @@ namespace BabbageMath {
     int random(int range) {
         if(sizeof(range) != sizeof(int) || sizeof(range) != sizeof(float) || sizeof(range) != sizeof(double)) {
             std::cout << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(range).name() << '\n';
-            std::cout << "Both must be; int, float or double\n";
+            std::cout << "Must be; int, float or double\n";
             return -1;
         }
         return rand() % range; // Check if 'rand()' can do more than int
     }
-    std::vector<int> getDigits(int number) { // Returns digits of number in vector format
+    std::vector<int> getDigits(int number) { // Returns digits of number in vector format, CHANGE TO ARRAY
         int digit;
         std::vector<int> result;
         if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) { // Check datatypes using 'sizeof' function
@@ -105,26 +101,36 @@ namespace BabbageMath {
     }
 }
 
-// Vector (Move vector to math library)
-// Incorrect arguments for functions
 namespace VectorMath { // Implement graphics library into this, properly implement function arguments
     // Vectors
     struct Vector1 {
         float x;
         float vec1[1]{x};
+        Vector1(int cX = 0) {
+            x = cX;
+        }
     };
 
     struct Vector2 {
         float x;
         float y;
         float vec2[2]{x,y};
+        Vector2(int cX = 0, int cY = 0) {
+            x = cX;
+            y = cY;
+        }
     };
 
     struct Vector3 {
         float x;
         float y;
         float z;
-        float vec2[3]{x,y,z};
+        float vec3[3]{x,y,z};
+        Vector3(int cX = 0, int cY = 0, int cZ = 0) {
+            x = cX;
+            y = cY;
+            z = cZ;
+        }
     };
 
     struct Vector4 {
@@ -133,34 +139,87 @@ namespace VectorMath { // Implement graphics library into this, properly impleme
         float z;
         float w;
         float vec4[4]{x,y,z,w};
+        Vector4(int cX = 0, int cY = 0, int cZ = 0, int cW = 0) {
+            x = cX;
+            y = cY;
+            z = cZ;
+            w = cW;
+        }
     };
 
-    float vectorInput1, vectorInput2, vectorInput3, vectorInput4; // Used for user creation
-    // Vector 2
-    float vecMag(Vector2 vec1, Vector2 vec2) { // Magnitude
-        float magnitude = sqrt((vec1.x - vec1.y) + (vec2.x - vec2.y)); 
-        return magnitude;
+    // Vector creation | Should return using pointers/ref ?
+    Vector1 CVec1(float vecIn1) {
+        Vector1 vec;
+        vec.vec1[0] = vecIn1;
+        return vec;
     }
-    float addVec(Vector2 vec1, Vector2 vec2) { // Works!
-        return vec1.x + vec2.x * vec1.y + vec2.y;
+    Vector2 CVec2(float vecIn1, float vecIn2) {
+        Vector2 vec;
+        vec.vec2[0] = vecIn1;
+        vec.vec2[1] = vecIn2;
+        return vec;
     }
-    float subVec(Vector2 vec1, Vector2 vec2) {
-        return vec1.x + vec2.x * -vec1.y + -vec2.y; // Incorrect formula?
+    Vector3 CVec3(float vecIn1, float vecIn2, float vecIn3) {
+        Vector3 vec;
+        vec.vec3[0] = vecIn1;
+        vec.vec3[1] = vecIn2;
+        vec.vec3[2] = vecIn3;
+        return vec;
     }
-    float dotProd(Vector2 vec1, Vector2 vec2) { // Produces 'scalar'
+    Vector4 CVec4(float vecIn1, float vecIn2, float vecIn3, float vecIn4) {
+        Vector4 vec;
+        vec.vec4[0] = vecIn1;
+        vec.vec4[1] = vecIn2;
+        vec.vec4[2] = vecIn3;
+        vec.vec4[3] = vecIn4;
+        return vec;
+    }
+
+    // Vector 2 Math
+    float vecMag(Vector2 vec1) { // Magnitude
+        float mag = sqrt(vec1.x * vec1.x + vec1.y * vec1.y); // Do custom sqrt function
+        return mag;
+    }
+    Vector2 addVec(Vector2 vec1, Vector2 vec2) { // Working?
+        Vector2 vec;
+        vec.x = vec1.x + vec2.x;
+        vec.y = vec1.y + vec2.y;
+        return vec;
+    }
+    Vector2 subVec(Vector2 vec1, Vector2 vec2) { // Working
+        Vector2 vec;
+        vec.x = vec1.x + (-vec2.x);
+        vec.y = vec1.y + (-vec2.y);
+        return vec;
+    }
+    float dotProd(Vector2 vec1, Vector2 vec2) { // Produces 'scalar' | Working
         return vec1.x * vec2.x + vec1.y * vec2.y;
     }
 
-    // Vector3
-    void addVec3() {
+    // Vector3 Math
+    void addVec3(Vector3 vec1, Vector3 vec2) {
         return;
     }
-    void crossProd() {
-
+    void crossProd(Vector3 vec1, Vector3 vec2) {
+        return;
     }
+
+    // Vector4 Math
 }
 
 namespace MatrixMath {
+    struct Matrix {
+        int mRows;
+        int mColums;
+
+        inline Matrix() = default;
+
+        Matrix(int rows = 0, int columns = 0) {
+            mRows = rows;
+            mColums = columns;
+        }
+    };
+
     std::vector<std::vector<int>> createMatrix(int input, int rows, int columns) {
         std::vector<std::vector<int>> matrix;
         // DO THIS
@@ -175,7 +234,7 @@ namespace MatrixMath {
         }
     }
 
-    // Work on calculation and return
+    // Work on calculation and return | Convert to non-vector
     std::vector<std::vector<int>> addMatrix(std::vector<std::vector<int>>& matrix1, std::vector<std::vector<int>>& matrix2) {
         if(matrix1.size() != matrix2.size()) {
             std::cout << "Babbage Error:-\nINVALID MATRIX SIZE'S OF: " << matrix1.size() << " AND " << matrix2.size();
@@ -199,29 +258,28 @@ namespace MatrixMath {
 }
 
 namespace GeometryMath {
-    int length;
-    int width;
-    int height;
+    struct shape2D {
+        static int width;
+        static int height;
+    };
+
+    struct shape3D {
+        static int width;
+        static int height;
+        static int depth;
+    };
+
     // Overloads
-    /*
-        GeometryMath operator+ (GeometryMath geo) { // Override + for geo calculations | May only work on volumes | Research overloading more
-            GeometryMath newVal;
-            newVal.length = length + geo.length; // Last operand equal to right hand side operand
-            newVal.width = width + geo.width;
-            newVal.height = height + geo.height;
-            return newVal;
-        }
-    */
 
     // General
-    int gPer(int a, int b) { // Square only for now
-        return a + b * 2;
+    int gPer(shape2D s1) { // Square only for now
+        return s1.width + s1.width + s1.height + s1.height;
     }
-    int gVol(int a, int b, int c) {
-        return a * b * c;
-    }
-    int gArea(int a, int b) {
+    int gArea(int a, int b) { // Possibly don't do objects for users sake | Overcomplicated
         return a * b;
+    }
+    int gVol(shape3D s1) {
+        return s1.width * s1.height * s1.depth;
     }
     int gPythagLong(int a, int b) {
         int c;
@@ -258,7 +316,37 @@ namespace GeometryMath {
             return opposite / adjacent; // Continue
         }
     };
-    
 }
+
+// Do better with objects. Have struct only be quat itself not functions
+struct Quaternion {
+    float x;
+    float y;
+    float z;
+    float w;
+
+    inline Quaternion() = default;
+
+    Quaternion(float a, float b, float c, float d) {
+        x = a;
+        y = b;
+        z = c;
+        w = d;
+    }
+
+    float magnitude() {
+        float mag = sqrt(w * w + x * x + y * y + z * z);
+        return mag;
+    }
+
+    float normailze() {
+        float mag = magnitude();
+        w /= mag;
+        x /= mag;
+        y /= mag;
+        z /= mag;
+        return mag; // ??
+    }
+};
 
 #endif

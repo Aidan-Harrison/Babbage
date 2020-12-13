@@ -1,11 +1,9 @@
-#include <iostream>
+#ifndef BabbageGraphics_h
+#define BabbageGraphics_h
+
+#include "BabbageMath.h" // Heavily uses custom math library
 
 // Babbage's Graphics library
-// To-Do-List:
-    // Heavily incorporate BabbageMath here for the users sake, do as much raw as possible
-    // for performance (system) sake
-// Changes:
-    // Moved portion to math library
 class Graphics {
     private:
         // Built in movement enumeration
@@ -16,3 +14,5 @@ class Graphics {
         std::wstring symbol; // Used for representing unicode chars
         wchar_t charSym; // Used for unicode as well??
 };
+
+#endif
