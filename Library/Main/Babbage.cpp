@@ -7,17 +7,10 @@
 * Compile into a library file along with 'Babbage.h'
 * Maybe incorporate some x86 Assembly into this for true overriding | MAJOR ADDITION
 * Replace classes with namespaces, extremely important for the users sake and best practice for library construction | MAJOR ADDITION | MUST IMPLEMENT
-# Classes and structs can be implemented when necessary inside namespaces but for now change most to namespace. Namespaces also allow for templates??
-# Remove almost all headers and replace with custom C/C++ functionallity
+* Classes and structs can be implemented when necessary inside namespaces but for now change most to namespace. Namespaces also allow for templates??
+* Remove almost all headers and replace with custom C/C++ functionallity
+* Replace all headers with C, <iostream>, <vector>, <cmath> etc. | There should be no headers. Babbage is the library which provides headers
 */
-
-// Avoid using other headers!! Replace their functions | This where Assembly can come in truly handy
-#include <iostream>
-#include <string>
-#include <vector>
-#include <map>
-#include <unordered_map>
-#include <typeinfo> // Compare to datatype
 
 // Data Structures and Algorithms (Add overloads for user simplicity)
         // Stack ----------------------------------------------------------------------------------

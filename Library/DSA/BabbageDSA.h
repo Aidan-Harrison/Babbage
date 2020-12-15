@@ -2,10 +2,21 @@
 #define BabbageDSA_h
 
 #include <iostream>
-#include <vector>
+#include <vector> // Replace with C style arrays
 #include <algorithm>
 #include <unordered_map>
 #include <map>
+
+// Data Structure definitions
+template<typename M>
+struct map { // Regular
+    M key;
+    M value;
+
+    map() = default;
+
+    
+};
 
 namespace BabbageDSA {
     // Implement generic
@@ -247,7 +258,7 @@ struct node { // Has to be visible in entire scope for function definitions
     node* right;
 };
 
-struct bTree {
+class bTree {
     private:
         // System level functions
         void destroyTree(node* leaf);
@@ -265,14 +276,13 @@ struct bTree {
         void destroyTree();
 };
 
-// Move to .cpp file
 bTree::~bTree() { // Call tree destruction on destructor
     destroyTree();  
 }
 
 // System functions
 void bTree::destroyTree(node* leaf) { 
-    if(leaf != nullptr) {
+    if(leaf != nullptr) { // If leaf exists, remove left and right children, the delete current node
         destroyTree(leaf->left);
         destroyTree(leaf->right);
         delete leaf;

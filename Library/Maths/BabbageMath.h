@@ -3,8 +3,8 @@
 
 // Used includes for now to stop errors, remove all afterwards
 #include <iostream>
-#include <vector>
-#include <cmath>
+#include <vector> // Replace with C style arrays
+#include <cmath> // Override functions
 
 #define PI 3.14159
 #define Euler 2.71828
@@ -17,57 +17,60 @@ namespace BabbageMath {
 
     // Overloads
 
-    template<typename T> // Find way to template namespace
+    template<typename T> // Find way to template most of namespace
     // Basic
-    T Add(T a, T b) {
+    inline T Add(T a, T b) {
         return a + b;
     }
-    double Subtract(double a, double b) {
+    inline double Subtract(double a, double b) {
         return a - b;
     }
-    double Multiply(double a, double b) {
+    inline double Multiply(double a, double b) {
         return a * b;
     }
-    double Divide(double a, double b) {
+    inline double Divide(double a, double b) {
         return a / b;
     }
+        //To-do:
+        // > Custom sqrt function. Override <cmath>
+        // > 
 
     // Comparisons
-    const double Max(double a, double b) {
+    inline const double Max(double a, double b) {
         return a < b ? b : a;
     }
-    const double Min(double a, double b) {
+    inline const double Min(double a, double b) {
         return a > b ? a : b;
     }
-    bool Same(double a, double b) {
+    inline bool Same(double a, double b) {
         if(a == b) return true;
         return false;
     }
 
     // Conversions
-    int toASC(char value) { // Char only? | Try 'char*'
+    inline int toASC(char value) { // Char only? | Try 'char*'
         return static_cast<int>(value); // Type-cast to int (ASCII)
     }
     // Both of these are probably the wrong formula
-    double convRadToDeg(double radians) {
+    inline double convRadToDeg(double radians) {
         return radians = 180/PI; 
     }
-    double convDegToRad(double degrees) {
+    inline double convDegToRad(double degrees) {
         return degrees = PI/180;
     }
     // Possibly incorrect
-    double convCelToFah(double c) {
+    inline double convCelToFah(double c) {
         return (c * 9 / 5) + 32;
     }        
-    double convFahToCel(double f) {
+    inline double convFahToCel(double f) {
         return (f - 32) * 5 / 9;
     }
 
     // Other   
     int random(int range) {
         if(sizeof(range) != sizeof(int) || sizeof(range) != sizeof(float) || sizeof(range) != sizeof(double)) {
-            std::cout << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(range).name() << '\n';
-            std::cout << "Must be; int, float or double\n";
+            printf("%s", "Babbage Error:-\nINVALID DATATYPE OF: ", typeid(range).name(), "%c", '-'); // Should be ok?
+            printf("%s", "Must be: int, float or double\n");
             return -1;
         }
         return rand() % range; // Check if 'rand()' can do more than int
@@ -76,8 +79,8 @@ namespace BabbageMath {
         int digit;
         std::vector<int> result;
         if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) { // Check datatypes using 'sizeof' function
-            std::cout << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(number).name() << '\n';
-            std::cout << "Both must be; int, float or double\n";
+            printf("%s", "Babbage Error:-\nINVALID DATATYPE OF: ", typeid(number).name(), "%c", '-');
+            printf("%s", "Must be: int, float or double\n");
             return result;
         }
         else {
@@ -246,7 +249,7 @@ namespace MatrixMath {
             std::vector<std::vector<int>> result{{}};
             for(int i = 0; i < matrix1.size() - 1; i++) {
                 for(int j = 0; j < matrix1.size() - 1; j++) {
-                    // DO THIS
+                    // Do this
                 }
             }
         }
@@ -284,7 +287,7 @@ namespace GeometryMath {
     int gPythagLong(int a, int b) {
         int c;
         c = a * a + b * b;
-        return sqrt(c);
+        return sqrt(c); // Call own sqrt function when overriden
     }
     int gPythagShort(int a, int b) {
         int c;
@@ -294,7 +297,7 @@ namespace GeometryMath {
 
     struct CircleTheorem {
         double Circumfrence(double radius) {
-        return 2 * PI * radius;
+            return 2 * PI * radius;
         }
         double CircleArea(double radius) {
             return PI * radius * radius;
@@ -302,10 +305,9 @@ namespace GeometryMath {
     };
 
     struct Trigonometry  {
-        // Possible incorporate some static members | Do it for most classes??
-        static double hypotenuse;
-        static double opposite;
-        static double adjacent;
+        double hypotenuse;
+        double opposite;
+        double adjacent;
         double gSin(double opposite, double hypotenuse) {
             return opposite / hypotenuse;
         }

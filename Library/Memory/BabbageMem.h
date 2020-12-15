@@ -6,13 +6,13 @@
 
 // This will be the lowest level and most complex header next to graphics
 // C for the most part
-// Convert to arrays not vectors
+// Replace with C style arrays
 
 namespace BabbageMemory {
     // Do a lot of overloads?
     // Printing
-    int* memPrintA(int arr[], int size) {
-        size = sizeof(arr) / sizeof(arr[0]);
+    int* memPrintA(int arr[], int size) { // Fixed arrays cannot have their size found within the function | Does not exist
+        size = sizeof(arr) / sizeof(arr[0]); // Alter this, reference based?
         for(int i = 0; i < size; i++)
             std::cout << &arr[i] << ", ";
         return arr;
