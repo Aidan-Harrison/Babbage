@@ -4,6 +4,7 @@
 #include <vector> // Replace with C style arrays
 #include <iostream>
 
+// Because of templating may not want to use C style printing
 namespace BabbagePrint {
     // Sort out generic returns
     inline void Print(int a) { // Single argument, allow for multiple | Replace with custom print
@@ -33,11 +34,12 @@ namespace BabbagePrint {
             putchar('\n');
         }
     }
-    std::vector<int> pArray(std::vector<int>& arr) { // Replace
-        for(auto i : arr)
-            printf("&d", arr[i]); putchar('-');
-        return arr;
+
+    void pArray(int arr[], int size) {
+        for(int i = 0; i < size; i++)
+            std::cout << arr[i] << ", ";
     }
+
     std::vector<std::vector<int>> pArray2D(std::vector<std::vector<int>>& arr) { // Replace
         int m = arr.size();
         int n = arr[0].size();

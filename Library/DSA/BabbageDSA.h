@@ -8,14 +8,11 @@
 #include <map>
 
 // Data Structure definitions
+// Hash Table (Map)
 template<typename M>
-struct map { // Regular
+struct map {
     M key;
     M value;
-
-    map() = default;
-
-    
 };
 
 namespace BabbageDSA {
