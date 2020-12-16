@@ -2,13 +2,12 @@
 Custom C/C++ library
 Line Count: 1000+
 
-A general purpose library/language. Intending to include most langauge features and beyond with the hope to be able to implement assembly overrides (x86) for certain features. High performance with vast documentation to be used for small projects.
+A general purpose library/language. Intending to include most langauge features and beyond. High performance with vast documentation to be used as a portfolio piece and for small projects. Not reccomended for serious use.
 
 To-Do-List:
-> List and Tree creation with multiple functions and complete user control
-> Finish abstraction/re-write
+> Custom DSA implementation
+> Templating
+> Quaternions
 > Graphics (Simple)
-> C implementation
-> x86 Assembly implementation
-> External language intergration
+> External language intergration | Possible use with languages other than C/C++
 > General optimisations and improvements
