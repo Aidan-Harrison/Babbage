@@ -26,7 +26,7 @@ namespace Graphics {
                 p2.m_X = p2X; p2.m_Y = p2Y;
                 p3.m_X = p3X; p3.m_Y = p3Y;
                 // Calculate angle size based on vertex positions
-                return &tri; // Check return
+                return &tri; // Check return for rendering
         }
 
         Shape2D cQuad(double &x, double &y, double &z) {

@@ -3,7 +3,7 @@
 
 #define WAIT std::cin.get()
 
-// Add general typedefs
+// Add general typedefs and byte compatability
 
 // General non-specified header
 namespace BabbageGeneral {

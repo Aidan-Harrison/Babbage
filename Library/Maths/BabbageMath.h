@@ -1,9 +1,5 @@
 #ifndef BabbageMath_h
-using int8_t = char;
-using int16_t = int;
-using int32_t = long;
 #define BabbageMath_h
-// Add proper byte compatability for different systems
 
 // Used includes for now to stop errors, remove all (except for iostream) afterwards
 #include <iostream>
@@ -162,31 +158,31 @@ namespace BabbageVectorMath { // Add unit vectors
     };
 
     // Vector creation (User functions) | Check return
-    Vector1* CVec1(float vecIn1) {
+    Vector1 CVec1(float vecIn1) {
         Vector1 vec;
         vec.vec1[0] = vecIn1;
-        return &vec;
+        return vec;
     }
-    Vector2* CVec2(float vecIn1, float vecIn2) {
+    Vector2 CVec2(float vecIn1, float vecIn2) {
         Vector2 vec;
         vec.vec2[0] = vecIn1;
         vec.vec2[1] = vecIn2;
-        return &vec;
+        return vec;
     }
-    Vector3* CVec3(float vecIn1, float vecIn2, float vecIn3) {
+    Vector3 CVec3(float vecIn1, float vecIn2, float vecIn3) {
         Vector3 vec;
         vec.vec3[0] = vecIn1;
         vec.vec3[1] = vecIn2;
         vec.vec3[2] = vecIn3;
-        return &vec;
+        return vec;
     }
-    Vector4* CVec4(float vecIn1, float vecIn2, float vecIn3, float vecIn4) {
+    Vector4 CVec4(float vecIn1, float vecIn2, float vecIn3, float vecIn4) {
         Vector4 vec;
         vec.vec4[0] = vecIn1;
         vec.vec4[1] = vecIn2;
         vec.vec4[2] = vecIn3;
         vec.vec4[3] = vecIn4;
-        return &vec;
+        return vec;
     }
 
     // Vector 2 Math | Possibly incorporate operator overloads
@@ -223,51 +219,60 @@ namespace BabbageVectorMath { // Add unit vectors
 
 namespace BabbageMatrixMath {
     struct Matrix {
-        int m_Rows;
-        int m_Colums;
-        Matrix() = default;
+        unsigned int m_Rows;
+        unsigned int m_Columns;
         Matrix(int rows = 0, int columns = 0) {
             m_Rows = rows;
-            m_Colums = columns;
+            m_Columns = columns;
         }
-        ~Matrix() = default;
+        std::vector<std::vector<int>> matrix{{}}; // Template
+        Matrix CreateMatrix(int &rows, int &columns);
+        void PrintMatrix(Matrix &matrix);
+        Matrix AddMatrix(Matrix &m1, Matrix &m2);
+        Matrix SubMatrix(Matrix &m1, Matrix &m2);
+        Matrix MultMatrix(Matrix &m1, Matrix &m2);
     };
 
-    std::vector<std::vector<int>> createMatrix(int rows, int columns) {
-        std::vector<std::vector<int>> matrix;
-        // DO THIS
-        return matrix;
+    // Operator Overloads
+
+    Matrix CreateMatrix(int rows, int columns) {
+        Matrix m1;
+        for(int i = 0; i < rows; i++)
+            m1.matrix[rows].push_back(1);
+            for(int j = 0; j < columns; j++)
+                m1.matrix[columns].push_back(1);
+        return m1;
     }
 
-    void printMatrix(std::vector<std::vector<int>>& matrix) {
-        for(int i = 0; i < matrix.size(); i++) {
-            for(int j = 0; j < matrix.size(); j++)
-                std::cout << matrix[i][j] << ", ";
+    void PrintMatrix(Matrix &matrix) {
+        for(int i = 0; i < matrix.matrix.size(); i++) {
+            for(int j = 0; j < matrix.matrix.size(); j++)
+                std::cout << matrix.matrix[i][j] << ", ";
             std::cout << '\n';
         }
     }
 
-    // Work on calculation and return | Convert to non-vector
-    std::vector<std::vector<int>> addMatrix(std::vector<std::vector<int>>& matrix1, std::vector<std::vector<int>>& matrix2) {
-        if(matrix1.size() != matrix2.size()) {
-            std::cerr << "Babbage Error:-\nINVALID MATRIX SIZE'S OF: " << matrix1.size() << " AND " << matrix2.size();
+    // Work on calculation and return | Convert to C array
+    Matrix AddMatrix(Matrix &m1, Matrix &m2) {
+        Matrix resultMatrix{{}};
+        if(m1.matrix.size() != m2.matrix.size()) {
+            std::cerr << "Babbage Error:-\nINVALID MATRIX SIZE'S OF: " << m1.matrix.size() << " AND " << m2.matrix.size();
             std::cerr << "Must be equal\n";
-            return matrix1;
+            return m1;
         }
         else {
             int sum = 0;
-            std::vector<std::vector<int>> result{{}};
-            for(int i = 0; i < matrix1.size() - 1; i++) {
-                for(int j = 0; j < matrix1.size() - 1; j++) {
-                    // Do this
+            for(int i = 0; i < m1.matrix.size(); i++) {
+                for(int j = 0; j < m1.matrix.size(); j++) { // Incorrect but close
+                    std::vector<int> newColumn;
+                    resultMatrix.matrix.push_back(newColumn);
+                    sum = m1.matrix[i][j] + m2.matrix[i][j];
+                    resultMatrix.matrix.at(i).push_back(sum);
                 }
             }
         }
-        return matrix1;
+        return resultMatrix;
     }
-
-    std::vector<std::vector<int>> subMatrix(std::vector<std::vector<int>>& matrix);
-    std::vector<std::vector<int>> multMatrix(std::vector<std::vector<int>>& matrix);
 }
 
 namespace BabbageGeometryMath {
@@ -394,6 +399,7 @@ namespace BabbageQuatMath {
         float j;
         float k;
         float w;
+        float magnitude = 0.0f;
         Quaternion() = default;
         Quaternion(float a, float b, float c, float d) {
             i = a;
@@ -402,26 +408,35 @@ namespace BabbageQuatMath {
             w = d;
         }
 
-        // Operator Overloads
-
-        float magnitude() {
-            float mag = sqrt(w * w + i * i + j * j + k * k);
-            return mag;
-        }
-
-        float normailze() {
-            float mag = magnitude();
-            w /= mag;
-            i /= mag;
-            j /= mag;
-            k /= mag;
-            return mag;
-        }
-
-        float HamiltonProduct(Quaternion &q1, Quaternion &q2) { // Quat mulitplication
-            return 5.0f; // Temp to avoid errors
-        }
+        float Magnitude(Quaternion &q1);
+        float Normalize(Quaternion &q1);
+        Quaternion QuatMult(Quaternion &q1, Quaternion &q2);
     };
+
+    // Operator Overloads
+
+    float Magnitude(Quaternion &q1) {
+        float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
+        return mag;
+    }
+
+    float Normailze(Quaternion &q1) {
+        q1.magnitude = Magnitude(q1);
+        q1.w /= q1.magnitude;
+        q1.i /= q1.magnitude;
+        q1.j /= q1.magnitude;
+        q1.k /= q1.magnitude;
+        return q1.magnitude;
+    }
+
+    Quaternion QuatMult(Quaternion &q1, Quaternion &q2) { // Quat mulitplication
+        Quaternion resultQuat;
+        resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
+        resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
+        resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
+        resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
+        return resultQuat;
+    }
 }
 
 #endif

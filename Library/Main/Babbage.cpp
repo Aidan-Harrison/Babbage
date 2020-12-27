@@ -7,6 +7,8 @@
 * Maybe incorporate some x86 Assembly into this for true overriding | MAJOR ADDITION
 * Classes and structs can be implemented when necessary inside namespaces but for now change most to namespace
 * Replace headers with C when necessary <vector>, <cmath> etc.
+* Add unified error handling header/cpp
+* Add proper byte compatability for different systems
 */
 
 // Data Structures and Algorithms (Add overloads for user simplicity)
