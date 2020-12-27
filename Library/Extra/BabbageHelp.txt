@@ -1,3 +1,4 @@
-Babbage Library-
+Babbage Library- WORK IN PROGRESS
+GNU General Public LICENSE V3.0
 
-ADD MIT LICENSE TO REPO
+This Library is in development and is not intended to be used until specified
