@@ -7,7 +7,7 @@
 // Because of templating may not want to use C style printing
 namespace BabbagePrint {
     // Sort out generic returns
-    inline void Print(int a) { // Single argument, allow for multiple | Replace with custom print
+    inline void Print(int a) {
         printf("%d", a);
     }
     inline void nl() {

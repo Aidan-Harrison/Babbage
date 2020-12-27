@@ -57,7 +57,7 @@ namespace BabbageDSA {
             else if(!isalnum(str[p2]))
                 p2--;
             else if(tolower(str[p1]) != tolower(str[p2])) { // Ignore case
-                std::cout << "Babbage:-\nNOT PALINDROME\n";
+                std::cerr << "Babbage:-\nNOT PALINDROME\n";
                 return false;
             }
             else { // Move pointers regardless
@@ -72,8 +72,8 @@ namespace BabbageDSA {
         int n = s.length();
         int m =  t.length();
         if(n != m) {
-            std::cout << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|";
-            std::cout << "Both must be equal in length\n"; 
+            std::cerr << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|";
+            std::cerr << "Both must be equal in length\n"; 
             return false;
         }
         std::map<char,int> mapS;
@@ -110,8 +110,8 @@ namespace BabbageDSA {
     std::string revStr(std::string str) {
         // Reverse | Possibly replace with sorting algorithm
         if(str.length() <= 1) {
-            std::cout << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";
-            std::cout << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";
+            std::cerr << "Must be greater than '1'\n";
             return str;
         }
         int start = 0;
@@ -136,8 +136,8 @@ namespace BabbageDSA {
     // Bubble Sort-
     std::vector<int> bSortV(std::vector<int>& arr) {
         if(arr.size() <= 1) {
-            std::cout << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
-            std::cout << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
+            std::cerr << "Must be greater than '1'\n";
             return arr;
         }
         for(int i = 0; i < arr.size(); i++) // Still not entirely sure about this
@@ -150,8 +150,8 @@ namespace BabbageDSA {
     int* bSortA(int arr[]) { // Return by address
         int size = sizeof(arr) / sizeof(arr[0]); // Fix
         if(size <= 1) {
-            std::cout << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << size << " FOR |BUBBLE SORT|";
-            std::cout << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << size << " FOR |BUBBLE SORT|";
+            std::cerr << "Must be greater than '1'\n";
             return arr;
         }
         for(int i = 0; i < size; i++)
@@ -165,8 +165,8 @@ namespace BabbageDSA {
     // Quick Sort-
     int Partition(std::vector<int>& nums, int low, int high) {
         if(nums.size() <= 1) { // Too small
-            std::cout << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|";
-            std::cout << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|";
+            std::cerr << "Must be greater than '1'\n";
             return -1;
         }
         int pivot = nums[high];
@@ -185,7 +185,7 @@ namespace BabbageDSA {
             qSortV(nums, pivot + 1, rightIndex);
         }
         else
-            std::cout << "Babbage Error:-\nINVALID INPUT OF: " << "Left index: " << leftIndex << " OR " << "Right index: " << rightIndex << " FOR |QUICK SORT|"; // Add better error handling
+            std::cerr << "Babbage Error:-\nINVALID INPUT OF: " << "Left index: " << leftIndex << " OR " << "Right index: " << rightIndex << " FOR |QUICK SORT|"; // Add better error handling
         return nums;
     }
 
@@ -218,7 +218,7 @@ namespace BabbageSLinkedList { // Numbers only for now
         if(key == node->data)
             return node;
         else {
-            std::cout << "Babbage Error:-\nSpecified value does not exist in list";
+            std::cerr << "Babbage Error:-\nSpecified value does not exist in list";
             Node* empty; return empty; // Return null node
         }
     }

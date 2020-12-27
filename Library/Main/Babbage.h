@@ -1,3 +1,6 @@
+#ifndef Babbage_h
+#define Babbage_h
+
 // General non-specified header
 namespace BabbageGeneral {
     int* Asize(int array[]) {
@@ -5,3 +8,5 @@ namespace BabbageGeneral {
         return &size;
     }
 }
+
+#endif
