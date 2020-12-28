@@ -217,61 +217,81 @@ namespace BabbageVectorMath { // Add unit vectors
     // Vector4 Math
 }
 
-namespace BabbageMatrixMath {
-    struct Matrix {
-        unsigned int m_Rows;
-        unsigned int m_Columns;
-        Matrix(int rows = 0, int columns = 0) {
-            m_Rows = rows;
-            m_Columns = columns;
+namespace BabbageVecMatrixMath {
+    struct ArrMatrix { // Heap allocated 
+        const static uint16_t m_ArrRows = 5;
+        const static uint16_t m_ArrColumns = 5;
+        int Test[m_ArrRows][m_ArrColumns] = {{}};
+    };
+
+    struct VecMatrix {
+        uint16_t m_VecRows;
+        uint16_t m_VecColumns;
+        VecMatrix(int rows = 1, int columns = 1) {
+            m_VecRows = rows;
+            m_VecColumns = columns;
         }
-        std::vector<std::vector<int>> matrix{{}}; // Template
-        Matrix CreateMatrix(int &rows, int &columns);
-        void PrintMatrix(Matrix &matrix);
-        Matrix AddMatrix(Matrix &m1, Matrix &m2);
-        Matrix SubMatrix(Matrix &m1, Matrix &m2);
-        Matrix MultMatrix(Matrix &m1, Matrix &m2);
+        std::vector<std::vector<int>> Matrix{{}}; // Template
+        VecMatrix CreateStanVecMatrix(int &rows, int &columns); // Creates specified matrix with all elements assigned value 1
+        VecMatrix CreateVecMatrix(int &rows, int &columns); // Creates specified matrix with all elements assigned value 1
+        void PrintVecMatrix(VecMatrix &VecMatrix);
+        VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2);
+        VecMatrix SubVecMatrix(VecMatrix &m1, VecMatrix &m2);
+        VecMatrix MultVecMatrix(VecMatrix &m1, VecMatrix &m2);
     };
 
     // Operator Overloads
 
-    Matrix CreateMatrix(int rows, int columns) {
-        Matrix m1;
+    VecMatrix CreateStanVecMatrix(int rows, int columns) {
+        VecMatrix m1;
         for(int i = 0; i < rows; i++)
-            m1.matrix[rows].push_back(1);
+            m1.Matrix[rows].push_back(1);
             for(int j = 0; j < columns; j++)
-                m1.matrix[columns].push_back(1);
-        return m1;
+                m1.Matrix[columns].push_back(1);
+        return m1; // Should return with updated matrix
     }
 
-    void PrintMatrix(Matrix &matrix) {
-        for(int i = 0; i < matrix.matrix.size(); i++) {
-            for(int j = 0; j < matrix.matrix.size(); j++)
-                std::cout << matrix.matrix[i][j] << ", ";
+    VecMatrix CreateVecMatrix(int rows, int columns) { // Allow use to fill matrix
+        VecMatrix m1;
+        for(int i = 0; i < rows; i++)
+            m1.Matrix[rows].push_back(1);
+            for(int j = 0; j < columns; j++)
+                m1.Matrix[columns].push_back(1);
+        return m1; // Should return with updated matrix
+    }
+
+    void PrintVecMatrix(VecMatrix &VecMatrix) {
+        for(int i = 0; i < VecMatrix.Matrix.size(); i++) {
+            for(int j = 0; j < VecMatrix.Matrix.size(); j++)
+                std::cout << VecMatrix.Matrix[i][j] << ", ";
             std::cout << '\n';
         }
     }
 
     // Work on calculation and return | Convert to C array
-    Matrix AddMatrix(Matrix &m1, Matrix &m2) {
-        Matrix resultMatrix{{}};
-        if(m1.matrix.size() != m2.matrix.size()) {
-            std::cerr << "Babbage Error:-\nINVALID MATRIX SIZE'S OF: " << m1.matrix.size() << " AND " << m2.matrix.size();
+    VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2) {
+        VecMatrix resultVecMatrix{{}};
+        if(m1.Matrix.size() != m2.Matrix.size()) {
+            std::cerr << "Babbage Error:-\nINVALID VecMatrix SIZE'S OF: " << m1.Matrix.size() << " AND " << m2.Matrix.size();
             std::cerr << "Must be equal\n";
             return m1;
         }
         else {
             int sum = 0;
-            for(int i = 0; i < m1.matrix.size(); i++) {
-                for(int j = 0; j < m1.matrix.size(); j++) { // Incorrect but close
+            for(int i = 0; i < m1.Matrix.size(); i++) {
+                for(int j = 0; j < m1.Matrix.size(); j++) { // Incorrect but close!
                     std::vector<int> newColumn;
-                    resultMatrix.matrix.push_back(newColumn);
-                    sum = m1.matrix[i][j] + m2.matrix[i][j];
-                    resultMatrix.matrix.at(i).push_back(sum);
+                    resultVecMatrix.Matrix.push_back(newColumn);
+                    sum = m1.Matrix[i][j] + m2.Matrix[i][j];
+                    resultVecMatrix.Matrix.at(i).push_back(sum);
                 }
             }
         }
-        return resultMatrix;
+        return resultVecMatrix;
+    }
+
+    VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2) {
+        
     }
 }
 
@@ -332,18 +352,6 @@ namespace BabbageGeometryMath {
         return Shape3D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width * s1.m_Depth * s2.m_Depth);
     }
 
-    struct Triangle {
-        static double m_Angle1;
-        static double m_Angle2;
-        static double m_Angle3;
-        Triangle() = default;
-        Triangle(double angle1, double angle2, double angle3) {
-            m_Angle1 = angle1;
-            m_Angle2 = angle2;
-            m_Angle3 = angle3;
-        }
-    };
-
     // General
     inline double gPer(Shape2D &s1) { // Square only for now | hence method
         return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height;
@@ -365,6 +373,7 @@ namespace BabbageGeometryMath {
         return sqrt(c);
     }
 
+    // Circle Math
     struct CircleTheorem {
         inline double Circumfrence(double radius) {
             return 2 * PI * radius;
@@ -374,22 +383,101 @@ namespace BabbageGeometryMath {
         }
     };
 
-    struct Trigonometry  {
-        double hypotenuse;
-        double opposite;
-        double adjacent;
-        double gSin(double opposite, double hypotenuse) {
-            return opposite / hypotenuse;
-        }
-        double gCos(double hypotenuse, double adjacent) {
-            return adjacent / hypotenuse;
-        }
-        double gTan(double opposite, double hypotenuse, double adjacent) {
-            return opposite / adjacent; // Continue
+    // Triangle Math
+    // Possibly add angles
+    struct Triangle { // Standard tri with total freedom
+        double m_a;
+        double m_b;
+        double m_c;
+        Triangle() = default;
+        Triangle(double a, double b, double c) {
+            m_a = a;
+            m_b = b;
+            m_c = c;
         }
     };
 
-    // Add angle struct
+    struct ITriangle { // Isosceles
+        double m_Height; // The size of the lengths which are equal
+        double m_Base;
+        ITriangle() = default;
+        ITriangle(double height = 1, double base = 1) {
+            m_Height = height;
+            m_Base = base;
+        }
+        ITriangle ITriArea(double height, double base);
+    };
+
+    struct ETriangle { // Equilateral | Angle always = 60
+        double m_Size; // In area cm
+        ETriangle() = default;
+        ETriangle(double size = 1) {
+            m_Size = size;
+        }
+    };
+
+    struct RTriangle {// Right-Angle
+        static double m_Opposite;
+        static double m_Adjacent;
+        static double m_Hypotenuse;
+        RTriangle() = default;
+        RTriangle(double oppSize, double adjSize, double hypSize) {
+            m_Opposite = oppSize;
+            m_Adjacent = adjSize;
+            m_Hypotenuse = hypSize;
+        }
+    };
+
+    // Do function overloading to accomodate triangle structs
+    double TriPer(double a, double b, double c) {
+        if(a + b > c)
+            return(a + b + c);
+        else // Do better error handling
+            std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
+    }
+
+    double TriPer(ITriangle &t1) { // Overload for Isosceles
+        if(t1.m_Height > t1.m_Base)
+            std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
+        else
+            return(t1.m_Height * 2 + t1.m_Base);
+    }
+
+    double TriPer(ETriangle &t1) { // Overload for Equilateral
+        return(t1.m_Size * 3);
+    }
+
+    double TriArea(double height, double base) {
+        return(height * base / 2);
+    }
+
+    double TriArea(double a) { // Equilateral without object
+        return(sqrt(3) / 4 * a * a);
+    }
+
+    double TriArea(ETriangle &t1) {
+        return(sqrt(3) / 4 * t1.m_Size * t1.m_Size);
+    }
+
+    double Pythag(double a, double b) { // Right-Angle default
+        double c = a * a + b * b;
+        return sqrt(c);
+    }  
+
+    struct Trigonometry { // Pass in triangles | Possibly remove trig struct
+        double hypotenuse;
+        double opposite;
+        double adjacent;
+        inline double gSin(double opposite, double hypotenuse) {
+            return opposite / hypotenuse;
+        }
+        inline double gCos(double hypotenuse, double adjacent) {
+            return adjacent / hypotenuse;
+        }
+        inline double gTan(double opposite, double hypotenuse, double adjacent) {
+            return opposite / adjacent; // Continue
+        }
+    };
 }
 
 // Do better with objects. Have struct only be quat itself not functions
@@ -429,12 +517,21 @@ namespace BabbageQuatMath {
         return q1.magnitude;
     }
 
-    Quaternion QuatMult(Quaternion &q1, Quaternion &q2) { // Quat mulitplication
+    Quaternion QuatMult(Quaternion &q1, Quaternion &q2) {
         Quaternion resultQuat;
         resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
         resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
         resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
         resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
+        return resultQuat;
+    }
+
+    Quaternion QuatAdd(Quaternion &q1, Quaternion &q2) {
+        Quaternion resultQuat;
+        resultQuat.i = q1.i + q2.w;
+        resultQuat.j = q1.j + q2.j;
+        resultQuat.k = q1.k + q2.k;
+        resultQuat.w = q1.w + q2.w;
         return resultQuat;
     }
 }

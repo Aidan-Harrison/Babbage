@@ -6,9 +6,13 @@
 
 // Because of templating may not want to use C style printing
 namespace BabbagePrint {
-    // Sort out generic returns
-    inline void Print(int a) {
+    template<typename T>
+    inline void Print(T a) {
         printf("%d", a);
+    }
+    template<typename T>
+    inline void PrintASCII(T a) {
+        std::cout << static_cast<int>(a);
     }
     inline void nl() {
         putchar('\n'); 
@@ -35,12 +39,14 @@ namespace BabbagePrint {
         }
     }
 
-    void pArray(int arr[], int size) {
+    template<typename T>
+    void pArray(T arr[], int size) {
         for(int i = 0; i < size; i++)
             std::cout << arr[i] << ", ";
     }
 
-    std::vector<std::vector<int>> pArray2D(std::vector<std::vector<int>>& arr) { // Replace
+    template<typename T>
+    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) { // Replace
         int m = arr.size();
         int n = arr[0].size();
         for(int i = 0; i < m; i++)

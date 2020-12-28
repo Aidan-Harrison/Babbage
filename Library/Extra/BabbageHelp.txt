@@ -1,4 +1,48 @@
-Babbage Library- WORK IN PROGRESS
+Custom C/C++ Based Library | Babbage - WORK IN PROGRESS
 GNU General Public LICENSE V3.0
 
-This Library is in development and is not intended to be used until specified
+====!This Library is in development and is not intended to be used until specified!====
+====!This Library is in development and is not intended to be used until specified!====
+====!This Library is in development and is not intended to be used until specified!====
+====!This Library is in development and is not intended to be used until specified!====
+====!This Library is in development and is not intended to be used until specified!====
+
+Guide: (+ some advice on how headers work)
+This is a header only library for now and all functionallity exists in the specified headers. Simply include the headers you want to use and refer to the corresponding namespaces.
+Note that these headers can contain multiple different namespaces. Recommended to use 'using namespace' for clarity reasons (Does not alter performance!). All headers are self contained
+and do not require any other includes. e.g. Including "BabbageGraphics.h" does not mean you have to include "BabbageMath.h". The graphics library already has this implemented. However if 
+you wish to use the maths library independently of the graphics, then you must include "BabbageMath.h".
+
+The following headers of this library are: (Independent of one another)
+    > Babbage.h
+    > BabbagePrint.h
+    > BabbageMem.h
+    > BabbageMath.h
+    > BabbageGraphics.h
+    > BabbageThread.h
+    > BabbageDSA.h
+
+Planned Additions:
+    > Custom unified error handling header
+    > Custom graphics library for assisting in understanding the basics of graphics programming
+    > Byte compatability for different systems
+    > x86 assembly additions
+    > .lib and .dll compile/build
+    > Heavy operator and function overloading for user experience and freedom
+    > Vector and C-Style arrays for most if not all array based components
+    > 
+
+Planned Additions Header Specific:
+- BabbageDSA.h (Data Structures and Algorithms)
+    > Custom data structure implementations
+
+- BabbageGraphics.h
+    > Console screen buffer
+    > Basic Vertex and Fragment shader
+    > debugging along with error handling header
+
+- BabbageMem.h
+    > More useful memory based functions
+
+- BabbageThead.h
+    > Hope to heavily simplify threading and timing in general
