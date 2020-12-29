@@ -9,7 +9,7 @@ GNU General Public LICENSE V3.0
 
 Guide: (+ some advice on how headers work)
 This is a header only library for now and all functionallity exists in the specified headers. Simply include the headers you want to use and refer to the corresponding namespaces.
-Note that these headers can contain multiple different namespaces. Recommended to use 'using namespace' for clarity reasons (Does not alter performance!). All headers are self contained
+Note that these headers only contain a single namespace. Not recommended to use 'using namespace' for clarity reasons (Does not alter performance!). All headers are self contained
 and do not require any other includes. e.g. Including "BabbageGraphics.h" does not mean you have to include "BabbageMath.h". The graphics library already has this implemented. However if 
 you wish to use the maths library independently of the graphics, then you must include "BabbageMath.h".
 

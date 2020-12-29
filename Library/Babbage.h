@@ -6,7 +6,7 @@
 // Add general typedefs and byte compatability
 
 // General non-specified header
-namespace BabbageGeneral {
+namespace bgen {
     int* Asize(int array[]) {
         int size = sizeof(array) / sizeof(array[0]); // Fix
         return &size;

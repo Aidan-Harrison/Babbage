@@ -5,7 +5,7 @@
 #include <iostream>
 
 // Because of templating may not want to use C style printing
-namespace BabbagePrint {
+namespace bpr{
     template<typename T>
     inline void Print(T a) {
         printf("%d", a);

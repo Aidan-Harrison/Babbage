@@ -4,10 +4,10 @@
 #include <windows.h> // Access windows API for custom graphics
 
 #include "BabbageMath.h" // Heavily uses custom math library
-using namespace BabbageGeometryMath;
+using namespace bmath;
 
 // Babbage's Graphics library
-namespace Graphics {
+namespace bgraphics {
         // Built in movement enumeration
         enum direction {STOP = 0, LEFT, RIGHT, FORWARD, BACK};
         direction bDir = STOP;

@@ -6,7 +6,7 @@
 #include <chrono>
 
 // Heavy overriding of headers necessary
-namespace BabbageThread {
+namespace bthread {
     
 }
 

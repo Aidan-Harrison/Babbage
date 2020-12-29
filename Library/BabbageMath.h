@@ -10,12 +10,7 @@
 #define Euler 2.71828
 #define Radian 57.2958
 
-// Research use of doubles
-namespace BabbageMath {
-    // Definitions | typedef's here?
-
-    // Overloads
-
+namespace bmath {
     // Basic
     template<typename T> // ?? | Template entire namespace instead of per function
     inline T Add(T a, T b) { // Inline is not needed but is not bad either
@@ -37,6 +32,15 @@ namespace BabbageMath {
     double bSqrt(double &num) { // Implement
         double result = 0.0;
         return result;
+    }
+
+    // Advanced
+    inline double floor(double value) {
+        return static_cast<int>(value);
+    }
+
+    double round(double value, float roundTo) { // 'roundTo' refers to the the digit to round to 
+
     }
 
     // Comparisons
@@ -109,9 +113,6 @@ namespace BabbageMath {
         }
         return result;
     }
-}
-
-namespace BabbageVectorMath { // Add unit vectors
     // Vectors
     struct Vector1 {
         float x;
@@ -214,10 +215,6 @@ namespace BabbageVectorMath { // Add unit vectors
         return;
     }
 
-    // Vector4 Math
-}
-
-namespace BabbageVecMatrixMath {
     struct ArrMatrix { // Heap allocated 
         const static uint16_t m_ArrRows = 5;
         const static uint16_t m_ArrColumns = 5;
@@ -293,9 +290,6 @@ namespace BabbageVecMatrixMath {
     VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2) {
         
     }
-}
-
-namespace BabbageGeometryMath {
     struct point { // Pixel based
         static int m_X;
         static int m_Y;
@@ -459,11 +453,38 @@ namespace BabbageGeometryMath {
         return(sqrt(3) / 4 * t1.m_Size * t1.m_Size);
     }
 
-    double Pythag(double a, double b) { // Right-Angle default
-        double c = a * a + b * b;
-        return sqrt(c);
-    }  
+    double Pythag(double a, double b, std::string side) { // Right-Angle default | Check!
+        if(side == "short") {
+            double c = a * a + b * b;
+            return sqrt(c);
+        }
+        else if(side == "long") {
+            double c = a * a - b * b;
+            return sqrt(c);
+        }
+        else { // Error checking
+            std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 'short' or 'long'\n";
+            return 0.0;
+        }
+        return 0.0;
+    }
 
+    double Pythag(RTriangle &t, std::string side) { // Object based
+        if(side == "short") {
+            double c = t.m_Opposite * t.m_Opposite + t.m_Adjacent * t.m_Adjacent;
+            return sqrt(c);
+        }
+        else if(side == "long") {
+            double c = t.m_Opposite * t.m_Opposite - t.m_Adjacent * t.m_Adjacent;
+            return sqrt(c);
+        }
+        else { // Error checking
+            std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 'short' or 'long'\n";
+            return 0.0;
+        }
+        return 0.0;
+    }
+    
     struct Trigonometry { // Pass in triangles | Possibly remove trig struct
         double hypotenuse;
         double opposite;
@@ -478,10 +499,8 @@ namespace BabbageGeometryMath {
             return opposite / adjacent; // Continue
         }
     };
-}
 
 // Do better with objects. Have struct only be quat itself not functions
-namespace BabbageQuatMath {
     struct Quaternion {
         float i;
         float j;
@@ -535,5 +554,4 @@ namespace BabbageQuatMath {
         return resultQuat;
     }
 }
-
 #endif

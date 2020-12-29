@@ -8,7 +8,7 @@
 // C for the most part
 // Replace with C style arrays
 
-namespace BabbageMemory {
+namespace bmem {
     // Do a lot of overloads?
     // Printing
     int* memPrintA(int arr[], int size) { // Fixed arrays cannot have their size found within the function | Does not exist

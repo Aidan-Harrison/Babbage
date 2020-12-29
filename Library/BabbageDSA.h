@@ -15,7 +15,7 @@ struct map {
     M value;
 };
 
-namespace BabbageDSA {
+namespace bdsa {
     // Implement generic
     // Pick map after understanding | Faster I believe
 
@@ -197,10 +197,8 @@ namespace BabbageDSA {
         void pushStack(int value);
         void printStack();
     };
-};
 
 // Review everything extensively
-namespace BabbageSLinkedList { // Numbers only for now
     struct Node {
         int data; // Allow user to implement custom data of any type
         Node* next;
@@ -238,107 +236,104 @@ namespace BabbageSLinkedList { // Numbers only for now
 
     // Deconstructor instead??? | Or both??
     void ldestroyList(Node* node);
-};
 
-namespace BabbageDLinkedList {
     struct Node {
         int data;
         Node* previous;
         Node* next;
     };
-}
 
-// Binary Tree
-struct node { // Has to be visible in entire scope for function definitions
-    int keyValue;
-    node* left;
-    node* right;
-};
+    // Binary Tree
+    struct node { // Has to be visible in entire scope for function definitions
+        int keyValue;
+        node* left;
+        node* right;
+    };
 
-class bTree {
-    private:
-        // System level functions
-        void destroyTree(node* leaf);
-        void insert(int key, node* leaf);
-        node* search(int key, node* leaf);
+    class bTree {
+        private:
+            // System level functions
+            void destroyTree(node* leaf);
+            void insert(int key, node* leaf);
+            node* search(int key, node* leaf);
 
-        node* root;
-    public:
-        bTree();
-        ~bTree();
+            node* root;
+        public:
+            bTree();
+            ~bTree();
 
-        // user functions
-        void insert(int key);
-        node* search(int key);
-        void destroyTree();
-};
+            // user functions
+            void insert(int key);
+            node* search(int key);
+            void destroyTree();
+    };
 
-bTree::~bTree() { // Call tree destruction on destructor
-    destroyTree();  
-}
-
-// System functions
-void bTree::destroyTree(node* leaf) { 
-    if(leaf != nullptr) { // If leaf exists, remove left and right children, the delete current node
-        destroyTree(leaf->left);
-        destroyTree(leaf->right);
-        delete leaf;
+    bTree::~bTree() { // Call tree destruction on destructor
+        destroyTree();  
     }
-}
 
-void bTree::insert(int key, node* leaf) {
-    if(key < leaf->keyValue) {
-        if(leaf->left != nullptr) // If lead does exist, add
-            insert(key, leaf->left);
-        else { // Else add leaf
-            leaf->left = new node;
-            leaf->left->keyValue = key;
-            leaf->left->left = nullptr;
-            leaf->left->right = nullptr;
+    // System functions
+    void bTree::destroyTree(node* leaf) { 
+        if(leaf != nullptr) { // If leaf exists, remove left and right children, the delete current node
+            destroyTree(leaf->left);
+            destroyTree(leaf->right);
+            delete leaf;
         }
     }
-    else if(key >= leaf->keyValue) {
-        if(leaf->right != nullptr)
-            insert(key, leaf->right);
+
+    void bTree::insert(int key, node* leaf) {
+        if(key < leaf->keyValue) {
+            if(leaf->left != nullptr) // If lead does exist, add
+                insert(key, leaf->left);
+            else { // Else add leaf
+                leaf->left = new node;
+                leaf->left->keyValue = key;
+                leaf->left->left = nullptr;
+                leaf->left->right = nullptr;
+            }
+        }
+        else if(key >= leaf->keyValue) {
+            if(leaf->right != nullptr)
+                insert(key, leaf->right);
+            else {
+                leaf->right = new node;
+                leaf->right->keyValue = key;
+                leaf->right->left = nullptr;
+                leaf->right->right = nullptr;
+            }
+        }
+    }   
+
+    node* bTree::search(int key, node* leaf) {
+        if(leaf != nullptr) {
+            if(key == leaf->keyValue)
+                return leaf;
+            if(key < leaf->keyValue)
+                return search(key, leaf->left);
+            else
+                return search(key, leaf->right);
+        }
+        else return nullptr; // Return nothing if leaf is equal to nothing
+    }
+
+    // User side functions
+    void bTree::insert(int key) {
+        if(root != nullptr)
+            insert(key, root);
         else {
-            leaf->right = new node;
-            leaf->right->keyValue = key;
-            leaf->right->left = nullptr;
-            leaf->right->right = nullptr;
+            root = new node;
+            root->keyValue = key;
+            root->left = nullptr;
+            root->right = nullptr;
         }
     }
-}   
 
-node* bTree::search(int key, node* leaf) {
-    if(leaf != nullptr) {
-        if(key == leaf->keyValue)
-            return leaf;
-        if(key < leaf->keyValue)
-            return search(key, leaf->left);
-        else
-            return search(key, leaf->right);
+    node* bTree::search(int key) {
+        return search(key, root);
     }
-    else return nullptr; // Return nothing if leaf is equal to nothing
-}
 
-// User side functions
-void bTree::insert(int key) {
-    if(root != nullptr)
-        insert(key, root);
-    else {
-        root = new node;
-        root->keyValue = key;
-        root->left = nullptr;
-        root->right = nullptr;
+    void bTree::destroyTree() {
+        return destroyTree(root);
     }
 }
-
-node* bTree::search(int key) {
-    return search(key, root);
-}
-
-void bTree::destroyTree() {
-    return destroyTree(root);
-}
-
 #endif
