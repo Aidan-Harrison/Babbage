@@ -7,11 +7,11 @@
 // Because of templating may not want to use C style printing
 namespace bpr{
     template<typename T>
-    inline void Print(T a) {
+    inline void print(T a) {
         printf("%d", a);
     }
     template<typename T>
-    inline void PrintASCII(T a) {
+    inline void prASCII(T a) {
         std::cout << static_cast<int>(a);
     }
     inline void nl() {

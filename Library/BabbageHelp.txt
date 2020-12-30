@@ -24,13 +24,12 @@ The following headers of this library are: (Independent of one another)
 
 Planned Additions:
     > Custom unified error handling header
-    > Custom graphics library for assisting in understanding the basics of graphics programming
+    > Custom graphics library for assisting in understanding the basics of graphics programming (Software based renderer)
     > Byte compatability for different systems
     > x86 assembly additions
     > .lib and .dll compile/build
     > Heavy operator and function overloading for user experience and freedom
     > Vector and C-Style arrays for most if not all array based components
-    > 
 
 Planned Additions Header Specific:
 - BabbageDSA.h (Data Structures and Algorithms)
@@ -44,5 +43,8 @@ Planned Additions Header Specific:
 - BabbageMem.h
     > More useful memory based functions
 
-- BabbageThead.h
+- BabbageThread.h
     > Hope to heavily simplify threading and timing in general
+
+- Babbage.h
+    > Include some useful typedefs and definitions for simplifing certain aspects

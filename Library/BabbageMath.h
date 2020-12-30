@@ -13,20 +13,20 @@
 namespace bmath {
     // Basic
     template<typename T> // ?? | Template entire namespace instead of per function
-    inline T Add(T a, T b) { // Inline is not needed but is not bad either
+    inline T add(T a, T b) { // Inline is not needed but is not bad either
         return a + b;
     }
     template<typename T>
-    inline T Subtract(T a, T b) {
+    inline T sub(T a, T b) {
         return a - b;
     }
     template<typename T>
-    inline T Multiply(T a, T b) {
-        return a * b;
+    inline T mult(T a, T b) {
+        return(a * b);
     }
     template<typename T>
-    inline T Divide(T a, T b) {
-        return a / b;
+    inline T div(T a, T b) {
+        return(a / b);
     }
     
     double bSqrt(double &num) { // Implement
@@ -35,12 +35,13 @@ namespace bmath {
     }
 
     // Advanced
-    inline double floor(double value) {
+    inline int floor(double value) {
         return static_cast<int>(value);
     }
 
-    double round(double value, float roundTo) { // 'roundTo' refers to the the digit to round to 
-
+    template<typename T>
+    float round(T value, float roundTo) { // 'roundTo' refers to the the digit to round to, similar to floor but with user control
+        
     }
 
     // Comparisons
@@ -53,14 +54,18 @@ namespace bmath {
         return (a > b) ? a : b;
     }
     template<typename T>
-    inline bool Same(T a, T b) {
+    inline bool same(T a, T b) {
         if(a == b) return true;
         return false;
     }
 
     // Conversions
-    inline int toASC(char value) { // Char only? | Try 'char*'
+    inline int toASC(char value) {
         return static_cast<int>(value); // Type-cast to int (ASCII)
+    }
+    inline int toASC(char string[], short size) { // Conver to char*
+        for(int i = 0; i < size; i++)
+            return static_cast<int>(string[i]);
     }
     // Both of these are probably the wrong formula
     inline double convRadToDeg(double radians) {
@@ -86,9 +91,10 @@ namespace bmath {
         }
         return rand() % range; // Check if 'rand()' can do more than int
     }
-    std::vector<int> getDigits(int number) { // Returns digits of number in vector format, CHANGE TO ARRAY
-        int digit;
-        std::vector<int> result;
+    template<typename T>
+    std::vector<int> getDigits(T number) { // Returns digits of number in vector format, CHANGE TO ARRAY
+        short digit;
+        std::vector<int> result{};
         if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) { // Check datatypes using 'sizeof' function
             std::cerr << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(number).name() << '-'; //  Check this
             std::cerr << "Must be int, float or double\n";
@@ -117,7 +123,7 @@ namespace bmath {
     struct Vector1 {
         float x;
         float vec1[1]{x};
-        Vector1(int cX = 0) {
+        Vector1(short cX = 0) {
             x = cX;
         }
     };
@@ -126,7 +132,7 @@ namespace bmath {
         float x;
         float y;
         float vec2[2]{x,y};
-        Vector2(int cX = 0, int cY = 0) {
+        Vector2(short cX = 0, short cY = 0) {
             x = cX;
             y = cY;
         }
@@ -137,7 +143,7 @@ namespace bmath {
         float y;
         float z;
         float vec3[3]{x,y,z};
-        Vector3(int cX = 0, int cY = 0, int cZ = 0) {
+        Vector3(short cX = 0, short cY = 0, short cZ = 0) {
             x = cX;
             y = cY;
             z = cZ;
@@ -150,7 +156,7 @@ namespace bmath {
         float z;
         float w;
         float vec4[4]{x,y,z,w};
-        Vector4(int cX = 0, int cY = 0, int cZ = 0, int cW = 0) {
+        Vector4(short cX = 0, short cY = 0, short cZ = 0, short cW = 0) {
             x = cX;
             y = cY;
             z = cZ;
@@ -224,7 +230,7 @@ namespace bmath {
     struct VecMatrix {
         uint16_t m_VecRows;
         uint16_t m_VecColumns;
-        VecMatrix(int rows = 1, int columns = 1) {
+        VecMatrix(short rows = 1, short columns = 1) {
             m_VecRows = rows;
             m_VecColumns = columns;
         }
@@ -293,7 +299,7 @@ namespace bmath {
     struct point { // Pixel based
         static int m_X;
         static int m_Y;
-        point(int xPos = 0, int yPos = 0) {
+        point(short xPos = 0, short yPos = 0) {
             m_X = xPos;
             m_Y = yPos;
         }
@@ -303,7 +309,7 @@ namespace bmath {
         static double m_Width;
         static double m_Height;
         Shape2D() = default;
-        Shape2D(double width = 0.0, double height = 0.0) {
+        Shape2D(float width = 0.0f, float height = 0.0f) {
             m_Width = width;
             m_Height = height;
         } 
@@ -327,7 +333,7 @@ namespace bmath {
         static double m_Height;
         static double m_Depth;
         Shape3D() = default;
-        Shape3D(double width = 0.0, double height = 0.0, double depth = 0.0) {
+        Shape3D(float width = 0.0f, float height = 0.0f, float depth = 0.0f) {
             m_Width = width;
             m_Height = height;
             m_Depth = depth;
@@ -394,8 +400,7 @@ namespace bmath {
     struct ITriangle { // Isosceles
         double m_Height; // The size of the lengths which are equal
         double m_Base;
-        ITriangle() = default;
-        ITriangle(double height = 1, double base = 1) {
+        ITriangle(short height = 1, short base = 1) {
             m_Height = height;
             m_Base = base;
         }
@@ -404,8 +409,7 @@ namespace bmath {
 
     struct ETriangle { // Equilateral | Angle always = 60
         double m_Size; // In area cm
-        ETriangle() = default;
-        ETriangle(double size = 1) {
+        ETriangle(short size = 1) {
             m_Size = size;
         }
     };
@@ -423,33 +427,33 @@ namespace bmath {
     };
 
     // Do function overloading to accomodate triangle structs
-    double TriPer(double a, double b, double c) {
+    double TPer(double a, double b, double c) {
         if(a + b > c)
             return(a + b + c);
         else // Do better error handling
             std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
     }
 
-    double TriPer(ITriangle &t1) { // Overload for Isosceles
+    double TPer(ITriangle &t1) { // Overload for Isosceles
         if(t1.m_Height > t1.m_Base)
             std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
         else
             return(t1.m_Height * 2 + t1.m_Base);
     }
 
-    double TriPer(ETriangle &t1) { // Overload for Equilateral
+    double TPer(ETriangle &t1) { // Overload for Equilateral
         return(t1.m_Size * 3);
     }
 
-    double TriArea(double height, double base) {
+    double TArea(double height, double base) {
         return(height * base / 2);
     }
 
-    double TriArea(double a) { // Equilateral without object
+    double TArea(double a) { // Equilateral without object
         return(sqrt(3) / 4 * a * a);
     }
 
-    double TriArea(ETriangle &t1) {
+    double TArea(ETriangle &t1) {
         return(sqrt(3) / 4 * t1.m_Size * t1.m_Size);
     }
 
@@ -507,8 +511,7 @@ namespace bmath {
         float k;
         float w;
         float magnitude = 0.0f;
-        Quaternion() = default;
-        Quaternion(float a, float b, float c, float d) {
+        Quaternion(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 0.0f) {
             i = a;
             j = b;
             k = c;
@@ -522,13 +525,13 @@ namespace bmath {
 
     // Operator Overloads
 
-    float Magnitude(Quaternion &q1) {
+    float QMag(Quaternion &q1) {
         float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
         return mag;
     }
 
-    float Normailze(Quaternion &q1) {
-        q1.magnitude = Magnitude(q1);
+    float QNorm(Quaternion &q1) {
+        q1.magnitude = QMag(q1);
         q1.w /= q1.magnitude;
         q1.i /= q1.magnitude;
         q1.j /= q1.magnitude;
@@ -536,7 +539,7 @@ namespace bmath {
         return q1.magnitude;
     }
 
-    Quaternion QuatMult(Quaternion &q1, Quaternion &q2) {
+    Quaternion QMult(Quaternion &q1, Quaternion &q2) {
         Quaternion resultQuat;
         resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
         resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
@@ -545,7 +548,7 @@ namespace bmath {
         return resultQuat;
     }
 
-    Quaternion QuatAdd(Quaternion &q1, Quaternion &q2) {
+    Quaternion QAdd(Quaternion &q1, Quaternion &q2) {
         Quaternion resultQuat;
         resultQuat.i = q1.i + q2.w;
         resultQuat.j = q1.j + q2.j;

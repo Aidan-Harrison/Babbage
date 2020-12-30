@@ -9,21 +9,26 @@
 // Replace with C style arrays
 
 namespace bmem {
-    // Do a lot of overloads?
     // Printing
-    int* memPrintA(int arr[], int size) { // Fixed arrays cannot have their size found within the function | Does not exist
-        size = sizeof(arr) / sizeof(arr[0]); // Alter this, reference based?
+    template<typename T>
+    T* memPrintA(T arr[], int size) {
         for(int i = 0; i < size; i++)
             printf("%d", &arr[i], '-');
         return arr;
     }
 
-    std::vector<std::vector<int>> memPrint2D(std::vector<std::vector<int>>& input) {
+    template<typename T>
+    std::vector<std::vector<T>> memPrint2D(std::vector<std::vector<T>>& input) {
         for(int i = 0; i < input.size(); i++)
             for(int j = 0; j < input.size(); j++)
                 printf("%d", &input[i][j]);
         return input;
     }
+
+    char NULLTERM() {
+        return putchar('\0');
+    }
+    
     // Memory allocations
 };
 #endif
