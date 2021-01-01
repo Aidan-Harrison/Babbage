@@ -119,183 +119,7 @@ namespace bmath {
         }
         return result;
     }
-    // Vectors
-    struct Vector1 {
-        float x;
-        float vec1[1]{x};
-        Vector1(short cX = 0) {
-            x = cX;
-        }
-    };
-
-    struct Vector2 {
-        float x;
-        float y;
-        float vec2[2]{x,y};
-        Vector2(short cX = 0, short cY = 0) {
-            x = cX;
-            y = cY;
-        }
-    };
-
-    struct Vector3 {
-        float x;
-        float y;
-        float z;
-        float vec3[3]{x,y,z};
-        Vector3(short cX = 0, short cY = 0, short cZ = 0) {
-            x = cX;
-            y = cY;
-            z = cZ;
-        }
-    };
-
-    struct Vector4 {
-        float x;
-        float y;
-        float z;
-        float w;
-        float vec4[4]{x,y,z,w};
-        Vector4(short cX = 0, short cY = 0, short cZ = 0, short cW = 0) {
-            x = cX;
-            y = cY;
-            z = cZ;
-            w = cW;
-        }
-    };
-
-    // Vector creation (User functions) | Check return
-    Vector1 CVec1(float vecIn1) {
-        Vector1 vec;
-        vec.vec1[0] = vecIn1;
-        return vec;
-    }
-    Vector2 CVec2(float vecIn1, float vecIn2) {
-        Vector2 vec;
-        vec.vec2[0] = vecIn1;
-        vec.vec2[1] = vecIn2;
-        return vec;
-    }
-    Vector3 CVec3(float vecIn1, float vecIn2, float vecIn3) {
-        Vector3 vec;
-        vec.vec3[0] = vecIn1;
-        vec.vec3[1] = vecIn2;
-        vec.vec3[2] = vecIn3;
-        return vec;
-    }
-    Vector4 CVec4(float vecIn1, float vecIn2, float vecIn3, float vecIn4) {
-        Vector4 vec;
-        vec.vec4[0] = vecIn1;
-        vec.vec4[1] = vecIn2;
-        vec.vec4[2] = vecIn3;
-        vec.vec4[3] = vecIn4;
-        return vec;
-    }
-
-    // Vector 2 Math | Possibly incorporate operator overloads
-    float vecMag(Vector2 vec1) { // Magnitude
-        float mag = sqrt(vec1.x * vec1.x + vec1.y * vec1.y); // Do custom sqrt function
-        return mag;
-    }
-    Vector2 addVec(Vector2 vec1, Vector2 vec2) { // Working?
-        Vector2 vec;
-        vec.x = vec1.x + vec2.x;
-        vec.y = vec1.y + vec2.y;
-        return vec;
-    }
-    Vector2 subVec(Vector2 vec1, Vector2 vec2) { // Working
-        Vector2 vec;
-        vec.x = vec1.x + (-vec2.x);
-        vec.y = vec1.y + (-vec2.y);
-        return vec;
-    }
-    float dotProd(Vector2 vec1, Vector2 vec2) { // Produces 'scalar' | Working
-        return vec1.x * vec2.x + vec1.y * vec2.y;
-    }
-
-    // Vector3 Math
-    void addVec3(Vector3 vec1, Vector3 vec2) {
-        return;
-    }
-    void crossProd(Vector3 vec1, Vector3 vec2) {
-        return;
-    }
-
-    struct ArrMatrix { // Heap allocated 
-        const static uint16_t m_ArrRows = 5;
-        const static uint16_t m_ArrColumns = 5;
-        int Test[m_ArrRows][m_ArrColumns] = {{}};
-    };
-
-    struct VecMatrix {
-        uint16_t m_VecRows;
-        uint16_t m_VecColumns;
-        VecMatrix(short rows = 1, short columns = 1) {
-            m_VecRows = rows;
-            m_VecColumns = columns;
-        }
-        std::vector<std::vector<int>> Matrix{{}}; // Template
-        VecMatrix CreateStanVecMatrix(int &rows, int &columns); // Creates specified matrix with all elements assigned value 1
-        VecMatrix CreateVecMatrix(int &rows, int &columns); // Creates specified matrix with all elements assigned value 1
-        void PrintVecMatrix(VecMatrix &VecMatrix);
-        VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2);
-        VecMatrix SubVecMatrix(VecMatrix &m1, VecMatrix &m2);
-        VecMatrix MultVecMatrix(VecMatrix &m1, VecMatrix &m2);
-    };
-
-    // Operator Overloads
-
-    VecMatrix CreateStanVecMatrix(int rows, int columns) {
-        VecMatrix m1;
-        for(int i = 0; i < rows; i++)
-            m1.Matrix[rows].push_back(1);
-            for(int j = 0; j < columns; j++)
-                m1.Matrix[columns].push_back(1);
-        return m1; // Should return with updated matrix
-    }
-
-    VecMatrix CreateVecMatrix(int rows, int columns) { // Allow use to fill matrix
-        VecMatrix m1;
-        for(int i = 0; i < rows; i++)
-            m1.Matrix[rows].push_back(1);
-            for(int j = 0; j < columns; j++)
-                m1.Matrix[columns].push_back(1);
-        return m1; // Should return with updated matrix
-    }
-
-    void PrintVecMatrix(VecMatrix &VecMatrix) {
-        for(int i = 0; i < VecMatrix.Matrix.size(); i++) {
-            for(int j = 0; j < VecMatrix.Matrix.size(); j++)
-                std::cout << VecMatrix.Matrix[i][j] << ", ";
-            std::cout << '\n';
-        }
-    }
-
-    // Work on calculation and return | Convert to C array
-    VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2) {
-        VecMatrix resultVecMatrix{{}};
-        if(m1.Matrix.size() != m2.Matrix.size()) {
-            std::cerr << "Babbage Error:-\nINVALID VecMatrix SIZE'S OF: " << m1.Matrix.size() << " AND " << m2.Matrix.size();
-            std::cerr << "Must be equal\n";
-            return m1;
-        }
-        else {
-            int sum = 0;
-            for(int i = 0; i < m1.Matrix.size(); i++) {
-                for(int j = 0; j < m1.Matrix.size(); j++) { // Incorrect but close!
-                    std::vector<int> newColumn;
-                    resultVecMatrix.Matrix.push_back(newColumn);
-                    sum = m1.Matrix[i][j] + m2.Matrix[i][j];
-                    resultVecMatrix.Matrix.at(i).push_back(sum);
-                }
-            }
-        }
-        return resultVecMatrix;
-    }
-
-    VecMatrix AddVecMatrix(VecMatrix &m1, VecMatrix &m2) {
-        
-    }
+    
     struct point { // Pixel based
         static int m_X;
         static int m_Y;
@@ -309,10 +133,10 @@ namespace bmath {
         static double m_Width;
         static double m_Height;
         Shape2D() = default;
-        Shape2D(float width = 0.0f, float height = 0.0f) {
+        Shape2D(short width = 1, short height = 1) {
             m_Width = width;
-            m_Height = height;
-        } 
+            m_Height = height; 
+        }
     };
 
     // Overloads | CHECK ALL OF THESE! | Although they may be correct syntactically the formula's are wrong? | Check middle operator
@@ -333,7 +157,7 @@ namespace bmath {
         static double m_Height;
         static double m_Depth;
         Shape3D() = default;
-        Shape3D(float width = 0.0f, float height = 0.0f, float depth = 0.0f) {
+        Shape3D(short width = 1, short height = 1, short depth = 1) {
             m_Width = width;
             m_Height = height;
             m_Depth = depth;
@@ -390,39 +214,38 @@ namespace bmath {
         double m_b;
         double m_c;
         Triangle() = default;
-        Triangle(double a, double b, double c) {
-            m_a = a;
-            m_b = b;
-            m_c = c;
+        Triangle(double a, double b, double c)
+            :m_a(a), m_b(b), m_c(c)
+        {
         }
     };
 
     struct ITriangle { // Isosceles
         double m_Height; // The size of the lengths which are equal
         double m_Base;
-        ITriangle(short height = 1, short base = 1) {
-            m_Height = height;
-            m_Base = base;
+        ITriangle(short height = 1, short base = 1)
+            :m_Height(height), m_Base(base)
+        {
         }
         ITriangle ITriArea(double height, double base);
     };
 
     struct ETriangle { // Equilateral | Angle always = 60
         double m_Size; // In area cm
-        ETriangle(short size = 1) {
-            m_Size = size;
+        ETriangle(short size = 1) 
+            :m_Size(size)
+        {
         }
     };
 
     struct RTriangle {// Right-Angle
-        static double m_Opposite;
-        static double m_Adjacent;
-        static double m_Hypotenuse;
+        double m_Opposite;
+        double m_Adjacent;
+        double m_Hypotenuse;
         RTriangle() = default;
-        RTriangle(double oppSize, double adjSize, double hypSize) {
-            m_Opposite = oppSize;
-            m_Adjacent = adjSize;
-            m_Hypotenuse = hypSize;
+        RTriangle(double oppSize, double adjSize, double hypSize)
+            :m_Opposite(oppSize), m_Adjacent(adjSize), m_Hypotenuse(hypSize)
+        {
         }
     };
 
@@ -457,6 +280,7 @@ namespace bmath {
         return(sqrt(3) / 4 * t1.m_Size * t1.m_Size);
     }
 
+    // Pythagoras
     double Pythag(double a, double b, std::string side) { // Right-Angle default | Check!
         if(side == "short") {
             double c = a * a + b * b;
@@ -488,23 +312,29 @@ namespace bmath {
         }
         return 0.0;
     }
-    
-    struct Trigonometry { // Pass in triangles | Possibly remove trig struct
-        double hypotenuse;
-        double opposite;
-        double adjacent;
-        inline double gSin(double opposite, double hypotenuse) {
-            return opposite / hypotenuse;
-        }
-        inline double gCos(double hypotenuse, double adjacent) {
-            return adjacent / hypotenuse;
-        }
-        inline double gTan(double opposite, double hypotenuse, double adjacent) {
-            return opposite / adjacent; // Continue
-        }
-    };
 
-// Do better with objects. Have struct only be quat itself not functions
+    // Trigonometry
+        // Standard
+    inline double sin(double opposite, double hypotenuse) {
+        return opposite / hypotenuse;
+    }
+    inline double cos(double hypotenuse, double adjacent) {
+        return adjacent / hypotenuse;
+    }
+    inline double tan(double opposite, double hypotenuse, double adjacent) {
+        return opposite / adjacent; // Continue
+    }
+        // RTriangle object overloads
+    inline double sin(RTriangle &t) {
+        return t.m_Opposite / t.m_Hypotenuse;
+    }
+    inline double cos(RTriangle &t) {
+        return t.m_Adjacent / t.m_Hypotenuse;
+    }
+    inline double tan(RTriangle &t) {
+        return t.m_Opposite / t.m_Adjacent; // Continue | Do not forget hypot
+    }
+
     struct Quaternion {
         float i;
         float j;
@@ -557,4 +387,5 @@ namespace bmath {
         return resultQuat;
     }
 }
+
 #endif

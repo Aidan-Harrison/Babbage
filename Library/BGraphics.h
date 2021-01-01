@@ -3,7 +3,7 @@
 
 #include <windows.h> // Access windows API for custom graphics
 
-#include "BabbageMath.h" // Heavily uses custom math library
+#include "BMath.h" // Heavily uses custom math library
 using namespace bmath;
 
 // Babbage's Graphics library
