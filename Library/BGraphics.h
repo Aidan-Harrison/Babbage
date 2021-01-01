@@ -1,10 +1,16 @@
 #ifndef BabbageGraphics_h
 #define BabbageGraphics_h
 
-#include <windows.h> // Access windows API for custom graphics
+#include <windows.h> // Access windows API
 
-#include "BMath.h" // Heavily uses custom math library
+// Maths lib
+#include "BMath.h"
+#include "BMatrix.h"
+#include "BVector.h"
+
 using namespace bmath;
+using namespace bmatrix;
+using namespace bvector;
 
 // Babbage's Graphics library
 namespace bgraphics {

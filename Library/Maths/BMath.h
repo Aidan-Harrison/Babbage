@@ -6,6 +6,9 @@
 #include <vector> // Replace with C style arrays
 #include <cmath> // Override functions
 
+#include "BMatrix.h"
+#include "BVector.h"
+
 #define PI 3.14159
 #define Euler 2.71828
 #define Radian 57.2958
@@ -119,9 +122,9 @@ namespace bmath {
         }
         return result;
     }
-    
+
     struct point { // Pixel based
-        static int m_X;
+        static int m_X; // Check!
         static int m_Y;
         point(short xPos = 0, short yPos = 0) {
             m_X = xPos;
@@ -130,13 +133,14 @@ namespace bmath {
     };
 
     struct Shape2D { 
-        static double m_Width;
+        static double m_Width; // Check!
         static double m_Height;
         Shape2D() = default;
         Shape2D(short width = 1, short height = 1) {
             m_Width = width;
             m_Height = height; 
         }
+        ~Shape2D() = default;
     };
 
     // Overloads | CHECK ALL OF THESE! | Although they may be correct syntactically the formula's are wrong? | Check middle operator
@@ -162,6 +166,7 @@ namespace bmath {
             m_Height = height;
             m_Depth = depth;
         }
+        ~Shape3D() = default;
     };
 
     Shape3D operator+(Shape3D &s1, Shape3D &s2) {
@@ -199,16 +204,32 @@ namespace bmath {
 
     // Circle Math
     struct CircleTheorem {
-        inline double Circumfrence(double radius) {
+        struct Circle {
+            double m_Radius;
+            Circle() = default;
+            Circle(short radius = 1)
+                :m_Radius(radius)
+            {
+            }
+            ~Circle() = default;
+        };
+        // Standard
+        inline double circum(double radius) {
             return 2 * PI * radius;
         }
-        inline double CircleArea(double radius) {
+        inline double circA(double radius) {
             return PI * radius * radius;
+        }
+        // Object based overloads
+        inline double circum(Circle &c) {
+            return 2 * PI * c.m_Radius;
+        }
+        inline double circA(Circle &c) {
+            return PI * c.m_Radius * c.m_Radius;
         }
     };
 
-    // Triangle Math
-    // Possibly add angles
+    // Triangle Math | Add angles
     struct Triangle { // Standard tri with total freedom
         double m_a;
         double m_b;
@@ -218,6 +239,7 @@ namespace bmath {
             :m_a(a), m_b(b), m_c(c)
         {
         }
+        ~Triangle() = default;
     };
 
     struct ITriangle { // Isosceles
@@ -227,6 +249,8 @@ namespace bmath {
             :m_Height(height), m_Base(base)
         {
         }
+        ITriangle() = default;
+        ~ITriangle() = default;
         ITriangle ITriArea(double height, double base);
     };
 
@@ -236,6 +260,7 @@ namespace bmath {
             :m_Size(size)
         {
         }
+        ~ETriangle() = default;
     };
 
     struct RTriangle {// Right-Angle
@@ -247,6 +272,7 @@ namespace bmath {
             :m_Opposite(oppSize), m_Adjacent(adjSize), m_Hypotenuse(hypSize)
         {
         }
+        ~RTriangle() = default;
     };
 
     // Do function overloading to accomodate triangle structs
@@ -321,8 +347,8 @@ namespace bmath {
     inline double cos(double hypotenuse, double adjacent) {
         return adjacent / hypotenuse;
     }
-    inline double tan(double opposite, double hypotenuse, double adjacent) {
-        return opposite / adjacent; // Continue
+    inline double tan(double opposite, double adjacent) {
+        return opposite / adjacent;
     }
         // RTriangle object overloads
     inline double sin(RTriangle &t) {
@@ -332,35 +358,34 @@ namespace bmath {
         return t.m_Adjacent / t.m_Hypotenuse;
     }
     inline double tan(RTriangle &t) {
-        return t.m_Opposite / t.m_Adjacent; // Continue | Do not forget hypot
+        return t.m_Opposite / t.m_Adjacent;
     }
 
     struct Quaternion {
-        float i;
-        float j;
-        float k;
-        float w;
+        float i; float j;
+        float k; float w;
         float magnitude = 0.0f;
-        Quaternion(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 0.0f) {
-            i = a;
-            j = b;
-            k = c;
-            w = d;
+        Quaternion(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 0.0f)
+            :i(a), j(b), k(c), w(d)
+        {
         }
-
-        float Magnitude(Quaternion &q1);
-        float Normalize(Quaternion &q1);
-        Quaternion QuatMult(Quaternion &q1, Quaternion &q2);
+        ~Quaternion() = default;
+        // Creation | ADD!
+        // Math
+        float QMag(Quaternion &q1);
+        float QNorm(Quaternion &q1);
+        Quaternion QAdd(Quaternion &q1, Quaternion &q2);
+        Quaternion QMult(Quaternion &q1, Quaternion &q2);
     };
 
     // Operator Overloads
 
-    float QMag(Quaternion &q1) {
+    float Quaternion::QMag(Quaternion &q1) {
         float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
         return mag;
     }
 
-    float QNorm(Quaternion &q1) {
+    float Quaternion::QNorm(Quaternion &q1) {
         q1.magnitude = QMag(q1);
         q1.w /= q1.magnitude;
         q1.i /= q1.magnitude;
@@ -369,7 +394,7 @@ namespace bmath {
         return q1.magnitude;
     }
 
-    Quaternion QMult(Quaternion &q1, Quaternion &q2) {
+    Quaternion Quaternion::QMult(Quaternion &q1, Quaternion &q2) {
         Quaternion resultQuat;
         resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
         resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
@@ -378,7 +403,7 @@ namespace bmath {
         return resultQuat;
     }
 
-    Quaternion QAdd(Quaternion &q1, Quaternion &q2) {
+    Quaternion Quaternion::QAdd(Quaternion &q1, Quaternion &q2) {
         Quaternion resultQuat;
         resultQuat.i = q1.i + q2.w;
         resultQuat.j = q1.j + q2.j;

@@ -2,6 +2,7 @@
 #define BVector_h
 
 #include <algorithm>
+#include <BMatrix.h>
 
 namespace bvector {
     struct Vector1 {
@@ -11,6 +12,7 @@ namespace bvector {
             :x(cX)
         {
         }
+        ~Vector1() = default;
     };
 
     struct Vector2 {
@@ -21,6 +23,7 @@ namespace bvector {
             :x(cX), y(cY)
         {
         }
+        ~Vector2() = default;
     };
 
     struct Vector3 {
@@ -32,6 +35,7 @@ namespace bvector {
             :x(cX), y(cY), z(cZ)
         {
         }
+        ~Vector3() = default;
     };
 
     struct Vector4 {
@@ -44,37 +48,41 @@ namespace bvector {
             :x(cX), y(cY), z(cZ), w(cW)
         {
         }
+        ~Vector4() = default;
     };
+    
+    /* Operator Overloads */
 
-    // Vector creation (User functions) | Check return
-    Vector1 CVec1(float vecIn1) {
+    // Vector creation (User functions)
+    Vector1 CVec1(float x) {
         Vector1 vec;
-        vec.vec1[0] = vecIn1;
+        vec.vec1[0] = x;
         return vec;
     }
-    Vector2 CVec2(float vecIn1, float vecIn2) {
+    Vector2 CVec2(float x, float y) {
         Vector2 vec;
-        vec.vec2[0] = vecIn1;
-        vec.vec2[1] = vecIn2;
-        return vec;
-    }
-    Vector3 CVec3(float vecIn1, float vecIn2, float vecIn3) {
-        Vector3 vec;
-        vec.vec3[0] = vecIn1;
-        vec.vec3[1] = vecIn2;
-        vec.vec3[2] = vecIn3;
-        return vec;
-    }
-    Vector4 CVec4(float vecIn1, float vecIn2, float vecIn3, float vecIn4) {
-        Vector4 vec;
-        vec.vec4[0] = vecIn1;
-        vec.vec4[1] = vecIn2;
-        vec.vec4[2] = vecIn3;
-        vec.vec4[3] = vecIn4;
+        vec.vec2[0] = x;
+        vec.vec2[1] = y;
         return vec;
     }
 
-    // Vector 2 Math | Possibly incorporate operator overloads
+    Vector3 CVec3(float x, float y, float z) {
+        Vector3 vec;
+        vec.vec3[0] = x;
+        vec.vec3[1] = y;
+        vec.vec3[2] = z;
+        return vec;
+    }
+    Vector4 CVec4(float x, float y, float z, float w) {
+        Vector4 vec;
+        vec.vec4[0] = x;
+        vec.vec4[1] = y;
+        vec.vec4[2] = z;
+        vec.vec4[3] = w;
+        return vec;
+    }
+
+    // Vector 2 Math | Incorporate operator overloads
     float vecMag(Vector2 vec1) { // Magnitude
         float mag = sqrt(vec1.x * vec1.x + vec1.y * vec1.y); // Do custom sqrt function
         return mag;
@@ -102,6 +110,8 @@ namespace bvector {
     void crossProd(Vector3 vec1, Vector3 vec2) {
         return;
     }
+
+    // Vector4 Math
 }
 
 #endif
