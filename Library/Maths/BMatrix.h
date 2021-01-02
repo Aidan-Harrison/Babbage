@@ -21,7 +21,7 @@ namespace bmatrix {
         std::vector<std::vector<int>> mat2(int rows, int columns, int input); // Add 2D array input
         std::vector<std::vector<std::vector<int>>> mat3(int input[]);
         Matrix mat4(int input);
-        // Math | Object only
+        // Math | Object only (for now)
         Matrix addmat(Matrix &m1, Matrix &m2);
         Matrix submat(Matrix &m1, Matrix &m2);
         Matrix multmat(Matrix &m1, Matrix &m2);
@@ -94,7 +94,7 @@ namespace bmatrix {
         }
     }
 
-    inline void Matrix::delMat(Matrix &matrix) {
+    inline void Matrix::delMat(Matrix &matrix) { // Check!
         delete matrix;
     }
 }

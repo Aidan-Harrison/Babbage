@@ -24,11 +24,7 @@ namespace bmem {
                 printf("%d", &input[i][j]);
         return input;
     }
-
-    char NULLTERM() {
-        return putchar('\0');
-    }
-    
+    char NULLTERM() { return putchar('\0'); }
     // Memory allocations
 };
 #endif

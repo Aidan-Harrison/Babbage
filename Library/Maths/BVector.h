@@ -53,7 +53,7 @@ namespace bvector {
     
     /* Operator Overloads */
 
-    // Vector creation (User functions)
+    // Vector creation (User functions) | ravlue overloads?
     Vector1 CVec1(float x) {
         Vector1 vec;
         vec.vec1[0] = x;

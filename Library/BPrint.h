@@ -7,25 +7,23 @@
 // Because of templating may not want to use C style printing
 namespace bpr{
     template<typename T>
-    inline void print(T a) {
-        printf("%d", a);
-    }
+        inline void print(T a)       { printf("%d", a); }
     template<typename T>
-    inline void prASCII(T a) {
-        std::cout << static_cast<int>(a);
-    }
-    inline void nl() {
-        putchar('\n'); 
-    }
-    inline void line(int amount) {
-        std::cout << '-' + std::string(amount, '-') << '\n'; // C print
-    }
+        inline void print(T &&a)     { printf("%d", a); }
+    template<typename T>
+        inline void prASCII(T a)     { std::cout << static_cast<int>(a); }
+    template<typename T>
+        inline void prASCII(T &&a)   { std::cout << static_cast<int>(a); }
+    inline void nl()                 { putchar('\n'); }
+    inline void line(int amount)     { std::cout << '-' + std::string(amount, '-') << '\n'; }
+
     void box(int height, int width) {
         for(int i = 0; i < height; i++)
             for(int j = 0; j < width; j++)
                 putchar('*');
             putchar('\n');
     }
+    
     void pyramid(int height, int width) { // Fix
         for(int i = 1, k = 0; i <= height; i++, k = 0) {
             for(width = 1; width <= height - i; width++) {

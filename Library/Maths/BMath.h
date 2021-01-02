@@ -15,22 +15,23 @@
 
 namespace bmath {
     // Basic
-    template<typename T> // ?? | Template entire namespace instead of per function
-    inline T add(T a, T b) { // Inline is not needed but is not bad either
-        return a + b;
-    }
+    // Not sure about this templating and overloads
+    template<typename T> // Template entire namespace instead of per function?
+        inline T add(T a, T b)      { return a + b; }
     template<typename T>
-    inline T sub(T a, T b) {
-        return a - b;
-    }
+        inline T add(T &&a, T &&b)  { return a + b; } // rvalue overload
     template<typename T>
-    inline T mult(T a, T b) {
-        return(a * b);
-    }
+        inline T sub(T a, T b)      { return a - b; }
     template<typename T>
-    inline T div(T a, T b) {
-        return(a / b);
-    }
+        inline T sub(T &&a, T &&b)  { return a - b; }
+    template<typename T>
+        inline T mult(T a, T b)     { return(a * b); }
+    template<typename T>
+        inline T mult(T &&a, T &&b) { return(a * b); }
+    template<typename T>
+        inline T div(T a, T b)      { return(a / b); }
+    template<typename T>
+        inline T div(T &&a, T &&b)  { return(a / b); }
     
     double bSqrt(double &num) { // Implement
         double result = 0.0;
@@ -38,9 +39,10 @@ namespace bmath {
     }
 
     // Advanced
-    inline int floor(double value) {
-        return static_cast<int>(value);
-    }
+    inline int floor(float value)    { return static_cast<int>(value); }
+    inline int floor(float &&value)  { return static_cast<int>(value); }
+    inline int floor(double value)   { return static_cast<int>(value); }
+    inline int floor(double &&value) { return static_cast<int>(value); }
 
     template<typename T>
     float round(T value, float roundTo) { // 'roundTo' refers to the the digit to round to, similar to floor but with user control
@@ -49,13 +51,13 @@ namespace bmath {
 
     // Comparisons
     template<typename T>
-    inline const T Max(T a, T b) {
-        return (a < b) ? b : a;
-    }
+        inline const T Max(T a, T b)     { return (a < b) ? b : a; }
     template<typename T>
-    inline const T Min(T a, T b) {
-        return (a > b) ? a : b;
-    }
+        inline const T Max(T &&a, T &&b) { return (a < b) ? b : a; }
+    template<typename T>
+        inline const T Min(T a, T b)     { return (a > b) ? a : b; }
+    template<typename T>
+        inline const T Min(T &&a, T &&b) { return (a > b) ? a : b; }
     template<typename T>
     inline bool same(T a, T b) {
         if(a == b) return true;
@@ -63,27 +65,21 @@ namespace bmath {
     }
 
     // Conversions
-    inline int toASC(char value) {
-        return static_cast<int>(value); // Type-cast to int (ASCII)
-    }
+    inline int toASC(char value) { return static_cast<int>(value); }
     inline int toASC(char string[], short size) { // Conver to char*
         for(int i = 0; i < size; i++)
             return static_cast<int>(string[i]);
     }
-    // Both of these are probably the wrong formula
-    inline double convRadToDeg(double radians) {
-        return radians = 180/PI; 
-    }
-    inline double convDegToRad(double degrees) {
-        return degrees = PI/180;
-    }
+    // Both of these are probably the wrong formula | Add float overloads
+    inline double convRadToDeg(float radians)   { return radians = 180/PI; }
+    inline double convRadToDeg(float &&radians) { return radians = 180/PI; }
+    inline double convDegToRad(float degrees)   { return degrees = PI/180; }
+    inline double convDegToRad(float &&degrees) { return degrees = PI/180; }
     // Possibly incorrect
-    inline double convCelToFah(double c) {
-        return (c * 9 / 5) + 32;
-    }        
-    inline double convFahToCel(double f) {
-        return (f - 32) * 5 / 9;
-    }
+    inline double convCelToFah(float c)   { return (c * 9 / 5) + 32; }        
+    inline double convCelToFah(float &&c) { return (c * 9 / 5) + 32; }        
+    inline double convFahToCel(float f)   { return (f - 32) * 5 / 9; }
+    inline double convFahToCel(float &&f) { return (f - 32) * 5 / 9; }
 
     // Other   
     int random(int range) {
@@ -182,10 +178,13 @@ namespace bmath {
     }
 
     // General
-    inline double gPer(Shape2D &s1) { // Square only for now | hence method
+    inline double gPer(Shape2D &s1) { // Square only for now
         return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height;
     }
-    inline double gArea(int &a, int &b) { // Possibly don't do objects for users sake | Overcomplicated
+    inline double gArea(int a, int b) {
+        return a * b;
+    }
+    inline double gArea(int &&a, int &&b) {
         return a * b;
     }
     inline double gVol(Shape3D &s1) {
@@ -196,7 +195,17 @@ namespace bmath {
         c = a * a + b * b;
         return sqrt(c); // Call own sqrt function when overriden
     }
+    inline double gPythagLong(int &&a, int &&b) {
+        double c;
+        c = a * a + b * b;
+        return sqrt(c); // Call own sqrt function when overriden
+    }
     inline double gPythagShort(int a, int b) {
+        double c;
+        c = a * a - b * b;
+        return sqrt(c);
+    }
+    inline double gPythagShort(int &&a, int &&b) {
         double c;
         c = a * a - b * b;
         return sqrt(c);
@@ -214,19 +223,11 @@ namespace bmath {
             ~Circle() = default;
         };
         // Standard
-        inline double circum(double radius) {
-            return 2 * PI * radius;
-        }
-        inline double circA(double radius) {
-            return PI * radius * radius;
-        }
+        inline double circum(double radius) { return 2 * PI * radius; }
+        inline double circA(double radius)  { return PI * radius * radius; }
         // Object based overloads
-        inline double circum(Circle &c) {
-            return 2 * PI * c.m_Radius;
-        }
-        inline double circA(Circle &c) {
-            return PI * c.m_Radius * c.m_Radius;
-        }
+        inline double circum(Circle &c)     { return 2 * PI * c.m_Radius; }
+        inline double circA(Circle &c)      { return PI * c.m_Radius * c.m_Radius; }
     };
 
     // Triangle Math | Add angles
@@ -289,22 +290,10 @@ namespace bmath {
         else
             return(t1.m_Height * 2 + t1.m_Base);
     }
-
-    double TPer(ETriangle &t1) { // Overload for Equilateral
-        return(t1.m_Size * 3);
-    }
-
-    double TArea(double height, double base) {
-        return(height * base / 2);
-    }
-
-    double TArea(double a) { // Equilateral without object
-        return(sqrt(3) / 4 * a * a);
-    }
-
-    double TArea(ETriangle &t1) {
-        return(sqrt(3) / 4 * t1.m_Size * t1.m_Size);
-    }
+    double TPer(ETriangle &t1)               { return(t1.m_Size * 3); } // Overload for Equilateral
+    double TArea(double height, double base) { return(height * base / 2); }
+    double TArea(double a)                   { return(sqrt(3) / 4 * a * a); } // Equilateral without object
+    double TArea(ETriangle &t1)              { return(sqrt(3) / 4 * t1.m_Size * t1.m_Size); }
 
     // Pythagoras
     double Pythag(double a, double b, std::string side) { // Right-Angle default | Check!
@@ -341,25 +330,13 @@ namespace bmath {
 
     // Trigonometry
         // Standard
-    inline double sin(double opposite, double hypotenuse) {
-        return opposite / hypotenuse;
-    }
-    inline double cos(double hypotenuse, double adjacent) {
-        return adjacent / hypotenuse;
-    }
-    inline double tan(double opposite, double adjacent) {
-        return opposite / adjacent;
-    }
+    inline double sin(double opposite, double hypotenuse) { return opposite / hypotenuse; }
+    inline double cos(double hypotenuse, double adjacent) { return adjacent / hypotenuse; }
+    inline double tan(double opposite, double adjacent)   { return opposite / adjacent; }
         // RTriangle object overloads
-    inline double sin(RTriangle &t) {
-        return t.m_Opposite / t.m_Hypotenuse;
-    }
-    inline double cos(RTriangle &t) {
-        return t.m_Adjacent / t.m_Hypotenuse;
-    }
-    inline double tan(RTriangle &t) {
-        return t.m_Opposite / t.m_Adjacent;
-    }
+    inline double sin(RTriangle &t) { return t.m_Opposite / t.m_Hypotenuse; }
+    inline double cos(RTriangle &t) { return t.m_Adjacent / t.m_Hypotenuse; }
+    inline double tan(RTriangle &t) { return t.m_Opposite / t.m_Adjacent; }
 
     struct Quaternion {
         float i; float j;
