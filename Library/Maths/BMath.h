@@ -1,14 +1,15 @@
 #ifndef BabbageMath_h
 #define BabbageMath_h
 
-// Used includes for now to stop errors, remove all (except for iostream) afterwards
 #include <iostream>
-#include <vector> // Replace with C style arrays
-#include <cmath> // Override functions
+#include <vector> 
+#include <cmath> // Override most functions
 
 #include "BMatrix.h"
 #include "BVector.h"
 
+// Definitions
+    // General
 #define PI 3.14159
 #define Euler 2.71828
 #define Radian 57.2958
@@ -19,19 +20,11 @@ namespace bmath {
     template<typename T> // Template entire namespace instead of per function?
         inline T add(T a, T b)      { return a + b; }
     template<typename T>
-        inline T add(T &&a, T &&b)  { return a + b; } // rvalue overload
-    template<typename T>
         inline T sub(T a, T b)      { return a - b; }
-    template<typename T>
-        inline T sub(T &&a, T &&b)  { return a - b; }
     template<typename T>
         inline T mult(T a, T b)     { return(a * b); }
     template<typename T>
-        inline T mult(T &&a, T &&b) { return(a * b); }
-    template<typename T>
         inline T div(T a, T b)      { return(a / b); }
-    template<typename T>
-        inline T div(T &&a, T &&b)  { return(a / b); }
     
     double bSqrt(double &num) { // Implement
         double result = 0.0;
@@ -40,10 +33,7 @@ namespace bmath {
 
     // Advanced
     inline int floor(float value)    { return static_cast<int>(value); }
-    inline int floor(float &&value)  { return static_cast<int>(value); }
     inline int floor(double value)   { return static_cast<int>(value); }
-    inline int floor(double &&value) { return static_cast<int>(value); }
-
     template<typename T>
     float round(T value, float roundTo) { // 'roundTo' refers to the the digit to round to, similar to floor but with user control
         
@@ -53,33 +43,99 @@ namespace bmath {
     template<typename T>
         inline const T Max(T a, T b)     { return (a < b) ? b : a; }
     template<typename T>
-        inline const T Max(T &&a, T &&b) { return (a < b) ? b : a; }
-    template<typename T>
         inline const T Min(T a, T b)     { return (a > b) ? a : b; }
-    template<typename T>
-        inline const T Min(T &&a, T &&b) { return (a > b) ? a : b; }
     template<typename T>
     inline bool same(T a, T b) {
         if(a == b) return true;
         return false;
     }
 
-    // Conversions
+    // Conversions -------------------------------------------------
     inline int toASC(char value) { return static_cast<int>(value); }
-    inline int toASC(char string[], short size) { // Conver to char*
+    inline int toASC(char string[], short size) {
         for(int i = 0; i < size; i++)
             return static_cast<int>(string[i]);
     }
-    // Both of these are probably the wrong formula | Add float overloads
-    inline double convRadToDeg(float radians)   { return radians = 180/PI; }
-    inline double convRadToDeg(float &&radians) { return radians = 180/PI; }
-    inline double convDegToRad(float degrees)   { return degrees = PI/180; }
-    inline double convDegToRad(float &&degrees) { return degrees = PI/180; }
-    // Possibly incorrect
-    inline double convCelToFah(float c)   { return (c * 9 / 5) + 32; }        
-    inline double convCelToFah(float &&c) { return (c * 9 / 5) + 32; }        
-    inline double convFahToCel(float f)   { return (f - 32) * 5 / 9; }
-    inline double convFahToCel(float &&f) { return (f - 32) * 5 / 9; }
+        /* Angles/Rotation */
+            // Degrees
+    inline double convDegToRad(float deg)       { return deg * PI/180; }
+    inline double convDegToGrad(float deg)      { return deg * 200/180; }
+    inline double convDegToMinArc(float deg)    { return deg * 60; }
+    inline double convDegToSecArc(float deg)    { return deg * 3600; }
+            // Radians
+    inline double convRadToDeg(float rad)       { return rad * 180/PI; }
+    inline double convRadToGrad(float rad)      { return rad * 200/PI; }
+    inline double convRadToMinArc(float rad)    { return rad * (60 * 180)/PI; }
+    inline double convRadToSecArc(float rad)    { return rad * (3600 * 180)/PI; }
+        /* Temperature */
+            // Celsius
+    inline float convCelToFah(float c)          { return c * 9 / 5 + 32; }
+    inline float convCelToKel(float c)          { return c + 273.15; }
+            // Fahrenheit               
+    inline float convFahToCel(float f)          { return f - 32 * 5 / 9; }
+    inline float convFahToKel(float f)          { return f - 32 * 5 / 9 + 273.15; }
+        /* Distance */
+            // Metres & Centi
+    inline float convCMtoMicro(float centi)     { return centi * 10000; }
+    inline float convCMtoInch(float centi)      { return centi / 2.54; }
+    inline float convCMtoMem(float centi)       { return centi / 100; }
+    inline float convMemtoMM(float meters)      { return meters * 1000; }
+    inline float convMemtoCM(float meters)      { return meters * 100; }
+    inline float convMemtoKM(float meters)      { return meters / 1000; }
+    inline float convMemtoMile(float meters)    { return meters / 1609; }
+    inline float convMemtoYard(float meters)    { return meters * 1.094; }
+    inline float convMemtoInch(float meters)    { return meters * 39.97; }
+    inline float convMemtoNMile(float meters)   { return meters / 1852; }
+            // Kilometers
+    inline float convKMtoCM(float km)           { return km * 10000; }      
+    inline float convKMtoMem(float km)          { return km * 1000; }      
+    inline float convKMtoMile(float km)         { return km * 0.6214; }
+    inline float convKMtoYard(float km)         { return km * 1093.61; }
+    inline float convKMtoFoot(float km)         { return km * 3208.84; }
+    inline float convKMtoInch(float km)         { return km * 39370; }
+    inline float convKMtoNMile(float km)        { return km / 1.852; }
+            // Miles
+    inline float convMiletoCM(float miles)      { return miles * 160934; }
+    inline float convMiletoM(float miles)       { return miles * 1609.34; }
+    inline float convMiletoKM(float miles)      { return miles * 1.60934; }
+    inline float convMiletoYard(float miles)    { return miles * 1760; }
+    inline float convMiletoFoot(float miles)    { return miles * 5280; }
+    inline float convMiletoInch(float miles)    { return miles * 63360; }
+    inline float convMiletoNMile(float miles)   { return miles / 1.151; }
+        /* Time */
+            // Seconds
+    inline float convSectoMilli(float sec)      { return sec * 1000; }      
+    inline float convSectoMin(float sec)        { return sec / 60; }      
+    inline float convSectoHour(float sec)       { return sec / 3600; }      
+    inline float convSectoDay(float sec)        { return sec / 86400; }      
+    inline float convSectoWeek(float sec)       { return sec / 604800; }
+            // Minutes
+    inline float convMintoMilli(float sec)      { return sec * 60000; } 
+    inline float convMintoSec(float sec)        { return sec * 60; } 
+    inline float convMintoHour(float sec)       { return sec / 60; } 
+    inline float convMintoDay(float sec)        { return sec / 1440; } 
+    inline float convMintoWeek(float sec)       { return sec / 10080; } 
+    inline float convMintoMonth(float sec)      { return sec / 43800; } 
+            // Hours
+    inline float convHourtoMin(float sec)       { return sec * 60; } 
+    inline float convHourtoSec(float sec)       { return sec * 3600; } 
+    inline float convHourtoDay(float sec)       { return sec * 24; } 
+    inline float convHourtoDay(float sec)       { return sec / 168; } 
+    inline float convHourtoMonth(float sec)     { return sec / 730; } 
+    inline float convHourtoYear(float sec)      { return sec / 8760; } 
+        /* Energy */
+            // Joules
+    inline float convJtoKJ(float joule)         { return joule / 1000; } 
+    inline float convJtoWattHr(float joule)     { return joule / 3600; } 
+    inline float convJtoCal(float joule)        { return joule / 4.184; } 
+    inline float convJtoKCal(float joule)       { return joule / 4184; } 
+            // Calories
+    inline float convCaltoJ(float cal)          { return cal * 4.184; }
+    inline float convCaltoKJ(float cal)         { return cal / 239; }
+    inline float convCaltoKCal(float cal)       { return cal / 1000; }
+    inline float convCaltoWattHr(float cal)     { return cal / 860; }
+            // Wattage
+    inline float convAVtoWatt(float amps, float volts) { return amps * volts; }
 
     // Other   
     int random(int range) {
@@ -178,34 +234,15 @@ namespace bmath {
     }
 
     // General
-    inline double gPer(Shape2D &s1) { // Square only for now
-        return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height;
-    }
-    inline double gArea(int a, int b) {
-        return a * b;
-    }
-    inline double gArea(int &&a, int &&b) {
-        return a * b;
-    }
-    inline double gVol(Shape3D &s1) {
-        return s1.m_Width * s1.m_Height * s1.m_Depth;
-    }
+    inline double gPer(Shape2D &s1)       { return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height; } // Square only for now
+    inline double gArea(int a, int b)     { return a * b; }
+    inline double gVol(Shape3D &s1)       { return s1.m_Width * s1.m_Height * s1.m_Depth; }
     inline double gPythagLong(int a, int b) {
         double c;
         c = a * a + b * b;
         return sqrt(c); // Call own sqrt function when overriden
     }
-    inline double gPythagLong(int &&a, int &&b) {
-        double c;
-        c = a * a + b * b;
-        return sqrt(c); // Call own sqrt function when overriden
-    }
     inline double gPythagShort(int a, int b) {
-        double c;
-        c = a * a - b * b;
-        return sqrt(c);
-    }
-    inline double gPythagShort(int &&a, int &&b) {
         double c;
         c = a * a - b * b;
         return sqrt(c);

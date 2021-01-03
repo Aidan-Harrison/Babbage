@@ -8,12 +8,9 @@
 namespace bpr{
     template<typename T>
         inline void print(T a)       { printf("%d", a); }
-    template<typename T>
-        inline void print(T &&a)     { printf("%d", a); }
+    inline void print(const char* message) { printf("%c", message); } // C string overload | Check neccesity
     template<typename T>
         inline void prASCII(T a)     { std::cout << static_cast<int>(a); }
-    template<typename T>
-        inline void prASCII(T &&a)   { std::cout << static_cast<int>(a); }
     inline void nl()                 { putchar('\n'); }
     inline void line(int amount)     { std::cout << '-' + std::string(amount, '-') << '\n'; }
 
@@ -44,7 +41,7 @@ namespace bpr{
     }
 
     template<typename T>
-    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) { // Replace
+    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) { // Overload with C-2D array as well
         int m = arr.size();
         int n = arr[0].size();
         for(int i = 0; i < m; i++)
