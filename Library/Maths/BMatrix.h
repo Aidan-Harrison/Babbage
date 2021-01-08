@@ -53,9 +53,9 @@ namespace bmatrix {
         Matrix multmat(Matrix &m1, Matrix &m2);
         Matrix invmat(Matrix &m1); // Inverse
             // Extra
-        void pmat(Matrix &matrix);
+        void pmat(Matrix &matrix) const;
         template<typename T>
-        void pmat(std::vector<std::vector<T>> matrix);
+        void pmat(std::vector<std::vector<T>> matrix); // Check whether to mark as 'const'
         inline void delMat(Matrix &matrix);
     };
 
@@ -79,7 +79,7 @@ namespace bmatrix {
                 }
             }
         }
-        return resultMatrix;
+        return m1; // Sort proper return
     }
 
     Matrix Matrix::submat(Matrix &m1, Matrix &m2) {                
@@ -88,7 +88,7 @@ namespace bmatrix {
     Matrix Matrix::multmat(Matrix &m1, Matrix &m2) {
     }
 
-    void Matrix::pmat(Matrix &matrix) {
+    void Matrix::pmat(Matrix &matrix) const {
         for(int i = 0; i < matrix.s_Matrix.size(); i++) {
             for(int j = 0; j < matrix.s_Matrix.size(); j++)
                 std::cout << matrix.s_Matrix[i][j] << ", ";

@@ -71,7 +71,7 @@ namespace bDataStruct {
         short m_StackSize;
         T m_Stack[m_StackSize];
         // Vector stack
-        std::vector<T> m_VStack{}; // Template?
+        std::vector<T> m_VStack{};
         bStack() = default;
         ~bStack() = default;
         bStack(short stackData = 1)
@@ -84,16 +84,14 @@ namespace bDataStruct {
             return stack;
         }
         void PopStack(T stack[]) { // Delete last value
-            int size = sizeof(stack) / sizeof(stack[0]); // Does not work
         }
-        void PushStack(T stack[]) {
+        void PushStack(T stack[]) { // Add to stack
         }
         void printStack(T stack[], int size) {
             for(int i = 0; i < size; i++)
                 std::cout << stack[i] << ", ";
         }
         void printStack(T stack[]) { // Non-size argument overload
-            int size = sizeof(stack) / sizeof(stack[0]); // Does not work
             for(int i = 0; i < size; i++)
                 std::cout << stack[i] << ", ";
         }
@@ -115,17 +113,23 @@ namespace bDataStruct {
     };
 
         // Graph & Trees
-    struct Graph {
-        int data;
+    struct Graph { // Re-Do after done with binary tree
         Graph() = default;
         ~Graph() = default;
+        struct Vertex { // Character based for now
+            char m_Key;
+            Vertex(char key = 'A')
+                :m_Key(key) 
+            {
+            }
+            ~Vertex() = default;
+        };
     };
 
     struct treeNode {
         int key_Value;
         treeNode* left;
         treeNode* right;
-        // Check need!
         treeNode() = default;
         treeNode(int value)
             :key_Value(value) 
@@ -188,12 +192,9 @@ namespace bDataStruct {
 
     treeNode* bTree::search(int key, treeNode* leaf) {
         if(leaf != nullptr) {
-            if(key == leaf->key_Value)
-                return leaf;
-            if(key < leaf->key_Value)
-                return search(key, leaf->left);
-            else
-                return search(key, leaf->right);
+            if(key == leaf->key_Value) return leaf;
+            if(key < leaf->key_Value) return search(key, leaf->left);
+            else return search(key, leaf->right);
         }
         else return nullptr; // Return nothing if leaf is equal to nothing
     }

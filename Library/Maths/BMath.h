@@ -152,9 +152,9 @@ namespace bmath {
     }
 
     // Graphics and Geometry
-    struct point { // Pixel based
+    struct Point { // Pixel based
         static int m_X, m_Y;
-        point(short xPos = 0, short yPos = 0) {
+        Point(short xPos = 0, short yPos = 0) {
             m_X = xPos;
             m_Y = yPos;
         }
@@ -171,17 +171,9 @@ namespace bmath {
     };
 
     // Overloads | CHECK ALL OF THESE! | Although they may be correct syntactically the formula's are wrong? | Check middle operator
-    Shape2D operator+(Shape2D &s1, Shape2D &s2) {
-        return Shape2D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width);
-    }
-
-    Shape2D operator-(Shape2D &s1, Shape2D &s2) {
-        return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width);
-    }
-
-    Shape2D operator*(Shape2D &s1, Shape2D &s2) {
-        return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width);
-    }
+    Shape2D operator+(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width); }
+    Shape2D operator-(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width); }
+    Shape2D operator*(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width); }
 
     struct Shape3D {
         static double m_Width, m_Height, m_Depth;
@@ -194,17 +186,9 @@ namespace bmath {
         ~Shape3D() = default;
     };
 
-    Shape3D operator+(Shape3D &s1, Shape3D &s2) {
-        return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth);
-    }
-
-    Shape3D operator-(Shape3D &s1, Shape3D &s2) { // Change
-        return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth);
-    }
-
-    Shape3D operator*(Shape3D &s1, Shape3D &s2) {
-        return Shape3D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width * s1.m_Depth * s2.m_Depth);
-    }
+    Shape3D operator+(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth); }
+    Shape3D operator-(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth); } // Change
+    Shape3D operator*(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width * s1.m_Depth * s2.m_Depth); }
 
     // General
     inline double gPer(Shape2D &s1)   { return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height; } // Square only for now
@@ -222,20 +206,18 @@ namespace bmath {
     }
 
     // Circle Math
-    struct CircleTheorem {
-        struct Circle {
-            double m_Radius;
-            Circle() = default;
-            Circle(short radius = 1)
-                :m_Radius(radius)
-            {
-            }
-            ~Circle() = default;
-        };
-        // Standard
+    struct Circle {
+        double m_Radius;
+        Circle() = default;
+        Circle(short radius = 1)
+            :m_Radius(radius)
+        {
+        }
+        ~Circle() = default;
+            // Standard
         inline double circum(double radius) { return 2 * PI * radius; }
         inline double circA(double radius)  { return PI * radius * radius; }
-        // Object based overloads
+            // Object based overloads
         inline double circum(Circle &c)     { return 2 * PI * c.m_Radius; }
         inline double circA(Circle &c)      { return PI * c.m_Radius * c.m_Radius; }
     };

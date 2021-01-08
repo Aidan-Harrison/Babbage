@@ -27,7 +27,7 @@ namespace bgraphics {
         // Geomtry creation: Add depth to all these, possibly incorporate custom geo for graphics
         Triangle* cTri(int &p1X, int &p1Y, int &p2X, int &p2Y, int &p3X, int &p3Y) {
                 Triangle tri;
-                point p1; point p2; point p3;
+                Point p1; Point p2; Point p3;
                 p1.m_X = p1X; p1.m_Y = p1Y;
                 p2.m_X = p2X; p2.m_Y = p2Y;
                 p3.m_X = p3X; p3.m_Y = p3Y;
