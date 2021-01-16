@@ -32,6 +32,7 @@ namespace bDataStruct {
             {
             }
         };
+        inline Node getNode() const { return Node; } // Check!
         SLinkedList() = default;
         ~SLinkedList() = default;
         Node addNode(T data, Node *nextNode) {
@@ -123,6 +124,13 @@ namespace bDataStruct {
             {
             }
             ~Vertex() = default;
+            Vertex AddVertex(char input) {
+                Vertex newVertex;
+                newVertex.m_Key = input;
+                return newVertex;
+            }
+            inline void DeleteVertex(Vertex &v) { delete &v; } // Check!
+            void FindVertex(char input);
         };
     };
 
@@ -140,85 +148,86 @@ namespace bDataStruct {
     class bTree {
     private:
         // System level functions
-        void destroyTree(treeNode* leaf);
-        void insert(int key, treeNode* leaf);
-        treeNode* search(int key, treeNode* leaf);
+        void destroyTree(treeNode* leaf) { 
+            if(leaf != nullptr) { // If leaf exists, remove left and right children, then delete current node
+                destroyTree(leaf->left);
+                destroyTree(leaf->right);
+                delete leaf;
+            }
+        }
+
+        void insert(int key, treeNode* leaf) {
+            if(key < leaf->key_Value) {
+                if(leaf->left != nullptr) // If lead does exist, add
+                    insert(key, leaf->left);
+                else { // Else add leaf
+                    leaf->left = new treeNode;
+                    leaf->left->key_Value = key;
+                    leaf->left->left = nullptr;
+                    leaf->left->right = nullptr;
+                }
+            }
+            else if(key >= leaf->key_Value) {
+                if(leaf->right != nullptr)
+                    insert(key, leaf->right);
+                else {
+                    leaf->right = new treeNode;
+                    leaf->right->key_Value = key;
+                    leaf->right->left = nullptr;
+                    leaf->right->right = nullptr;
+                }
+            }
+        } 
+
+        treeNode* search(int key, treeNode* leaf) {
+            if(leaf != nullptr) {
+                if(key == leaf->key_Value) return leaf;
+                if(key < leaf->key_Value) return search(key, leaf->left);
+                else return search(key, leaf->right);
+            }
+            else return nullptr; // Return nothing if leaf is equal to nothing
+        }
 
         treeNode* root;
     public:
         bTree();
-        ~bTree();
-
+        bTree::~bTree() { destroyTree(); }
         // user functions
-        void insert(int key);
-        treeNode* search(int key);
-        void destroyTree();
-    };
-
-    // Call tree destruction on destructor
-    bTree::~bTree() { destroyTree(); }
-
-    // System functions
-    void bTree::destroyTree(treeNode* leaf) { 
-        if(leaf != nullptr) { // If leaf exists, remove left and right children, the delete current node
-            destroyTree(leaf->left);
-            destroyTree(leaf->right);
-            delete leaf;
-        }
-    }
-
-    void bTree::insert(int key, treeNode* leaf) {
-        if(key < leaf->key_Value) {
-            if(leaf->left != nullptr) // If lead does exist, add
-                insert(key, leaf->left);
-            else { // Else add leaf
-                leaf->left = new treeNode;
-                leaf->left->key_Value = key;
-                leaf->left->left = nullptr;
-                leaf->left->right = nullptr;
-            }
-        }
-        else if(key >= leaf->key_Value) {
-            if(leaf->right != nullptr)
-                insert(key, leaf->right);
+        void bTree::insert(int key) {
+            if(root != nullptr)
+                insert(key, root);
             else {
-                leaf->right = new treeNode;
-                leaf->right->key_Value = key;
-                leaf->right->left = nullptr;
-                leaf->right->right = nullptr;
+                root = new treeNode;
+                root->key_Value = key;
+                root->left = nullptr;
+                root->right = nullptr;
             }
         }
-    }   
 
-    treeNode* bTree::search(int key, treeNode* leaf) {
-        if(leaf != nullptr) {
-            if(key == leaf->key_Value) return leaf;
-            if(key < leaf->key_Value) return search(key, leaf->left);
-            else return search(key, leaf->right);
-        }
-        else return nullptr; // Return nothing if leaf is equal to nothing
-    }
-
-    // User side functions
-    void bTree::insert(int key) {
-        if(root != nullptr)
-            insert(key, root);
-        else {
-            root = new treeNode;
-            root->key_Value = key;
-            root->left = nullptr;
-            root->right = nullptr;
-        }
-    }
-
-    treeNode* bTree::search(int key) { return search(key, root); }
-    void bTree::destroyTree() { return destroyTree(root); }
+        treeNode* bTreeSearch(int key) { return search(key, root); }
+        void destroyTree() { return destroyTree(root); }
+    };
 }
 
 // Algorithms
+// Add templating | Check!
 namespace bAlgorithms {
-    bool findDup(std::vector<int>& arr) { // Check!
+    template<typename T>
+    bool findDup(std::vector<T>& arr);
+    template<>
+    bool findDup<int>(std::vector<int>& arr) { // Check!
         std::unordered_map<int,int> uMap;
+        for(auto i : arr) {
+            if(uMap.find(uMap[i]) == uMap.end())
+                uMap[arr[i]]++;
+            else
+                return true;
+            return false;
+        }
+    }
+    template<>
+    bool findDup<float>(std::vector<float>& arr) { // Check!
+        std::unordered_map<float,int> uMap;
         for(auto i : arr) {
             if(uMap.find(uMap[i]) == uMap.end())
                 uMap[arr[i]]++;

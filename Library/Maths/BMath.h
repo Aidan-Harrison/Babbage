@@ -158,6 +158,8 @@ namespace bmath {
             m_X = xPos;
             m_Y = yPos;
         }
+        inline int GetX() const { return m_X; }
+        inline int GetY() const { return m_Y; }
     };
 
     struct Shape2D { 
@@ -167,6 +169,8 @@ namespace bmath {
             m_Width = width;
             m_Height = height; 
         }
+        inline double GetWidth() const { return m_Width; }
+        inline double GetHeight() const { return m_Height; }
         ~Shape2D() = default;
     };
 
@@ -183,6 +187,9 @@ namespace bmath {
             m_Height = height;
             m_Depth = depth;
         }
+        inline double GetWidth() const { return m_Width; }
+        inline double GetHeight() const { return m_Height; }
+        inline double GetDepth() const { return m_Depth; }
         ~Shape3D() = default;
     };
 
@@ -194,16 +201,6 @@ namespace bmath {
     inline double gPer(Shape2D &s1)   { return s1.m_Width + s1.m_Width + s1.m_Height + s1.m_Height; } // Square only for now
     inline double gArea(int a, int b) { return a * b; }
     inline double gVol(Shape3D &s1)   { return s1.m_Width * s1.m_Height * s1.m_Depth; }
-    double gPythLong(int a, int b) {
-        double c;
-        c = a * a + b * b;
-        return sqrt(c); // Call own sqrt function when overriden
-    }
-    double gPythShort(int a, int b) {
-        double c;
-        c = a * a - b * b;
-        return sqrt(c);
-    }
 
     // Circle Math
     struct Circle {
@@ -213,6 +210,7 @@ namespace bmath {
             :m_Radius(radius)
         {
         }
+        inline double GetRad() const { return m_Radius; }
         ~Circle() = default;
             // Standard
         inline double circum(double radius) { return 2 * PI * radius; }
@@ -230,6 +228,9 @@ namespace bmath {
             :m_a(a), m_b(b), m_c(c)
         {
         }
+        inline double GetA() const { return m_a; }
+        inline double GetB() const { return m_b; }
+        inline double GetC() const { return m_c; }
         ~Triangle() = default;
     };
 
@@ -241,6 +242,8 @@ namespace bmath {
         }
         ITriangle() = default;
         ~ITriangle() = default;
+        inline double GetHeight() const { return m_Height; }
+        inline double GetBase() const { return m_Base; }
         ITriangle ITriArea(double height, double base);
     };
 
@@ -250,6 +253,7 @@ namespace bmath {
             :m_Size(size)
         {
         }
+        inline double GetSize() const { return m_Size; }
         ~ETriangle() = default;
     };
 
@@ -260,6 +264,9 @@ namespace bmath {
             :m_Opposite(oppSize), m_Adjacent(adjSize), m_Hypotenuse(hypSize)
         {
         }
+        inline double GetOpp() const { return m_Opposite; }
+        inline double GetAdj() const { return m_Adjacent; }
+        inline double GetHyp() const { return m_Hypotenuse; }
         ~RTriangle() = default;
     };
 
@@ -332,46 +339,40 @@ namespace bmath {
         {
         }
         ~Quaternion() = default;
+        // Operator Overloads
         // Math
-        float QMag(Quaternion &q1);
-        float QNorm(Quaternion &q1);
-        Quaternion QAdd(Quaternion &q1, Quaternion &q2);
-        Quaternion QMult(Quaternion &q1, Quaternion &q2);
+        float QMag(Quaternion &q1) {
+            float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
+            return mag;
+        }
+
+        float QNorm(Quaternion &q1) {
+            q1.magnitude = QMag(q1);
+            q1.w /= q1.magnitude;
+            q1.i /= q1.magnitude;
+            q1.j /= q1.magnitude;
+            q1.k /= q1.magnitude;
+            return q1.magnitude;
+        }
+
+        Quaternion QMult(Quaternion &q1, Quaternion &q2) {
+            Quaternion resultQuat;
+            resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
+            resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
+            resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
+            resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
+            return resultQuat;
+        }
+
+        Quaternion QAdd(Quaternion &q1, Quaternion &q2) {
+            Quaternion resultQuat;
+            resultQuat.i = q1.i + q2.w;
+            resultQuat.j = q1.j + q2.j;
+            resultQuat.k = q1.k + q2.k;
+            resultQuat.w = q1.w + q2.w;
+            return resultQuat;
+        }
     };
-
-    // Operator Overloads
-
-    float Quaternion::QMag(Quaternion &q1) {
-        float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
-        return mag;
-    }
-
-    float Quaternion::QNorm(Quaternion &q1) {
-        q1.magnitude = QMag(q1);
-        q1.w /= q1.magnitude;
-        q1.i /= q1.magnitude;
-        q1.j /= q1.magnitude;
-        q1.k /= q1.magnitude;
-        return q1.magnitude;
-    }
-
-    Quaternion Quaternion::QMult(Quaternion &q1, Quaternion &q2) {
-        Quaternion resultQuat;
-        resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
-        resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
-        resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
-        resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
-        return resultQuat;
-    }
-
-    Quaternion Quaternion::QAdd(Quaternion &q1, Quaternion &q2) {
-        Quaternion resultQuat;
-        resultQuat.i = q1.i + q2.w;
-        resultQuat.j = q1.j + q2.j;
-        resultQuat.k = q1.k + q2.k;
-        resultQuat.w = q1.w + q2.w;
-        return resultQuat;
-    }
 }
 
 #endif

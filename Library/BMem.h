@@ -61,4 +61,5 @@ namespace bmem {
     void printMem(ITriangle &t)  { std::cout << "Object: " << &t << '\n'; }
     void printMem(Quaternion &q) { std::cout << "Object: " << &q << '\n'; }
 };
+
 #endif

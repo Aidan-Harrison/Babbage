@@ -14,6 +14,8 @@ namespace bvector {
         }
         ~Vector1() = default;
         ~Vector1();
+        inline float getMag() { return sqrt(x * x); }
+        inline void deleteVec(Vector1 v) { delete &v; }
     };
 
     struct Vector2 {
@@ -25,9 +27,23 @@ namespace bvector {
         }
         ~Vector2() = default;
         ~Vector2();
-        Vector2 addVec(Vector2 &v1, Vector2 &v2);
-        Vector2 subVec(Vector2 &v1, Vector2 &v2);
-        float dotProd(Vector2 &v1, Vector2 &v2);
+        inline float getMag() { return sqrt(x * x + y * y); } // Check 'const'
+        Vector2 addVec(Vector2 &v1, Vector2 &v2) { // Re-do
+            Vector2 vec;
+            vec.x = v1.x + v2.x;
+            vec.y = v1.y + v2.y;
+            return vec;
+        }
+        Vector2 subVec(Vector2 &v1, Vector2 &v2) { // Working
+            Vector2 vec;
+            vec.x = v1.x + (-v2.x);
+            vec.y = v1.y + (-v2.y);
+            return vec;
+        }
+        float dotProd(Vector2 &v1, Vector2 &v2) { // Produces 'scalar'
+            return v1.x * v2.x + v1.y * v2.y; 
+        }
+        inline void deleteVec(Vector2 v) { delete &v; }
     };
 
     struct Vector3 {
@@ -39,9 +55,18 @@ namespace bvector {
         }
         ~Vector3() = default;
         ~Vector3();
-        Vector3 addVec3(Vector3 &v1, Vector3 &v2);
+        inline float getMag() { return sqrt(x * x + y * y + z * z); }
+        Vector3 addVec3(Vector3 &v1, Vector3 &v2) { // Check! | Incorrect
+            Vector3 vec;
+            return ((v1.x + v2.x) + (v1.y - v2.y)  + (v1.z - v2.z));
+            vec.x = v1.x + v2.x;
+            vec.y = v2.y - v2.y;
+            vec.z = v1.z = v2.z;
+            return vec;
+        }
         Vector3 dotProd3(Vector3 &v1, Vector3 &v2);
-        void crossProd(Vector3 &v1, Vector3 &v2); // Change to vector return?
+        void crossProd(Vector3 &v1, Vector3 &v2); // Change return?
+        inline void deleteVec(Vector3 v) { delete &v; }
     };
 
     struct Vector4 { // Includes origin
@@ -53,6 +78,8 @@ namespace bvector {
         }
         ~Vector4() = default;
         ~Vector4();
+        inline float getMag() { return sqrt(x * x + y * y + z * z + w * w); }
+        inline void deleteVec(Vector4 v) { delete &v; }
     };
     
     /* Operator Overloads */
@@ -85,47 +112,6 @@ namespace bvector {
         vec.vec4[3] = w;
         return vec;
     }
-
-    // Vector 2 Math | Incorporate operator overloads
-    float vecMag(Vector2 &vec) { // Magnitude
-        float mag = sqrt(vec.x * vec.x + vec.y * vec.y); // Do custom sqrt function
-        return mag;
-    }
-    Vector2 Vector2::addVec(Vector2 &v1, Vector2 &v2) { // Re-do
-        Vector2 vec;
-        vec.x = v1.x + v2.x;
-        vec.y = v1.y + v2.y;
-        return vec;
-    }
-    Vector2 Vector2::subVec(Vector2 &v1, Vector2 &v2) { // Working
-        Vector2 vec;
-        vec.x = v1.x + (-v2.x);
-        vec.y = v1.y + (-v2.y);
-        return vec;
-    }
-    float Vector2::dotProd(Vector2 &v1, Vector2 &v2) { // Produces 'scalar'
-        return v1.x * v2.x + v1.y * v2.y; 
-    }
-
-    // Vector3 Math
-    Vector3 Vector3::addVec3(Vector3 &v1, Vector3 &v2) { // Check! | Incorrect
-        Vector3 vec;
-        return ((v1.x + v2.x) + (v1.y - v2.y)  + (v1.z - v2.z));
-        vec.x = v1.x + v2.x;
-        vec.y = v2.y - v2.y;
-        vec.z = v1.z = v2.z;
-        return vec;
-    }
-
-    Vector3 Vector3::dotProd3(Vector3 &v1, Vector3 &v2) {
-        return;
-    }
-
-    void Vector3::crossProd(Vector3 &v1, Vector3 &v2) {
-        return;
-    }
-
-    // Vector4 Math
 }
 
 #endif

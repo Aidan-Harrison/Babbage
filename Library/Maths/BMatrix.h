@@ -14,8 +14,7 @@ namespace bmatrix {
         {
         }
         ~Matrix() = default;
-        // Standard
-        std::vector<std::vector<int>> s_Matrix{{}};
+        std::vector<std::vector<int>> s_Matrix{{}}; // Template?
         // Creation | Used within vector library
             // 1-Dimensional Matrix
         template<typename T>
@@ -38,7 +37,7 @@ namespace bmatrix {
 
         template<typename T>
         std::vector<std::vector<std::vector<T>>> mat3(T input[]) {
-            std::vector<std::vector<std::vector<int>>> new3DMatrix{{{}}};
+            std::vector<std::vector<std::vector<T>>> new3DMatrix{{{}}};
             for(int i = 0; i < new3DMatrix.size(); i++)
                 for(int j = 0; j < new3Dmatrix.size(); j++)
                     for(int k = 0; k < new3DMatrix.size(); k++)
@@ -48,60 +47,43 @@ namespace bmatrix {
 
         Matrix mat4(int input);
             // Math | Object only (for now)
-        Matrix addmat(Matrix &m1, Matrix &m2);
-        Matrix submat(Matrix &m1, Matrix &m2);
-        Matrix multmat(Matrix &m1, Matrix &m2);
         Matrix invmat(Matrix &m1); // Inverse
-            // Extra
-        void pmat(Matrix &matrix) const;
-        template<typename T>
-        void pmat(std::vector<std::vector<T>> matrix); // Check whether to mark as 'const'
-        inline void delMat(Matrix &matrix);
-    };
+        // 4-Dimensional Matrix (Origin)
 
-    // 4-Dimensional Matrix (Origin)
-
-    Matrix Matrix::addmat(Matrix &m1, Matrix &m2) {
-        if(m1.s_Matrix.size() != m2.s_Matrix.size()) {
-            std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.s_Matrix.size() << " AND " << m2.s_Matrix.size();
-            std::cerr << "Must be equal\n";
-            return m1;
-        }
-        else {
-            Matrix resultMatrix;
-            int sum = 0;
-            for(int i = 0; i < m1.s_Matrix.size(); i++) {
-                for(int j = 0; j < m1.s_Matrix.size(); j++) { // Incorrect but close!
-                    std::vector<int> newColumn;
-                    resultMatrix.s_Matrix.push_back(newColumn);
-                    sum = m1.s_Matrix[i][j] + m2.s_Matrix[i][j];
-                    resultMatrix.s_Matrix.at(i).push_back(sum);
+        std::vector<std::vector<int>> addmat(Matrix &m1, Matrix &m2) { // Do object return overload as well
+            if(m1.s_Matrix.size() != m2.s_Matrix.size()) {
+                std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.s_Matrix.size() << " AND " << m2.s_Matrix.size() << " | Must be equal";
+                return m1;
+            }
+            else {
+                std::vector<std::vector<int>> resultMatrix;
+                int sum = 0;
+                for(int i = 0; i < m1.s_Matrix.size(); i++) {
+                    for(int j = 0; j < m1.s_Matrix.size(); j++) { // Incorrect but close!
+                        std::vector<int> newColumn;
+                        resultMatrix.push_back(newColumn);
+                        sum = resultMatrix[i][j] + resultMatrix[i][j];
+                        resultMatrix.at(i).push_back(sum);
+                    }
                 }
             }
+            return resultMatrix;
         }
-        return m1; // Sort proper return
-    }
 
-    Matrix Matrix::submat(Matrix &m1, Matrix &m2) {                
-    }
-
-    Matrix Matrix::multmat(Matrix &m1, Matrix &m2) {
-    }
-
-    void Matrix::pmat(Matrix &matrix) const {
-        for(int i = 0; i < matrix.s_Matrix.size(); i++) {
-            for(int j = 0; j < matrix.s_Matrix.size(); j++)
-                std::cout << matrix.s_Matrix[i][j] << ", ";
-            std::cout << '\n';
+        Matrix submat(Matrix &m1, Matrix &m2) {                
         }
-    }
 
-    void Matrix::pmat(std::vector<std::vector> matrix) { // Vector overload
-        for(int i = 0; i < matrix.size(); i++)
-            for(int j = 0; j < matrix.size(); j++)
-                std::cout << matrix[i][j] << ', ';
-            std::cout << '\n';
-    }
-    inline void Matrix::delMat(Matrix &matrix) { delete matrix; } // Check!
+        Matrix multmat(Matrix &m1, Matrix &m2) {
+        }
+
+        void pmat(Matrix &matrix) const {
+            for(int i = 0; i < matrix.s_Matrix.size(); i++) {
+                for(int j = 0; j < matrix.s_Matrix.size(); j++)
+                    std::cout << matrix.s_Matrix[i][j] << ", ";
+                std::cout << '\n';
+            }
+        }
+        inline void delMat(Matrix matrix) { delete &matrix; } // Check!
+    };
 }
 #endif
