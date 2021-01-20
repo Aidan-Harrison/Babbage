@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <cassert>
 #include "BVector.h"
 namespace bmatrix {
     class Matrix {
@@ -12,15 +13,16 @@ namespace bmatrix {
         Matrix(short rows = 1, short columns = 1)
             :m_Rows(rows), m_Columns(columns)
         {
+            assert(m_Rows != 0 && m_Columns != 0);
         }
         ~Matrix() = default;
         std::vector<std::vector<int>> s_Matrix{{}}; // Template?
-        // Creation | Used within vector library
+        // Creation | Vector Based ---------------------------------------------------------------------------------------------------------------
             // 1-Dimensional Matrix
         template<typename T>
-        std::vector<T> mat1(T input[], int size)  { // Check! | Technically columns
+        std::vector<T> mat1(T input[], int size) {
             std::vector<T> newMatrix{};
-            for(int i = 0; i < size; i++)
+            for(unsigned int i = 0; i < size; i++)
                 newMatrix.push_back(input[i]);
             return newMatrix;
         }
@@ -28,62 +30,69 @@ namespace bmatrix {
         template<typename T>
         std::vector<std::vector<T>> mat2(int rows, int columns, T input) {
             std::vector<std::vector<T>> new2DMatrix{{}};
-            for(int i = 0; i < rows; i++) {
-                for(int j = 0; j < columns; j++)
+            for(unsigned int i = 0; i < rows; i++) {
+                for(unsigned int j = 0; j < columns; j++)
                     new2DMatrix[i][j].push_back(input);
             }
             return new2DMatrix;
         }
-
+            // 3-Dimensional Matrix | 
         template<typename T>
-        std::vector<std::vector<std::vector<T>>> mat3(T input[]) {
+        std::vector<std::vector<std::vector<T>>> mat3(int rows, int columns, int depth, T input[]) {
             std::vector<std::vector<std::vector<T>>> new3DMatrix{{{}}};
-            for(int i = 0; i < new3DMatrix.size(); i++)
-                for(int j = 0; j < new3Dmatrix.size(); j++)
-                    for(int k = 0; k < new3DMatrix.size(); k++)
+            for(unsigned int i = 0; i < rows; i++)
+                for(unsigned int j = 0; j < columns; j++)
+                    for(int k = 0; k < depth; k++)
                         new3DMatrix[i][j][k].push_back(input[i]);
             return new3DMatrix;
         }
+            // Add 4D matrix
+        // -------------------------------------------------------------------------------------------------------------------------------------
 
-        Matrix mat4(int input);
-            // Math | Object only (for now)
-        Matrix invmat(Matrix &m1); // Inverse
-        // 4-Dimensional Matrix (Origin)
-
-        std::vector<std::vector<int>> addmat(Matrix &m1, Matrix &m2) { // Do object return overload as well
-            if(m1.s_Matrix.size() != m2.s_Matrix.size()) {
-                std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.s_Matrix.size() << " AND " << m2.s_Matrix.size() << " | Must be equal";
-                return m1;
+            // Math | Vector Based
+        template<typename T>
+        std::vector<std::vector<T>> addmat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2) { // Fix
+            std::vector<std::vector<int>> resultMatrix = {{}};
+            if(m1.size() != m2.size()) {
+                std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.size() << " AND " << m2.size() << " | Must be equal";
+                exit(1);
             }
             else {
-                std::vector<std::vector<int>> resultMatrix;
                 int sum = 0;
-                for(int i = 0; i < m1.s_Matrix.size(); i++) {
-                    for(int j = 0; j < m1.s_Matrix.size(); j++) { // Incorrect but close!
-                        std::vector<int> newColumn;
-                        resultMatrix.push_back(newColumn);
-                        sum = resultMatrix[i][j] + resultMatrix[i][j];
-                        resultMatrix.at(i).push_back(sum);
+                for(unsigned int i = 0; i < m1.size(); i++) {
+                    for(unsigned int j = 0; j < m1.size(); j++) {
+                        sum = m1[i][j] + m2[i][j];
                     }
                 }
             }
-            return resultMatrix;
         }
+        template<typename T>
+        std::vector<std::vector<T>> submat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2);
+        template<typename T>
+        std::vector<std::vector<T>> multmat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2);
 
-        Matrix submat(Matrix &m1, Matrix &m2) {                
-        }
+            // Math | Object based
+        Matrix addmat(Matrix &m1, Matrix &m2);
+        Matrix submat(Matrix &m1, Matrix &m2);
+        Matrix multmat(Matrix &m1, Matrix &m2);
+        Matrix invmat(Matrix &m1); // Inverse
 
-        Matrix multmat(Matrix &m1, Matrix &m2) {
-        }
-
+            // Extra
         void pmat(Matrix &matrix) const {
-            for(int i = 0; i < matrix.s_Matrix.size(); i++) {
-                for(int j = 0; j < matrix.s_Matrix.size(); j++)
+            for(unsigned int i = 0; i < matrix.s_Matrix.size(); i++) {
+                for(unsigned int j = 0; j < matrix.s_Matrix.size(); j++)
                     std::cout << matrix.s_Matrix[i][j] << ", ";
                 std::cout << '\n';
             }
         }
-        inline void delMat(Matrix matrix) { delete &matrix; } // Check!
+        template<typename T>
+        void pmat(std::vector<std::vector<T>> &m) const { // Check need for const!
+            for(unsigned int i = 0; i < m.size(); i++)
+                for(unsigned int j = 0; j < m.size(); j++)
+                    std::cout << m[i][j] << ", ";
+                std::cout << '\n';
+        }
+        inline void delMat(Matrix m) { delete &m; } // Check!
     };
 }
 #endif

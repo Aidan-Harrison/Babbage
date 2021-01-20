@@ -5,11 +5,4 @@
 #include <thread>
 #include <chrono>
 
-// Heavy overriding of headers necessary
-namespace bthread {
-    std::thread bThread() {
-        return std::thread();
-    }
-}
-
 #endif

@@ -2,7 +2,7 @@
 #define BVector_h
 
 #include <algorithm>
-#include <BMatrix.h>
+#include <BMatrix.h> // Check!
 
 namespace bvector {
     struct Vector1 {
@@ -13,7 +13,6 @@ namespace bvector {
         {
         }
         ~Vector1() = default;
-        ~Vector1();
         inline float getMag() { return sqrt(x * x); }
         inline void deleteVec(Vector1 v) { delete &v; }
     };
@@ -26,23 +25,20 @@ namespace bvector {
         {
         }
         ~Vector2() = default;
-        ~Vector2();
-        inline float getMag() { return sqrt(x * x + y * y); } // Check 'const'
+        inline float getMag() { return sqrt(x * x + y * y); }
         Vector2 addVec(Vector2 &v1, Vector2 &v2) { // Re-do
             Vector2 vec;
             vec.x = v1.x + v2.x;
             vec.y = v1.y + v2.y;
             return vec;
         }
-        Vector2 subVec(Vector2 &v1, Vector2 &v2) { // Working
+        Vector2 subVec(Vector2 &v1, Vector2 &v2) {
             Vector2 vec;
             vec.x = v1.x + (-v2.x);
             vec.y = v1.y + (-v2.y);
             return vec;
         }
-        float dotProd(Vector2 &v1, Vector2 &v2) { // Produces 'scalar'
-            return v1.x * v2.x + v1.y * v2.y; 
-        }
+        float dotProd(Vector2 &v1, Vector2 &v2) { return v1.x * v2.x + v1.y * v2.y; }
         inline void deleteVec(Vector2 v) { delete &v; }
     };
 
@@ -54,7 +50,6 @@ namespace bvector {
         {
         }
         ~Vector3() = default;
-        ~Vector3();
         inline float getMag() { return sqrt(x * x + y * y + z * z); }
         Vector3 addVec3(Vector3 &v1, Vector3 &v2) { // Check! | Incorrect
             Vector3 vec;
@@ -69,7 +64,7 @@ namespace bvector {
         inline void deleteVec(Vector3 v) { delete &v; }
     };
 
-    struct Vector4 { // Includes origin
+    struct Vector4 {
         float x, y, z, w;
         float vec4[4]{x,y,z,w};
         Vector4(short cX = 0, short cY = 0, short cZ = 0, short cW = 0) 
@@ -77,7 +72,6 @@ namespace bvector {
         {
         }
         ~Vector4() = default;
-        ~Vector4();
         inline float getMag() { return sqrt(x * x + y * y + z * z + w * w); }
         inline void deleteVec(Vector4 v) { delete &v; }
     };

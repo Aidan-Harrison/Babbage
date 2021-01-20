@@ -51,6 +51,8 @@
         "string": "cpp",
         "algorithm": "cpp",
         "deque": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp"
     }
 }

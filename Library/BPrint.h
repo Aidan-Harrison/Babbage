@@ -7,12 +7,23 @@
 // Because of templating may not want to use C style printing
 namespace bpr{
     template<typename T>
-        inline void print(T a)       { printf("%d", a); }
-    inline void print(const char* message) { printf("%c", message); } // C string overload | Check neccesity
+    inline void print(T a) { 
+        printf("%d", a); 
+    }
+    inline void print(const char* message) { printf("%c", message); }
     template<typename T>
-        inline void prASCII(T a)     { std::cout << static_cast<int>(a); }
-    inline void nl()                 { putchar('\n'); }
-    inline void line(int amount)     { std::cout << '-' + std::string(amount, '-') << '\n'; }
+    inline void prASCII(T a) { 
+        std::cout << static_cast<int>(a); 
+    }
+    inline void nl() { putchar('\n'); }
+    inline void line(int amount) { 
+        std::cout << '-' + std::string(amount, '-') << '\n'; 
+    }
+    inline const char* convToCStr(std::string message) { return message.c_str(); }
+    std::string convToCPlusStr(const char* message) { 
+        std::string newMessage = message;
+        return newMessage;
+    }
 
     void box(int height, int width) {
         for(int i = 0; i < height; i++)
@@ -41,7 +52,7 @@ namespace bpr{
     }
 
     template<typename T>
-    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) { // Overload with C-2D array as well
+    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) {
         int m = arr.size();
         int n = arr[0].size();
         for(int i = 0; i < m; i++)

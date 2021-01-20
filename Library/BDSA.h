@@ -32,7 +32,7 @@ namespace bDataStruct {
             {
             }
         };
-        inline Node getNode() const { return Node; } // Check!
+        inline Node getNode() const { return Node; }
         SLinkedList() = default;
         ~SLinkedList() = default;
         Node addNode(T data, Node *nextNode) {
@@ -50,13 +50,14 @@ namespace bDataStruct {
             T data;
             dNode* prev;
             dNode* next;
-            dNode(short x) // Defaults to number 
+            dNode(short x)
                 :data(x) 
             {
             }
         };
         DLinkedList() = default;
         ~DLinkedList() = default;
+        inline dNode getNode() const { return dNode; }
         void addNode(dNode *prevNode, T data, dNode *nextNode) {
             dNode node;
             node->data = data;
@@ -67,50 +68,37 @@ namespace bDataStruct {
     };
 
     template<typename T>
-    struct bStack { // Try to avoid using vector | Check!
-        // C array stack
-        short m_StackSize;
-        T m_Stack[m_StackSize];
-        // Vector stack
+    struct bStack { // Do overloads
         std::vector<T> m_VStack{};
         bStack() = default;
         ~bStack() = default;
-        bStack(short stackData = 1)
-            :m_Stack[m_stackSize](stackData) 
-        {
-        }
             // Functions
-        T* stackCreate(int stackSize, T value) {
-            T stack[stackSize];
-            return stack;
-        }
-        void PopStack(T stack[]) { // Delete last value
-        }
-        void PushStack(T stack[]) { // Add to stack
+        bStack PushStack(bStack &s, T input) {
+            s.m_VStack.push_back(input);
+            return s;
         }
         void printStack(T stack[], int size) {
             for(int i = 0; i < size; i++)
                 std::cout << stack[i] << ", ";
         }
-        void printStack(T stack[]) { // Non-size argument overload
-            for(int i = 0; i < size; i++)
-                std::cout << stack[i] << ", ";
+        void printStack(bStack &s) {
+            for(unsigned int i = 0; i < s.m_VStack.size(); i++)
+                std::cout << s.m_VStack[i] << ", ";
         }
             // Deletion
-        void bStack::deleteStack(T stack[]) {
+        void deleteStack(T stack[]) {
             for(int i = 0; i < stack.size(); i++) {
                 stack.erase(stack.begin() + i);
                 i--;
             }
         }
-
-        void bStack::deleteStack(std::vector<T> stack) {
+        void deleteStack(std::vector<T> stack) {
             for(int i = 0; i < stack.size(); i++) {
                 stack.erase(stack.begin() + i);
                 i--;
             }
         }
-        inline void bStack::deleteStack(bStack *stack) { delete stack; }
+        inline void deleteStack(bStack *stack) { delete stack; }
     };
 
         // Graph & Trees
@@ -140,9 +128,10 @@ namespace bDataStruct {
         treeNode* right;
         treeNode() = default;
         treeNode(int value)
-            :key_Value(value) 
+            :key_Value(value)
         {    
         }
+        ~treeNode() = default;
     };
 
     class bTree {
@@ -209,8 +198,6 @@ namespace bDataStruct {
     };
 }
 
-// Algorithms
-// Add templating | Check!
 namespace bAlgorithms {
     template<typename T>
     bool findDup(std::vector<T>& arr);

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector> 
 #include <cmath> // Override most functions
+#include <cassert>
 
 #include "BMatrix.h"
 #include "BVector.h"
@@ -57,7 +58,7 @@ namespace bmath {
     // Conversions -------------------------------------------------
     inline int toASC(char value) { return static_cast<int>(value); }
     inline int toASC(const char* string, short size) {
-        for(int i = 0; i < size; i++)
+        for(unsigned int i = 0; i < size; i++)
             return static_cast<int>(string[i]);
     }
         /* Angles/Rotation */
@@ -144,8 +145,7 @@ namespace bmath {
     // Other   
     int random(int range) {
         if(sizeof(range) != sizeof(int) || sizeof(range) != sizeof(float) || sizeof(range) != sizeof(double)) {
-            std::cerr << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(range).name() << '-';
-            std::cerr << "Must be int, float or double\n";
+            std::cerr << "Babbage Error:- INVALID DATATYPE OF: " << typeid(range).name() << " - Must be int, float or double\n";
             return -1;
         }
         return rand() % range; // Handle other datatypes
@@ -168,6 +168,7 @@ namespace bmath {
         Shape2D(short width = 1, short height = 1) {
             m_Width = width;
             m_Height = height; 
+            assert(m_Width != 0 && m_Height != 0);
         }
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
@@ -186,6 +187,7 @@ namespace bmath {
             m_Width = width;
             m_Height = height;
             m_Depth = depth;
+            assert(m_Width != 0 && m_Height != 0 && m_Depth != 0);
         }
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
@@ -209,6 +211,7 @@ namespace bmath {
         Circle(short radius = 1)
             :m_Radius(radius)
         {
+            assert(m_Radius != 0);
         }
         inline double GetRad() const { return m_Radius; }
         ~Circle() = default;
@@ -227,6 +230,7 @@ namespace bmath {
         Triangle(double a, double b, double c)
             :m_a(a), m_b(b), m_c(c)
         {
+            assert(m_a != 0 && m_b != 0 && m_c != 0);
         }
         inline double GetA() const { return m_a; }
         inline double GetB() const { return m_b; }
@@ -239,6 +243,7 @@ namespace bmath {
         ITriangle(short height = 1, short base = 1)
             :m_Height(height), m_Base(base)
         {
+            assert(m_Height != 0 && m_Base != 0);
         }
         ITriangle() = default;
         ~ITriangle() = default;
@@ -252,6 +257,7 @@ namespace bmath {
         ETriangle(short size = 1) 
             :m_Size(size)
         {
+            assert(m_Size != 0);
         }
         inline double GetSize() const { return m_Size; }
         ~ETriangle() = default;
@@ -263,6 +269,7 @@ namespace bmath {
         RTriangle(double oppSize, double adjSize, double hypSize)
             :m_Opposite(oppSize), m_Adjacent(adjSize), m_Hypotenuse(hypSize)
         {
+            assert(m_Opposite != 0 && m_Adjacent != 0 && m_Hypotenuse != 0);
         }
         inline double GetOpp() const { return m_Opposite; }
         inline double GetAdj() const { return m_Adjacent; }
@@ -278,9 +285,9 @@ namespace bmath {
         if(t.m_a + t.m_b > t.m_c) return t.m_a + t.m_b + t.m_c;
         else std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
     }
-    double TPer(ITriangle &t1) { // Overload for Isosceles
-        if(t1.m_Height > t1.m_Base) std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
-        else return t1.m_Height * 2 + t1.m_Base;
+    double TPer(ITriangle &t) { // Overload for Isosceles
+        if(t.m_Height > t.m_Base) std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
+        else return t.m_Height * 2 + t.m_Base;
     }
     double TPer(ETriangle &t1)               { return(t1.m_Size * 3); }
     double TArea(double height, double base) { return(height * base / 2); }
@@ -288,7 +295,7 @@ namespace bmath {
     double TArea(ETriangle &t1)              { return(sqrt(3) / 4 * t1.m_Size * t1.m_Size); }
 
     // Pythagoras
-    double Pythag(double a, double b, std::string side) { // Right-Angle default | Check!
+    double Pythag(double a, double b, std::string side) {
         if(side == "short") {
             double c = a * a + b * b;
             return sqrt(c);
@@ -299,7 +306,7 @@ namespace bmath {
         }
         else {
             std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 'short' or 'long'\n";
-            return 0.0;
+            exit(1);
         }
         return 0.0;
     }
@@ -313,18 +320,22 @@ namespace bmath {
             double c = t.m_Opposite * t.m_Opposite - t.m_Adjacent * t.m_Adjacent;
             return sqrt(c);
         }
-        else { // Error checking
+        else {
             std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 'short' or 'long'\n";
-            return 0.0;
+            exit(1);
         }
         return 0.0;
     }
 
-    // Trigonometry
+    // Trigonometry | Fix first three
         // Standard
     inline double sin(double opposite, double hypotenuse) { return opposite / hypotenuse; }
     inline double cos(double hypotenuse, double adjacent) { return adjacent / hypotenuse; }
     inline double tan(double opposite, double adjacent)   { return opposite / adjacent; }
+    inline double csc(double hypotenuse, double opposite) { return hypotenuse / opposite; } // Cosecant
+    inline double sec(double hypotenuse, double adjacent) { return hypotenuse / adjacent; } // Secant
+    inline double cot(double adjacent, double opposite)   { return adjacent / opposite; }   // Cotangent
+
         // RTriangle object overloads
     inline double sin(RTriangle &t) { return t.m_Opposite / t.m_Hypotenuse; }
     inline double cos(RTriangle &t) { return t.m_Adjacent / t.m_Hypotenuse; }
