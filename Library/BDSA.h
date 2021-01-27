@@ -41,6 +41,9 @@ namespace bDataStruct {
             node->next = nextNode; // Check! Possibly incorrect
         }
         inline void deleteNode(Node *node) { delete node; } // Need to take into account previous node and change next
+        void deleteList() {
+
+        }
     };
 
         // Doubly-Linked List
@@ -65,10 +68,18 @@ namespace bDataStruct {
             node->next = nextNode;
         }
         inline void deleteNode(dNode *node) { delete node; }
+        void deleteDList() { // Check!
+            if(dNode != nullptr) { // Check if node exists
+                delete dNode->next;
+                delete dNode->data;
+                delete dNode;
+            }
+            deleteDList();
+        }
     };
 
     template<typename T>
-    struct bStack { // Do overloads
+    struct bStack {
         std::vector<T> m_VStack{};
         bStack() = default;
         ~bStack() = default;
@@ -200,21 +211,8 @@ namespace bDataStruct {
 
 namespace bAlgorithms {
     template<typename T>
-    bool findDup(std::vector<T>& arr);
-    template<>
-    bool findDup<int>(std::vector<int>& arr) { // Check!
-        std::unordered_map<int,int> uMap;
-        for(auto i : arr) {
-            if(uMap.find(uMap[i]) == uMap.end())
-                uMap[arr[i]]++;
-            else
-                return true;
-            return false;
-        }
-    }
-    template<>
-    bool findDup<float>(std::vector<float>& arr) { // Check!
-        std::unordered_map<float,int> uMap;
+    bool findDup(std::vector<T> &arr) {
+        std::unordered_map<int,T> uMap;
         for(auto i : arr) {
             if(uMap.find(uMap[i]) == uMap.end())
                 uMap[arr[i]]++;
@@ -224,7 +222,7 @@ namespace bAlgorithms {
         }
     }
 
-    bool palin(std::string str) {
+    bool palin(std::string &str) {
         int p1 = 0, p2 = str.length()-1;
         while(p1 < p2) {
             if(!isalnum(str[p1])) p1++; // Ignore symbols
@@ -238,7 +236,7 @@ namespace bAlgorithms {
         return true;
     }
     
-    bool anag(std::string s, std::string t) { // Also do number version
+    bool anag(std::string &s, std::string &t) { // Also do number version
         int n = s.length(), m = t.length();
         if(n != m) {
             std::cerr << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|";
@@ -253,8 +251,8 @@ namespace bAlgorithms {
         return false;
     }
     
-    // Template?
-    std::vector<int> Reverse(std::vector<int>& arr) {
+    template<typename T>
+    std::vector<T> Reverse(std::vector<T>& arr) {
         short start = 0, end = arr.size()-1;
         while(start < end) {
             int temp = arr[start];
@@ -264,8 +262,8 @@ namespace bAlgorithms {
         return arr;
     }
 
-        // Overload for custom start and end
-    std::vector<int> Reverse(std::vector<int>& arr, short start, short end) {
+     template<typename T>   // Overload for custom start and end
+    std::vector<T> Reverse(std::vector<T> &arr, short start, short end) {
         while(start < end) {
             int temp = arr[start];
             arr[start++] = arr[end];
@@ -274,7 +272,7 @@ namespace bAlgorithms {
         return arr;
     }
 
-    std::string Reverse(std::string str) {
+    std::string Reverse(std::string str) { // Try 'sizeof()'
         short start = 0, end = str.length()-1;
         while(start < end) {
             int temp = str[start];
@@ -330,13 +328,14 @@ namespace bAlgorithms {
         *b = temp;
     }
     // Bubble Sort
-    std::vector<int> bSortV(std::vector<int>& arr) {
+    template<typename T>
+    std::vector<T> bSortV(std::vector<T> &arr) {
         if(arr.size() <= 1) {
             std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
             std::cerr << "Must be greater than '1'\n";
             return arr;
         }
-        for(int i = 0; i < arr.size(); i++) // Still not entirely sure about this
+        for(int i = 0; i < arr.size(); i++)
             for(int j = 0; j < i - 1; j++)
                 if(arr[j] == arr[j + 1])
                     Swap(&arr[j], &arr[j + 1]);
@@ -356,8 +355,9 @@ namespace bAlgorithms {
         return arr;
     }
         // Quick Sort
-    int Partition(std::vector<int>& nums, int low, int high) {
-        if(nums.size() <= 1) { // Too small
+    template<typename T>
+    int Partition(std::vector<T>& nums, int low, int high) {
+        if(nums.size() <= 1) {
             std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|";
             std::cerr << "Must be greater than '1'\n";
             return -1;
@@ -371,7 +371,8 @@ namespace bAlgorithms {
         return (i + 1); // Return pivot
     }
 
-    std::vector<int> qSortV(std::vector<int>& nums, int leftIndex, int rightIndex) {
+    template<typename T>
+    std::vector<T> qSortV(std::vector<T>& nums, int leftIndex, int rightIndex) {
         if(leftIndex < rightIndex) {
             int pivot = Partition(nums, leftIndex, rightIndex);
             qSortV(nums, leftIndex, pivot - 1);

@@ -19,11 +19,6 @@ namespace bpr{
     inline void line(int amount) { 
         std::cout << '-' + std::string(amount, '-') << '\n'; 
     }
-    inline const char* convToCStr(std::string message) { return message.c_str(); }
-    std::string convToCPlusStr(const char* message) { 
-        std::string newMessage = message;
-        return newMessage;
-    }
 
     void box(int height, int width) {
         for(int i = 0; i < height; i++)

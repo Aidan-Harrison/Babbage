@@ -160,28 +160,47 @@ namespace bmath {
         }
         inline int GetX() const { return m_X; }
         inline int GetY() const { return m_Y; }
+        inline int GetPos() const { return m_X && m_Y; } // Check!
     };
 
     struct Shape2D { 
-        static double m_Width, m_Height;
+        double m_Width, m_Height;
         Shape2D() = default;
         Shape2D(short width = 1, short height = 1) {
             m_Width = width;
             m_Height = height; 
             assert(m_Width != 0 && m_Height != 0);
         }
+        // Move Constructor | Fix
+        Shape2D(Shape2D &&shape) noexcept
+            :m_Width(shape.m_Width), m_Height(shape.m_Height)
+        {
+            m_Width = 0, m_Height = 0; // Check!
+        }
+        // Move assignment | Fix
+        Shape2D& operator=(Shape2D &&shape) noexcept {
+                // Self detection
+            if(&shape == this)
+                return *this;
+                // Free data
+            delete &m_Width;            
+            delete &m_Height;            
+                // Move values
+            m_Width = shape.m_Width;
+            m_Height = shape.m_Height;
+            return *this;
+        }
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
-        ~Shape2D() = default;
     };
 
-    // Overloads | CHECK ALL OF THESE! | Although they may be correct syntactically the formula's are wrong? | Check middle operator
+    // Overloads | CHECK ALL OF THESE! | both syntatics and formulas
     Shape2D operator+(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width); }
     Shape2D operator-(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width); }
     Shape2D operator*(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width); }
 
     struct Shape3D {
-        static double m_Width, m_Height, m_Depth;
+        double m_Width, m_Height, m_Depth;
         Shape3D() = default;
         Shape3D(short width = 1, short height = 1, short depth = 1) {
             m_Width = width;
@@ -192,11 +211,9 @@ namespace bmath {
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
         inline double GetDepth() const { return m_Depth; }
-        ~Shape3D() = default;
     };
 
     Shape3D operator+(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth); }
-    Shape3D operator-(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth); } // Change
     Shape3D operator*(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width * s1.m_Depth * s2.m_Depth); }
 
     // General
@@ -206,40 +223,64 @@ namespace bmath {
 
     // Circle Math
     struct Circle {
-        double m_Radius;
+        double m_Radius, m_Circumfrence;
         Circle() = default;
         Circle(short radius = 1)
-            :m_Radius(radius)
+            :m_Radius(radius), m_Circumfrence(2 * PI * radius) // Check!
         {
             assert(m_Radius != 0);
         }
         inline double GetRad() const { return m_Radius; }
         ~Circle() = default;
-            // Standard
-        inline double circum(double radius) { return 2 * PI * radius; }
-        inline double circA(double radius)  { return PI * radius * radius; }
-            // Object based overloads
-        inline double circum(Circle &c)     { return 2 * PI * c.m_Radius; }
-        inline double circA(Circle &c)      { return PI * c.m_Radius * c.m_Radius; }
     };
 
-    // Triangle Math | Add angles
+    template<typename T>
+    double circArea(T radius) { return PI * radius * radius; }
+    double circArea(Circle &c) { return PI * c.m_Radius * c.m_Radius; }
+    template<typename T>
+    double diameter(T radius) { return radius * 2; }
+    double diameter(Circle &c) { return c.m_Radius * 2; }
+    template<typename T>
+    double circumfrence(T radius) { return 2 * PI * radius; }
+    double circumfrence(Circle &c) { return 2 * PI * c.m_Radius; }
+    template<typename T>
+    double radius(T cir) { return cir / 2 * PI; }
+    double radius(Circle &c) { return c.m_Circumfrence / 2 * PI; } // Check!
+
+    // Triangle Math
     struct Triangle { // Standard tri with total freedom
         double m_a, m_b, m_c;
+        float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
+        bool isEquilateral = false, isIsocoles = false, isScalene = false, isRightAngled = false;
         Triangle() = default;
         Triangle(double a, double b, double c)
             :m_a(a), m_b(b), m_c(c)
         {
             assert(m_a != 0 && m_b != 0 && m_c != 0);
+            check(); // Runs initially see to if their is a match
         }
+        bool check() { // Checks what type of triangle it is | Add right angle once angle calcs are in
+            if(m_a == m_b && m_a == m_c) return isEquilateral = true;
+            else if(m_a == m_b || m_a == m_c || m_b == m_c) return isIsocoles = true;
+            else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) return isRightAngled = true;
+            else return isScalene = true;
+        } 
         inline double GetA() const { return m_a; }
         inline double GetB() const { return m_b; }
         inline double GetC() const { return m_c; }
+        inline double getAngleA() const { return m_AngleA;}
+        inline double getAngleB() const { return m_AngleB;}
+        inline double getAngleC() const { return m_AngleC;}
+        float gamma(Triangle &t) { // Calculates angle | Continue | Do standard overload outside this class
+            float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
+            return gamma;
+        }
         ~Triangle() = default;
     };
 
     struct ITriangle { // Isosceles
         double m_Height, m_Base; // Height = equal sides
+        float m_AngleA, m_AngleB, m_AngleC;
         ITriangle(short height = 1, short base = 1)
             :m_Height(height), m_Base(base)
         {
@@ -249,22 +290,27 @@ namespace bmath {
         ~ITriangle() = default;
         inline double GetHeight() const { return m_Height; }
         inline double GetBase() const { return m_Base; }
-        ITriangle ITriArea(double height, double base);
+        inline double getAngleA() const { return m_AngleA; }
+        inline double getAngleB() const { return m_AngleB; }
+        inline double getAngleC() const { return m_AngleC; }
     };
 
     struct ETriangle { // Equilateral | Angle always = 60
         double m_Size; // In area cm
+        const float m_Angle = 60;
         ETriangle(short size = 1) 
             :m_Size(size)
         {
             assert(m_Size != 0);
         }
         inline double GetSize() const { return m_Size; }
+        inline double getAngle() const { return m_Angle; }
         ~ETriangle() = default;
     };
 
     struct RTriangle {// Right-Angle
         double m_Opposite, m_Adjacent, m_Hypotenuse;
+        const float m_RightAngle = 90;
         RTriangle() = default;
         RTriangle(double oppSize, double adjSize, double hypSize)
             :m_Opposite(oppSize), m_Adjacent(adjSize), m_Hypotenuse(hypSize)
@@ -277,6 +323,7 @@ namespace bmath {
         ~RTriangle() = default;
     };
 
+        // Perimeter
     double TPer(double a, double b, double c) {
         if(a + b > c) return a + b + c;
         else std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
@@ -289,10 +336,28 @@ namespace bmath {
         if(t.m_Height > t.m_Base) std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
         else return t.m_Height * 2 + t.m_Base;
     }
-    double TPer(ETriangle &t1)               { return(t1.m_Size * 3); }
+    double TPer(ETriangle &t) { 
+        return(t.m_Size * 3); 
+    }
+        // Semi-Perimeter
+    double semiTPer(double a, double b, double c) {
+        if(a + b > c) return a + b + c / 2;
+        else std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
+    }
+    double semiTPer(Triangle &t) {
+        if(t.m_a + t.m_b > t.m_c) return t.m_a + t.m_b + t.m_c / 2;
+        else std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c\n";
+    }
+    double semiTPer(ITriangle &t) {
+        if(t.m_Height > t.m_Base) std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a\n";
+        else return t.m_Height * 2 + t.m_Base / 2;
+    }
+    double semiTPer(ETriangle &t) { return(t.m_Size * 3 / 2); }
+        // Area
     double TArea(double height, double base) { return(height * base / 2); }
     double TArea(double a)                   { return(sqrt(3) / 4 * a * a); } // Equilateral without object
-    double TArea(ETriangle &t1)              { return(sqrt(3) / 4 * t1.m_Size * t1.m_Size); }
+    double TArea(ETriangle &t)               { return(sqrt(3) / 4 * t.m_Size * t.m_Size); }
+    double TArea(ITriangle &t)               { return t.m_Base * t.m_Height * 2 / 2; } // Check!
 
     // Pythagoras
     double Pythag(double a, double b, std::string side) {
