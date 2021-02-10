@@ -25,11 +25,10 @@ namespace bmath {
         inline T mult(T a, T b) { return a * b; }
     template<typename T>
         inline T div(T a, T b)  { return a / b; }
-
-    double bSqrt(double &num) { // Implement
-        double result = 0.0;
-        return result;
-    }
+    template<typename T>
+        inline T bSqr(T a) { return a * a; }
+    template<typename T>
+        inline T bCub(T a) { return a * a * a; }
 
     // Advanced
     inline int floor(float value)    { return static_cast<int>(value); }
@@ -153,7 +152,7 @@ namespace bmath {
 
     // Graphics and Geometry
     struct Point { // Pixel based
-        static int m_X, m_Y;
+        static short m_X, m_Y;
         Point(short xPos = 0, short yPos = 0) {
             m_X = xPos;
             m_Y = yPos;
@@ -161,14 +160,15 @@ namespace bmath {
         inline int GetX() const { return m_X; }
         inline int GetY() const { return m_Y; }
         inline int GetPos() const { return m_X && m_Y; } // Check!
+        inline void deletePoint(Point p) { delete &p; }
     };
 
     struct Shape2D { 
         double m_Width, m_Height;
         Shape2D() = default;
-        Shape2D(short width = 1, short height = 1) {
-            m_Width = width;
-            m_Height = height; 
+        Shape2D(short width = 1, short height = 1) 
+            :m_Width(width), m_Height(height)
+        {
             assert(m_Width != 0 && m_Height != 0);
         }
         // Move Constructor | Fix
@@ -192,6 +192,7 @@ namespace bmath {
         }
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
+        inline void deleteShape2D(Shape2D s) { delete &s; }
     };
 
     // Overloads | CHECK ALL OF THESE! | both syntatics and formulas
@@ -202,15 +203,31 @@ namespace bmath {
     struct Shape3D {
         double m_Width, m_Height, m_Depth;
         Shape3D() = default;
-        Shape3D(short width = 1, short height = 1, short depth = 1) {
-            m_Width = width;
-            m_Height = height;
-            m_Depth = depth;
+        Shape3D(short width = 1, short height = 1, short depth = 1) 
+            :m_Width(width), m_Height(height), m_Depth(depth)
+        {
             assert(m_Width != 0 && m_Height != 0 && m_Depth != 0);
+        }
+        Shape3D(Shape3D && shape) noexcept 
+            :m_Width(shape.m_Width), m_Height(shape.m_Height), m_Depth(shape.m_Depth)
+        {
+            m_Width = 0, m_Height = 0, m_Depth = 0;
+        }
+        Shape3D& operator=(Shape3D &&shape) noexcept 
+        {
+            if(&shape == this)
+                return *this;
+            delete &m_Width;
+            delete &m_Height;
+            delete &m_Depth;
+            m_Width = shape.m_Width;
+            m_Width = shape.m_Height;
+            return *this;
         }
         inline double GetWidth() const { return m_Width; }
         inline double GetHeight() const { return m_Height; }
         inline double GetDepth() const { return m_Depth; }
+        inline void deleteShape3D(Shape3D s) { delete &s; }
     };
 
     Shape3D operator+(Shape3D &s1, Shape3D &s2) { return Shape3D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width + s1.m_Depth + s2.m_Depth); }
@@ -230,22 +247,38 @@ namespace bmath {
         {
             assert(m_Radius != 0);
         }
+        Circle(Circle &&circ) noexcept 
+            :m_Radius(circ.m_Radius), m_Circumfrence(circ.m_Circumfrence)
+        {
+            m_Radius = 0, m_Circumfrence = 0;
+        }
+        Circle& operator=(Circle &&circ) noexcept 
+        {
+            if(&circ == this)
+                return *this;
+            delete &m_Radius;
+            delete &m_Circumfrence;
+            m_Radius = circ.m_Radius;
+            m_Circumfrence = circ.m_Circumfrence;
+            return *this;
+        }
         inline double GetRad() const { return m_Radius; }
+        inline double GetCirc() const { return m_Circumfrence; }
+        template<typename T>
+        double circArea(T radius) { return PI * radius * radius; }
+        double circArea(Circle &c) { return PI * c.m_Radius * c.m_Radius; }
+        template<typename T>
+        double diameter(T radius) { return radius * 2; }
+        double diameter(Circle &c) { return c.m_Radius * 2; }
+        template<typename T>
+        double circumfrence(T radius) { return 2 * PI * radius; }
+        double circumfrence(Circle &c) { return 2 * PI * c.m_Radius; }
+        template<typename T>
+        double radius(T cir) { return cir / 2 * PI; }
+        double radius(Circle &c) { return c.m_Circumfrence / 2 * PI; } // Check!
+        inline void deleteCircle(Circle c) { delete &c; }
         ~Circle() = default;
     };
-
-    template<typename T>
-    double circArea(T radius) { return PI * radius * radius; }
-    double circArea(Circle &c) { return PI * c.m_Radius * c.m_Radius; }
-    template<typename T>
-    double diameter(T radius) { return radius * 2; }
-    double diameter(Circle &c) { return c.m_Radius * 2; }
-    template<typename T>
-    double circumfrence(T radius) { return 2 * PI * radius; }
-    double circumfrence(Circle &c) { return 2 * PI * c.m_Radius; }
-    template<typename T>
-    double radius(T cir) { return cir / 2 * PI; }
-    double radius(Circle &c) { return c.m_Circumfrence / 2 * PI; } // Check!
 
     // Triangle Math
     struct Triangle { // Standard tri with total freedom
@@ -275,6 +308,7 @@ namespace bmath {
             float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
             return gamma;
         }
+        inline void deleteTri(Triangle t) { delete &t; }
         ~Triangle() = default;
     };
 
@@ -287,12 +321,13 @@ namespace bmath {
             assert(m_Height != 0 && m_Base != 0);
         }
         ITriangle() = default;
-        ~ITriangle() = default;
         inline double GetHeight() const { return m_Height; }
         inline double GetBase() const { return m_Base; }
         inline double getAngleA() const { return m_AngleA; }
         inline double getAngleB() const { return m_AngleB; }
         inline double getAngleC() const { return m_AngleC; }
+        inline void deleteITri(ITriangle t) { delete &t; }
+        ~ITriangle() = default;
     };
 
     struct ETriangle { // Equilateral | Angle always = 60
@@ -305,6 +340,7 @@ namespace bmath {
         }
         inline double GetSize() const { return m_Size; }
         inline double getAngle() const { return m_Angle; }
+        inline void deleteETri(ETriangle t) { delete &t; }
         ~ETriangle() = default;
     };
 
@@ -320,6 +356,7 @@ namespace bmath {
         inline double GetOpp() const { return m_Opposite; }
         inline double GetAdj() const { return m_Adjacent; }
         inline double GetHyp() const { return m_Hypotenuse; }
+        inline void deleteRTri(RTriangle t) { delete &t; }
         ~RTriangle() = default;
     };
 
@@ -358,7 +395,6 @@ namespace bmath {
     double TArea(double a)                   { return(sqrt(3) / 4 * a * a); } // Equilateral without object
     double TArea(ETriangle &t)               { return(sqrt(3) / 4 * t.m_Size * t.m_Size); }
     double TArea(ITriangle &t)               { return t.m_Base * t.m_Height * 2 / 2; } // Check!
-
     // Pythagoras
     double Pythag(double a, double b, std::string side) {
         if(side == "short") {
@@ -414,14 +450,34 @@ namespace bmath {
             :i(a), j(b), k(c), w(d)
         {
         }
-        ~Quaternion() = default;
+        // Move constructor
+        Quaternion(Quaternion &&quat) noexcept
+            :i(quat.i), j(quat.j), k(quat.k), w(quat.w)
+        {    
+        } 
+        // Move assignment
+        Quaternion& operator=(Quaternion &&quat) noexcept {
+                // Self detection
+            if(&quat == this)
+                return *this;
+                // Free data
+            delete &i;            
+            delete &j;            
+            delete &k;            
+            delete &w;            
+                // Move values
+            i = quat.i;
+            j = quat.j;
+            k = quat.k;
+            w = quat.w;
+            return *this;
+        }
         // Operator Overloads
         // Math
         float QMag(Quaternion &q1) {
             float mag = sqrt(q1.w * q1.w + q1.i * q1.i + q1.j * q1.j + q1.k * q1.k);
             return mag;
         }
-
         float QNorm(Quaternion &q1) {
             q1.magnitude = QMag(q1);
             q1.w /= q1.magnitude;
@@ -430,7 +486,6 @@ namespace bmath {
             q1.k /= q1.magnitude;
             return q1.magnitude;
         }
-
         Quaternion QMult(Quaternion &q1, Quaternion &q2) {
             Quaternion resultQuat;
             resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
@@ -439,7 +494,6 @@ namespace bmath {
             resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
             return resultQuat;
         }
-
         Quaternion QAdd(Quaternion &q1, Quaternion &q2) {
             Quaternion resultQuat;
             resultQuat.i = q1.i + q2.w;
@@ -448,6 +502,8 @@ namespace bmath {
             resultQuat.w = q1.w + q2.w;
             return resultQuat;
         }
+        inline void deleteQuat(Quaternion q) { delete &q; }
+        ~Quaternion() = default;
     };
 }
 

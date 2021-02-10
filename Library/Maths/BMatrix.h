@@ -6,20 +6,16 @@
 #include <cassert>
 #include "BVector.h"
 namespace bmatrix {
-    class Matrix {
-    private:
+    struct Matrix {
         uint16_t m_Rows, m_Columns;
-    public:
         Matrix(short rows = 1, short columns = 1)
             :m_Rows(rows), m_Columns(columns)
         {
             assert(m_Rows != 0 && m_Columns != 0); // Matrix can be empty but must be at least 1 x 1
         }
         std::vector<std::vector<int>> s_Matrix{{}}; // Template?
-
         // Operator Overloads
         Matrix operator+(Matrix &m1, Matrix &m2) {return addmat(m1, m2); } // Check!
-
         // Creation | Vector Based ---------------------------------------------------------------------------------------------------------------
             // 1-Dimensional Matrix
         template<typename T>
@@ -96,13 +92,11 @@ namespace bmatrix {
         template<typename T>
         std::vector<std::vector<T>> multmat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2) {
         }
-
             // Math | Object based
         Matrix addmat(Matrix &m1, Matrix &m2);
         Matrix submat(Matrix &m1, Matrix &m2);
         Matrix multmat(Matrix &m1, Matrix &m2);
         Matrix invmat(Matrix &m1); // Inverse
-
             // Extra
         void pmat(Matrix &matrix) const {
             for(unsigned int i = 0; i < matrix.s_Matrix.size(); i++) {
@@ -112,13 +106,13 @@ namespace bmatrix {
             }
         }
         template<typename T>
-        void pmat(std::vector<std::vector<T>> &m) const { // Check need for const!
+        void pmat(std::vector<std::vector<T>> &m) const {
             for(unsigned int i = 0; i < m.size(); i++)
                 for(unsigned int j = 0; j < m.size(); j++)
                     std::cout << m[i][j] << ", ";
                 std::cout << '\n';
         }
-        inline void delMat(Matrix m) { delete &m; } // Check!
+        inline void delMat(Matrix m) { delete &m; }
     };
 }
 #endif

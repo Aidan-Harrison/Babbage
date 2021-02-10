@@ -1,6 +1,7 @@
 #ifndef BVector_h
 #define BVector_h
 
+#include <cassert>
 #include <algorithm>
 #include <BMatrix.h> // Check!
 
@@ -11,9 +12,15 @@ namespace bvector {
         Vector1(short cX = 0)
             :x(cX)
         {
+            assert(x != sizeof(int));
         }
         ~Vector1() = default;
         inline float getMag() { return sqrt(x * x); }
+        Vector1 Normalize(Vector1 &v) {
+            if(v.x > 1) v.x = 1;
+            else if(v.x < -1) v.x = -1;
+            return v;
+        }
         inline void deleteVec(Vector1 v) { delete &v; }
     };
 
@@ -23,6 +30,7 @@ namespace bvector {
         Vector2(short cX = 0, short cY = 0)
             :x(cX), y(cY)
         {
+            assert(x != sizeof(int) && y != sizeof(int));
         }
         ~Vector2() = default;
         inline float getMag() { return sqrt(x * x + y * y); }
@@ -39,6 +47,13 @@ namespace bvector {
             return vec;
         }
         float dotProd(Vector2 &v1, Vector2 &v2) { return v1.x * v2.x + v1.y * v2.y; }
+        Vector2 Normalize(Vector2 &v) {
+            if(v.x > 1) v.x = 1;
+            if(v.y > 1) v.y = 1;
+            else if(v.x < -1) v.x = -1;
+            else if(v.y < -1) v.y = -1;
+            return v;
+        }
         inline void deleteVec(Vector2 v) { delete &v; }
     };
 
@@ -48,6 +63,7 @@ namespace bvector {
         Vector3(short cX = 0, short cY = 0, short cZ = 0)
             :x(cX), y(cY), z(cZ)
         {
+            assert(x != sizeof(int) && y != sizeof(int) && z != sizeof(int));
         }
         ~Vector3() = default;
         inline float getMag() { return sqrt(x * x + y * y + z * z); }
@@ -59,8 +75,19 @@ namespace bvector {
             vec.z = v1.z = v2.z;
             return vec;
         }
-        Vector3 dotProd3(Vector3 &v1, Vector3 &v2);
-        void crossProd(Vector3 &v1, Vector3 &v2); // Change return?
+        Vector3 dotProd3(Vector3 &v1, Vector3 &v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
+        Vector3 crossProd(Vector3 &v1, Vector3 &v2) {
+            v1.getMag() * v2.getMag();
+        }
+        Vector3 Normalize(Vector3 &v) {
+            if(v.x > 1) v.x = 1;
+            if(v.y > 1) v.y = 1;
+            if(v.z > 1) v.z = 1;
+            else if(v.x < -1) v.x = -1;
+            else if(v.y < -1) v.y = -1;
+            else if(v.z < -1) v.z = -1;
+            return v;
+        }
         inline void deleteVec(Vector3 v) { delete &v; }
     };
 
@@ -70,9 +97,19 @@ namespace bvector {
         Vector4(short cX = 0, short cY = 0, short cZ = 0, short cW = 0) 
             :x(cX), y(cY), z(cZ), w(cW)
         {
+            assert(x != sizeof(int) && y != sizeof(int) && z != sizeof(int) && w != sizeof(int));
         }
         ~Vector4() = default;
         inline float getMag() { return sqrt(x * x + y * y + z * z + w * w); }
+        Vector4 Normalize(Vector4 &v) { // Origin ignored
+            if(v.x > 1) v.x = 1;
+            if(v.y > 1) v.y = 1;
+            if(v.z > 1) v.z = 1;
+            else if(v.x < -1) v.x = -1;
+            else if(v.y < -1) v.y = -1;
+            else if(v.z < -1) v.z = -1;
+            return v;
+        }
         inline void deleteVec(Vector4 v) { delete &v; }
     };
     
@@ -90,7 +127,6 @@ namespace bvector {
         vec.vec2[1] = y;
         return vec;
     }
-
     Vector3 CVec3(float x, float y, float z) {
         Vector3 vec;
         vec.vec3[0] = x;
