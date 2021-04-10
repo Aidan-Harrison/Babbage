@@ -7,10 +7,12 @@
 #include "BMath.h"
 #include "BMatrix.h"
 #include "BVector.h"
+#include "BabbageError.h"
 
 using namespace bmath;
 using namespace bmatrix;
 using namespace bvector;
+using namespace bLog;
 
 // Babbage's Graphics library
 namespace bgraphics {
@@ -25,19 +27,41 @@ namespace bgraphics {
         // Console screen buffer | Using <windows.h>
 
         // Geomtry creation: Add depth to all these, possibly incorporate custom geo for graphics
-        Triangle* cTri(int &p1X, int &p1Y, int &p2X, int &p2Y, int &p3X, int &p3Y) {
-                Triangle tri;
-                Point p1; Point p2; Point p3;
-                p1.m_X = p1X; p1.m_Y = p1Y;
-                p2.m_X = p2X; p2.m_Y = p2Y;
-                p3.m_X = p3X; p3.m_Y = p3Y;
-                // Calculate angle size based on vertex positions
-                return &tri; // Check return for rendering
+            // Check!
+        Triangle* cTri(short p1X, short p1Y, short p2X, short p2Y, short p3X, short p3Y) {
+            Triangle tri;
+            Point p1, p2, p3;
+            p1.m_X = p1X; p1.m_Y = p1Y;
+            p2.m_X = p2X; p2.m_Y = p2Y;
+            p3.m_X = p3X; p3.m_Y = p3Y;
+            tri.m_a = p1.m_X + p1.m_Y;
+            tri.m_b = p2.m_X + p2.m_Y;
+            tri.m_c = p3.m_X + p3.m_Y;
+            // Calculate angle size based on vertex positions
+            return &tri; // Check return for rendering
         }
 
-        Shape2D cQuad(double &x, double &y, double &z) {
-                
-        }
+        struct Quad {
+            Quad() = default;
+            void crateQuad(float x, float y) { // Origin defaults to 0, 0
+                RTriangle t1, t2;   
+            }
+            void createQuadO(float x, float y, float origin) { // Origin overload
+                RTriangle t1, t2;   
+            }
+            ~Quad() = default;
+        };
+
+        struct Cube {
+            Cube() = default;
+            void cCube(float x, float y, float z) { // Origin defaults to 0, 0, 0
+                Triangle t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12;
+            }
+            void cCube(float x, float y, float z, float origin) {
+                Triangle t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12;
+            }
+            ~Cube() = default;
+        };
 
         // Draw | Add Renderer.h and Renderer.cpp
 }

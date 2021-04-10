@@ -1,33 +1,35 @@
 #ifndef BabbagePrint_h
 #define BabbagePrint_h
 
-#include <vector> // Replace with C style arrays
+#include <vector>
 #include <iostream>
 
-// Because of templating may not want to use C style printing
 namespace bpr{
     template<typename T>
-    inline void print(T a) { 
-        printf("%d", a); 
+    inline void print(const T a) { 
+        std::cout << a;
     }
-    inline void print(const char* message) { printf("%c", message); }
-    template<typename T>
-    inline void prASCII(T a) { 
+    inline void prASCII(char a) { 
         std::cout << static_cast<int>(a); 
     }
-    inline void nl() { putchar('\n'); }
-    inline void line(int amount) { 
-        std::cout << '-' + std::string(amount, '-') << '\n'; 
+    void prASCII(std::string &str) { // Check!
+        for(int i = 0; i < str.length(); i++)
+            std::cout << static_cast<int>(str[i]);
     }
-
-    void box(int height, int width) {
+    inline void nl() { 
+        putchar('\n'); 
+    }
+    inline void line(int amount = 1) { 
+        std::cout << std::string(amount, '-') << '\n'; 
+    }
+    void box(const int height, const int width) {
         for(int i = 0; i < height; i++)
             for(int j = 0; j < width; j++)
                 putchar('*');
             putchar('\n');
     }
     
-    void pyramid(int height, int width) { // Fix
+    void pyramid(int height, int width) { // Fix | Study
         for(int i = 1, k = 0; i <= height; i++, k = 0) {
             for(width = 1; width <= height - i; width++) {
                 putchar(' ');
@@ -41,19 +43,23 @@ namespace bpr{
     }
 
     template<typename T>
-    void pArray(T arr[], int size) {
+    void pArray(const T arr[], int size) {
         for(int i = 0; i < size; i++)
+            std::cout << arr[i] << ", ";
+    }
+    template<typename T>
+    void pArray(const std::vector<T> &arr) {
+        for(int i = 0; i < arr.size(); i++)
             std::cout << arr[i] << ", ";
     }
 
     template<typename T>
-    std::vector<std::vector<T>> pArray2D(std::vector<std::vector<T>>& arr) {
+    void pArray2D(const std::vector<std::vector<T>>& arr) {
         int m = arr.size();
         int n = arr[0].size();
         for(int i = 0; i < m; i++)
             for(int j = 0; j < n; j++)
-                printf("%d", arr[i][j]);
-            return arr;
+                std::cout << arr[i][j];
     }
 }
 

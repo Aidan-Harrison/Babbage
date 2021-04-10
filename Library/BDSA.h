@@ -19,6 +19,7 @@ namespace bDataStruct {
         {
         }
         ~map() = default;
+        inline void deleteMap(map m) { delete &m; } // Check!
     };
 
         // Singly-Linked List
@@ -41,9 +42,7 @@ namespace bDataStruct {
             node->next = nextNode; // Check! Possibly incorrect
         }
         inline void deleteNode(Node *node) { delete node; } // Need to take into account previous node and change next
-        void deleteList() {
-
-        }
+        inline void deleteList(SLinkedList s) { delete &s; }   
     };
 
         // Doubly-Linked List
@@ -67,7 +66,6 @@ namespace bDataStruct {
             node->prev = prevNode;
             node->next = nextNode;
         }
-        inline void deleteNode(dNode *node) { delete node; }
         void deleteDList() { // Check!
             if(dNode != nullptr) { // Check if node exists
                 delete dNode->next;
@@ -76,6 +74,7 @@ namespace bDataStruct {
             }
             deleteDList();
         }
+        inline void deleteNode(dNode *node) { delete node; }
     };
 
     template<typename T>
@@ -128,8 +127,8 @@ namespace bDataStruct {
                 newVertex.m_Key = input;
                 return newVertex;
             }
-            inline void DeleteVertex(Vertex &v) { delete &v; } // Check!
             void FindVertex(char input);
+            inline void DeleteVertex(Vertex &v) { delete &v; } // Check!
         };
     };
 
@@ -187,10 +186,9 @@ namespace bDataStruct {
             }
             else return nullptr; // Return nothing if leaf is equal to nothing
         }
-
         treeNode* root;
     public:
-        bTree();
+        bTree() = default;
         bTree::~bTree() { destroyTree(); }
         // user functions
         void bTree::insert(int key) {
@@ -203,7 +201,6 @@ namespace bDataStruct {
                 root->right = nullptr;
             }
         }
-
         treeNode* bTreeSearch(int key) { return search(key, root); }
         void destroyTree() { return destroyTree(root); }
     };
