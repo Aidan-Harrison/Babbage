@@ -13,36 +13,38 @@ namespace bDataStruct {
     struct map {
         M m_Key;
         M m_Value;
-        map() = default;
-        map(short key)
-            :m_Key(key) 
-        {
-        }
-        ~map() = default;
-        inline void deleteMap(map m) { delete &m; } // Check!
+        map(int key, int value) :m_Key(key), m_Value(value) {}
     };
 
         // Singly-Linked List
     template<typename T>
     struct SLinkedList {
+
+        SLinkedList() {}
         struct Node {
             T data;
             Node* next;
-            Node(int x)
-                :data(x) 
-            {
-            }
+            Node() :data(0), next(nullptr) {}
+            Node(int x) :data(x), next(nullptr) {}
         };
-        inline Node getNode() const { return Node; }
-        SLinkedList() = default;
-        ~SLinkedList() = default;
-        Node addNode(T data, Node *nextNode) {
-            Node node;
-            node->data = data;
-            node->next = nextNode; // Check! Possibly incorrect
+        void PrintList(Node *n) {
+            while(n != nullptr) {
+                std::cout << n->data << ' ';
+                n = n->next;
+            }
         }
-        inline void deleteNode(Node *node) { delete node; } // Need to take into account previous node and change next
-        inline void deleteList(SLinkedList s) { delete &s; }   
+        Node* addNode(Node* prevNode, T data) {
+            Node *newNode = new Node(data);
+            newNode->next = prevNode->next;
+            prevNode->next = newNode;
+            return newNode;
+        }
+        inline void deleteNode(Node *n) { 
+            n->next = n->next->next; 
+        }   
+        void delList();
+
+        ~SLinkedList() {}
     };
 
         // Doubly-Linked List
@@ -52,100 +54,171 @@ namespace bDataStruct {
             T data;
             dNode* prev;
             dNode* next;
-            dNode(short x)
-                :data(x) 
-            {
-            }
+            dNode() :data(0), prev(nullptr), next(nullptr) {}
+            dNode(short x) :data(x), prev(nullptr), next(nullptr) {}
         };
-        DLinkedList() = default;
-        ~DLinkedList() = default;
-        inline dNode getNode() const { return dNode; }
-        void addNode(dNode *prevNode, T data, dNode *nextNode) {
-            dNode node;
-            node->data = data;
-            node->prev = prevNode;
-            node->next = nextNode;
-        }
-        void deleteDList() { // Check!
-            if(dNode != nullptr) { // Check if node exists
-                delete dNode->next;
-                delete dNode->data;
-                delete dNode;
+        void PrintList(dNode *n) {
+            while(n != nullptr) {
+                std::cout << n->data << ' ';
+                n = n->next;
             }
-            deleteDList();
         }
-        inline void deleteNode(dNode *node) { delete node; }
+        dNode* addNode(dNode *prevNode, T data) {
+            dNode *newNode = new dNode(data);
+            newNode->next = prevNode->next;
+            newNode->prev = prevNode;
+            prevNode->next = newNode;
+            return newNode;
+        }
+        void delNode(dNode *n) {
+            n->prev = n->next;
+        }
+        void delList(dNode *n) {
+            if(n != nullptr) {
+                delete n->prev;
+                delete n->data;
+                n = n->next;
+            }
+            deleteDList(n);
+        }
     };
 
     template<typename T>
     struct bStack {
-        std::vector<T> m_VStack{};
-        bStack() = default;
-        ~bStack() = default;
-            // Functions
-        bStack PushStack(bStack &s, T input) {
-            s.m_VStack.push_back(input);
-            return s;
+        std::vector<T> items{};
+        int top = -1;
+        bStack() {}
+
+        bool IsFull() {
+            if(top == items.size()-1)
+                return true;
+            else
+                return false;
         }
-        void printStack(T stack[], int size) {
-            for(int i = 0; i < size; i++)
-                std::cout << stack[i] << ", ";
+
+        bool IsEmpty() {
+            if(top == -1)
+                return true;
+            else
+                return false;
         }
-        void printStack(bStack &s) {
-            for(unsigned int i = 0; i < s.m_VStack.size(); i++)
-                std::cout << s.m_VStack[i] << ", ";
+
+        void Push(T data) {
+            if(IsFull())
+                std::cerr << "Babbage Error: Stack is full!\n";
+            else
+                items[top++] = data;
         }
-            // Deletion
-        void deleteStack(T stack[]) {
-            for(int i = 0; i < stack.size(); i++) {
-                stack.erase(stack.begin() + i);
-                i--;
+        void Pop() {
+            if(IsEmpty())
+                std::cerr << "Babbage Error: Stack is empty!\n";
+            else {
+                items[top] = 0;
+                top--;
             }
         }
-        void deleteStack(std::vector<T> stack) {
-            for(int i = 0; i < stack.size(); i++) {
-                stack.erase(stack.begin() + i);
-                i--;
-            }
+        inline T Peek() {
+            return items[top];
         }
-        inline void deleteStack(bStack *stack) { delete stack; }
+
+        ~bStack() {}
+    };
+
+    template<typename T>
+    class bQueue {
+        private:
+        public:
+            std::vector<T> items{};
+            int rear = -1;
+            int front = 0;
+            int MAXSIZE = 0; // Used for re-sizing
+
+            bQueue(const int size) 
+            {
+                SetMax(size);
+            }
+
+            bool IsFull() {
+                if(rear == MAXSIZE)
+                    return true;
+                return 
+                    false;
+            }
+            bool IsEmpty();
+
+            void Enqueue(T data) {
+                if(IsFull())
+                    std::cerr << "Babbage Error: Queue is full!\n";
+                else 
+                    items[rear++] = data;
+            }
+            void Dequeue() {
+                if(IsEmpty)
+                    std::cerr << "Babbage Error: Queue is empty!\n";
+                else {
+                    items[rear] = 0;
+                    rear--;
+                }
+            }
+
+            inline void SetMax(int size) {
+                MAXSIZE = size;
+            }
+
+            ~bQueue() {}
     };
 
         // Graph & Trees
-    struct Graph { // Re-Do after done with binary tree
-        Graph() = default;
-        ~Graph() = default;
-        struct Vertex { // Character based for now
+    struct Graph { // Re-do partially!
+        int vertexCount = 0;
+        std::vector<std::vector<int>> adjMatrix{};
+        bool *isVisited;
+
+        Graph(const int vertices) 
+        {
+            isVisited = new bool[vertices];
+        }
+        struct Vertex { 
             char m_Key;
-            Vertex(char key = 'A')
-                :m_Key(key) 
-            {
-            }
-            ~Vertex() = default;
-            Vertex AddVertex(char input) {
-                Vertex newVertex;
-                newVertex.m_Key = input;
-                return newVertex;
-            }
+            Vertex(const char key = 'A') :m_Key(key) {}
             void FindVertex(char input);
             inline void DeleteVertex(Vertex &v) { delete &v; } // Check!
+
+            ~Vertex() {}
         };
+
+        Vertex* AddVertex(char input) {
+            Vertex *newVertex =  new Vertex(input);
+            return newVertex;
+        }
+
+        void AddEdge(int src, int dest) {
+            adjMatrix[src][dest] = 1;
+            adjMatrix[dest][src] = 1;
+        }
+        
+        void PrintGraph() {
+            for(unsigned int i = 0; i < vertexCount; i++) {
+		        for(unsigned int j = 0; j < vertexCount; j++) {
+			        std::cout << adjMatrix[i][j] << ", ";
+		        }
+		        putchar('\n');
+	        }
+        }
+        
+        ~Graph() {}
     };
 
     struct treeNode {
         int key_Value;
-        treeNode* left;
-        treeNode* right;
-        treeNode() = default;
-        treeNode(int value)
-            :key_Value(value)
-        {    
-        }
-        ~treeNode() = default;
+        treeNode *left;
+        treeNode *right;
+        treeNode(int value) :key_Value(value) {}
     };
 
     class bTree {
     private:
+        treeNode* root;
         // System level functions
         void destroyTree(treeNode* leaf) { 
             if(leaf != nullptr) { // If leaf exists, remove left and right children, then delete current node
@@ -160,7 +233,7 @@ namespace bDataStruct {
                 if(leaf->left != nullptr) // If lead does exist, add
                     insert(key, leaf->left);
                 else { // Else add leaf
-                    leaf->left = new treeNode;
+                    leaf->left = new treeNode(key);
                     leaf->left->key_Value = key;
                     leaf->left->left = nullptr;
                     leaf->left->right = nullptr;
@@ -170,7 +243,7 @@ namespace bDataStruct {
                 if(leaf->right != nullptr)
                     insert(key, leaf->right);
                 else {
-                    leaf->right = new treeNode;
+                    leaf->right = new treeNode(key);
                     leaf->right->key_Value = key;
                     leaf->right->left = nullptr;
                     leaf->right->right = nullptr;
@@ -182,20 +255,20 @@ namespace bDataStruct {
             if(leaf != nullptr) {
                 if(key == leaf->key_Value) return leaf;
                 if(key < leaf->key_Value) return search(key, leaf->left);
-                else return search(key, leaf->right);
+                else 
+                    return search(key, leaf->right);
             }
-            else return nullptr; // Return nothing if leaf is equal to nothing
+            else 
+                return nullptr; // Return nothing if leaf is equal to nothing
         }
-        treeNode* root;
     public:
-        bTree() = default;
-        bTree::~bTree() { destroyTree(); }
+        bTree() {};
         // user functions
         void bTree::insert(int key) {
             if(root != nullptr)
                 insert(key, root);
             else {
-                root = new treeNode;
+                root = new treeNode(key);
                 root->key_Value = key;
                 root->left = nullptr;
                 root->right = nullptr;
@@ -203,6 +276,8 @@ namespace bDataStruct {
         }
         treeNode* bTreeSearch(int key) { return search(key, root); }
         void destroyTree() { return destroyTree(root); }
+
+        ~bTree() { destroyTree(); }
     };
 }
 
@@ -225,7 +300,7 @@ namespace bAlgorithms {
             if(!isalnum(str[p1])) p1++; // Ignore symbols
             else if(!isalnum(str[p2])) p2--;
             else if(tolower(str[p1]) != tolower(str[p2])) { // Ignore case
-                std::cerr << "Babbage:-\nNOT PALINDROME\n";
+                std::cerr << "Babbage:-\nNOT PALINDROME" << std::endl;
                 return false;
             }
             else { p1++; p2--; } // Move pointers regardless
@@ -233,11 +308,11 @@ namespace bAlgorithms {
         return true;
     }
     
-    bool anag(std::string &s, std::string &t) { // Also do number version
+    bool anag(std::string &s, std::string &t) {
         int n = s.length(), m = t.length();
         if(n != m) {
-            std::cerr << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|";
-            std::cerr << "Both must be equal in length\n"; 
+            std::cerr << "Babbage Error:-\nINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|"
+                      << "Both must be equal in length" << std::endl; 
             return false;
         }
         std::map<char,int> mapS;
@@ -259,7 +334,7 @@ namespace bAlgorithms {
         return arr;
     }
 
-     template<typename T>   // Overload for custom start and end
+    template<typename T>   // Overload for custom start and end
     std::vector<T> Reverse(std::vector<T> &arr, short start, short end) {
         while(start < end) {
             int temp = arr[start];
@@ -269,7 +344,7 @@ namespace bAlgorithms {
         return arr;
     }
 
-    std::string Reverse(std::string str) { // Try 'sizeof()'
+    std::string Reverse(std::string &str) {
         short start = 0, end = str.length()-1;
         while(start < end) {
             int temp = str[start];
@@ -288,10 +363,10 @@ namespace bAlgorithms {
     }
     
         // Reverse String
-    std::string revStr(std::string str) {
+    std::string revStr(std::string &str) {
         if(str.length() <= 1) {
-            std::cerr << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|";
-            std::cerr << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID STRING LENGTH OF: " << str.length() << " FOR |REVERSE|"
+                      << "Must be greater than '1'" << std::endl;
             return str;
         }
         Reverse(str);
@@ -304,7 +379,7 @@ namespace bAlgorithms {
         std::vector<int> result{};
         if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) {
             std::cerr << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(number).name() << '-';
-            std::cerr << "Must be int, float or double\n";
+                      << "Must be int, float or double" << std::endl;
             return result;
         }
         else {
@@ -328,8 +403,8 @@ namespace bAlgorithms {
     template<typename T>
     std::vector<T> bSortV(std::vector<T> &arr) {
         if(arr.size() <= 1) {
-            std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|";
-            std::cerr << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << arr.size() << " FOR |BUBBLE SORT|"
+                      << "Must be greater than '1'" << std::endl;
             return arr;
         }
         for(int i = 0; i < arr.size(); i++)
@@ -341,8 +416,8 @@ namespace bAlgorithms {
 
     int* bSortA(int arr[], int size) { // Return by address | Overload version without size
         if(size <= 1) {
-            std::cerr << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << size << " FOR |BUBBLE SORT|";
-            std::cerr << "Must be greater than '1'\n";
+            std::cerr << "Babbage Error:-\nINVALID ARRAY SIZE OF: " << size << " FOR |BUBBLE SORT|"
+                      << "Must be greater than '1'" << std::endl;
             return arr;
         }
         for(int i = 0; i < size; i++)
@@ -356,7 +431,7 @@ namespace bAlgorithms {
     int Partition(std::vector<T>& nums, int low, int high) {
         if(nums.size() <= 1) {
             std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|";
-            std::cerr << "Must be greater than '1'\n";
+                      << "Must be greater than '1'" << std::endl;
             return -1;
         }
         int pivot = nums[high];
@@ -376,8 +451,24 @@ namespace bAlgorithms {
             qSortV(nums, pivot + 1, rightIndex);
         }
         else
-            std::cerr << "Babbage Error:-\nINVALID INPUT OF: " << "Left index: " << leftIndex << " OR " << "Right index: " << rightIndex << " FOR |QUICK SORT|"; // Add better error handling
+            std::cerr << "Babbage Error:-\nINVALID INPUT OF: " << "Left index: " << leftIndex << " OR " << "Right index: " << rightIndex << " FOR |QUICK SORT|" << std::endl; // Add better error handling
         return nums;
+    }
+
+    // Searching
+    template<typename T>
+    T bBinarySearch(std::vector<T> &arr, T target) {
+        if(arr.size() == 0)
+            return "BABBAGE: Your container is empty"; // Nothing to search
+        int left = 0;
+        int right = arr.size() - 1;
+        while(left <= right) {
+            int mid = left + (right - left) / 2;
+            if(arr[mid] == target) return arr[mid];
+            else if(arr[mid] < target) left = mid + 1;
+            else right = mid - 1;
+        }
+        return "BABBAGE: Binary search could not find value"; // Nothing found
     }
 }
 

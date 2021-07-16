@@ -3,21 +3,18 @@
 
 #include <cassert>
 #include <algorithm>
-#include <BMatrix.h> // Check!
+// Add printing
 
 namespace bvector {
 
-    class Vector1i {
-    private:
+    struct Vector1i {
         int x;
-    public:
         int vec1[1]{x};
         Vector1i(int cX = 0)
             :x(cX)
         {
             vec1[0] = vec1[0];
         }
-        ~Vector1i() = default;
         inline int getMag() { return sqrt(x * x); }
         void Normalize() {
             if(x > 1)       x = 1;
@@ -25,11 +22,11 @@ namespace bvector {
         }
         inline int getVector() const { return vec1[0]; }
         inline void deleteVec() { delete this; }
+
+        ~Vector1i() {};
     };
-    class Vector1f {
-    private:
+    struct Vector1f {
         float x;
-    public:
         float vec1[1]{x};
         Vector1f(float cX = 0.0f)
             :x(cX)
@@ -37,7 +34,6 @@ namespace bvector {
             assert(x != sizeof(int));
             vec1[0] = vec1[0];
         }
-        ~Vector1f() = default;
         inline float getMag() { return sqrt(x * x); }
         void Normalize() {
             if(x > 1)       x = 1;
@@ -45,11 +41,11 @@ namespace bvector {
         }
         inline float getVector() const { return vec1[0]; }
         inline void deleteVec() { delete this; }
+
+        ~Vector1f() {};
     };
-    class Vector2i {
-    private:
+    struct Vector2i {
         int x, y;
-    public:
         int vec2[2]{x,y};
         Vector2i(int cX = 0, int cY = 0)
             :x(cX), y(cY)
@@ -57,7 +53,6 @@ namespace bvector {
             vec2[0] = x;
             vec2[1] = y;
         }
-        ~Vector2i() = default;
         inline int getMag() { return sqrt(x * x + y * y); }
         void Normalize() {
             if(x > 1)       x = 1;
@@ -65,10 +60,10 @@ namespace bvector {
             if(y > 1)       y = 1;
             else if(y < -1) y = -1;
         }
-        int* getVector() const {
-            int coords[2];
-            coords[0] = vec2[0];
-            coords[1] = vec2[1];
+        std::tuple<int, int> getVector() const {
+            std::tuple<int,int> coords;
+            std::get<0>(coords) = vec2[0];
+            std::get<1>(coords) = vec2[1];
             return coords;
         }
         inline int getX() const { return vec2[0]; }
@@ -89,12 +84,14 @@ namespace bvector {
             return vec;
         }
         int dotProd(Vector2i &v1, Vector2i &v2) { return v1.x * v2.x + v1.y * v2.y; }
+
+        ~Vector2i() {};
     };
 
-    class Vector2f {
-    private:
+    Vector2i operator+(Vector2i &v1, Vector2i &v2) { return v1.x + v2.x + v1.y + v2.y;} // Check!
+
+    struct Vector2f {
         float x, y;
-    public:
         float vec2[2]{x,y};
         Vector2f(float cX = 0.0f, float cY = 0.0f)
             :x(cX), y(cY)
@@ -103,7 +100,6 @@ namespace bvector {
             vec2[0] = x;
             vec2[1] = y;
         }
-        ~Vector2f() = default;
         inline float getMag() { return sqrt(x * x + y * y); }
         void Normalize() {
             if(x > 1)       x = 1;
@@ -111,10 +107,10 @@ namespace bvector {
             if(y > 1)       y = 1;
             else if(y < -1) y = -1;
         }
-        float* getVector() const {
-            float coords[2];
-            coords[0] = vec2[0];
-            coords[1] = vec2[1];
+        std::tuple<float,float>getVector() const {
+            std::tuple<float,float> coords;
+            std::get<0>(coords) = vec2[0];
+            std::get<1>(coords) = vec2[1];
             return coords;
         }
         inline float getX() const { return vec2[0]; }
@@ -135,7 +131,11 @@ namespace bvector {
             return vec;
         }
         float dotProd(Vector2f &v1, Vector2f &v2) { return v1.x * v2.x + v1.y * v2.y; }
+        
+        ~Vector2f() {};
     };
+
+    Vector2f operator+(Vector2f &v1, Vector2f &v2) { return v1.x + v2.x + v1.y + v2.y; } // Check!
 
     class Vector3i {
     private:
@@ -149,7 +149,6 @@ namespace bvector {
             vec3[1] = y;
             vec3[2] = z;
         }
-        ~Vector3i() = default;
         inline int getMag() { return sqrt(x * x + y * y + z * z); }
         void Normalize() { // Check! | Optimise?
             if(x > 1)       x = 1;
@@ -159,11 +158,11 @@ namespace bvector {
             if(z > 1)       z = 1;
             else if(z < -1) z = -1;
         }
-        int* getVector() const {
-            int coords[3];
-            coords[0] = vec3[0];
-            coords[1] = vec3[1];
-            coords[2] = vec3[2];
+        std::tuple<int,int,int> getVector() const {
+            std::tuple<int,int,int> coords{};
+            std::get<0>(coords) = vec3[0];
+            std::get<1>(coords) = vec3[1];
+            std::get<2>(coords) = vec3[2];
             return coords;
         }
         inline int getX() const { return vec3[0]; }
@@ -184,6 +183,7 @@ namespace bvector {
         Vector3i crossProd(Vector3i &v1, Vector3i &v2) { // Continue
             // return v1.getMag() * v2.getMag();
         }
+        ~Vector3i() {};
     };
 
     class Vector3f {
@@ -199,7 +199,6 @@ namespace bvector {
             vec3[1] = y;
             vec3[2] = z;
         }
-        ~Vector3f() = default;
         inline float getMag() { return sqrt(x * x + y * y + z * z); }
         void Normalize() { // Check! | Optimise?
             if(x > 1)       x = 1;
@@ -209,11 +208,11 @@ namespace bvector {
             if(z > 1)       z = 1;
             else if(z < -1) z = -1;
         }
-        float* getVector() const {
-            float coords[3];
-            coords[0] = vec3[0];
-            coords[1] = vec3[1];
-            coords[2] = vec3[2];
+        std::tuple<float,float,float> getVector() const {
+            std::tuple<float,float,float> coords{};
+            std::get<0>(coords) = vec3[0];
+            std::get<1>(coords) = vec3[1];
+            std::get<2>(coords) = vec3[2];
             return coords;
         }
         inline float getX() const { return vec3[0]; }
@@ -234,6 +233,7 @@ namespace bvector {
         Vector3f crossProd(Vector3f &v1, Vector3f &v2) { // Continue
             // return v1.getMag() * v2.getMag();
         }
+        ~Vector3f() {};
     };
 
     class Vector4i {
@@ -249,7 +249,6 @@ namespace bvector {
             vec4[2] = z;
             vec4[3] = w;
         }
-        ~Vector4i() = default;
         inline int getMag() { return sqrt(x * x + y * y + z * z + w * w); }
         void Normalize() { // Origin ignored
             if(x > 1)       x = 1;
@@ -259,12 +258,12 @@ namespace bvector {
             if(z > 1)       z = 1;
             else if(z < -1) z = -1;
         }
-        int* getVector() const { // Convert to return existing vec array! Don't create new and return!
-            int coords[4];
-            coords[0] = vec4[0];
-            coords[1] = vec4[1]; 
-            coords[2] = vec4[2];
-            coords[3] = vec4[3];
+        std::tuple<int,int,int,int> getVector() const { // Convert to return existing vec array! Don't create new and return!
+            std::tuple<int,int,int,int> coords;
+            std::get<0>(coords) = vec4[0];
+            std::get<1>(coords) = vec4[1];
+            std::get<2>(coords) = vec4[2];
+            std::get<3>(coords) = vec4[3];
             return coords;
         }
         inline int getX() const { return vec4[0]; }
@@ -272,6 +271,8 @@ namespace bvector {
         inline int getZ() const { return vec4[2]; }
         inline int getW() const { return vec4[3]; }
         inline void deleteVec() { delete this; }
+
+        ~Vector4i() {};
     };
 
     class Vector4f {
@@ -288,7 +289,6 @@ namespace bvector {
             vec4[2] = z;
             vec4[3] = w;
         }
-        ~Vector4f() = default;
         inline float getMag() { return sqrt(x * x + y * y + z * z + w * w); }
         void Normalize() { // Origin ignored
             if(x > 1)       x = 1;
@@ -298,12 +298,12 @@ namespace bvector {
             if(z > 1)       z = 1;
             else if(z < -1) z = -1;
         }
-        float* getVector() const { // Convert to return existing vec array! Don't create new and return!
-            float coords[4];
-            coords[0] = vec4[0];
-            coords[1] = vec4[1]; 
-            coords[2] = vec4[2];
-            coords[3] = vec4[3];
+        std::tuple<float,float,float,float> getVector() const { // Convert to return existing vec array! Don't create new and return!
+            std::tuple<float,float,float,float> coords;
+            std::get<0>(coords) = vec4[0];
+            std::get<1>(coords) = vec4[1];
+            std::get<2>(coords) = vec4[2];
+            std::get<3>(coords) = vec4[3];
             return coords;
         }
         inline float getX() const { return vec4[0]; }
@@ -311,6 +311,8 @@ namespace bvector {
         inline float getZ() const { return vec4[2]; }
         inline float getW() const { return vec4[3]; }
         inline void deleteVec() { delete this; }
+
+        ~Vector4f() {};
     };
 }
 #endif

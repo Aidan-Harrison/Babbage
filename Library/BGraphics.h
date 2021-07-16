@@ -43,12 +43,11 @@ namespace bgraphics {
 
         struct Quad {
             Quad() = default;
-            void crateQuad(float x, float y) { // Origin defaults to 0, 0
-                RTriangle t1, t2;   
+            Quad(float x, float y) 
+            {
+                RTriangle t1, t2;
             }
-            void createQuadO(float x, float y, float origin) { // Origin overload
-                RTriangle t1, t2;   
-            }
+            void setOrigin(float origin);
             ~Quad() = default;
         };
 

@@ -4,160 +4,112 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
-#include "BVector.h"
 namespace bmatrix {
+    template<typename T> // Check!
     class Matrix {
     private:
-        uint16_t m_Rows, m_Columns; // Check data type!
-     public:
-        std::vector<std::vector<int>> m_Matrix{{}}; // Template?
-        Matrix(short rows = 1, short columns = 1)
+    public:
+        int m_Rows = 0, m_Columns = 0;
+        std::vector<std::vector<T>> matrix{};
+        Matrix(const int rows = 1, const int columns = 1, T fill = 0)
             :m_Rows(rows), m_Columns(columns)
         {
-            assert(m_Rows != 0 && m_Columns != 0); // Matrix can be empty but must be at least 1 x 1
-            // for(unsigned int i = 0; i < rows; i++) // Change at a later date
-               // m_Matrix.push_back(0);
-               // for(unsigned int j = 0; j < columns; j++)
-                  //  m_Matrix[0].push_back(0);
-        }
-        // Operator Overloads
-        Matrix operator+(Matrix &m1, Matrix &m2) {return addmat(m1, m2); } // Check!
-        // Creation | Vector Based ---------------------------------------------------------------------------------------------------------------
-            // 1-Dimensional Matrix
-        template<typename T> // REDO, zero point in these creations
-        std::vector<T> mat1(T input, int size) {
-            std::vector<T> newMatrix{};
-            for(unsigned int i = 0; i < size; i++)
-                newMatrix.push_back(input);
-            return newMatrix;
-        }
-        std::vector<T> mat1(T input[], int size) { // C-array overload
-            std::vector<T> newMatrix{};
-            for(unsigned int i = 0; i < size; i++)
-                newMatrix.push_back(input[i]);
-            return newMatrix;
-        }
-            // 2-Dimensional Matrix
-        template<typename T>
-        std::vector<std::vector<T>> mat2(int rows, int columns, T input) { // Add 2D C-array overload
-            std::vector<std::vector<T>> new2DMatrix{{}};
-            for(unsigned int i = 0; i < rows; i++) {
-                for(unsigned int j = 0; j < columns; j++)
-                    new2DMatrix[i][j].push_back(input);
+            assert(rows > 0 && columns > 0);
+            matrix.resize(rows);
+            matrix[0].resize(rows);
+            for(unsigned int i = 0; i <= rows; i++) {
+                for(unsigned int j = 0; j <= columns; j++) {
+                    matrix[i][j] = fill;
+                }
             }
-            return new2DMatrix;
         }
-            // 3-Dimensional Matrix
-        template<typename T>
-        std::vector<std::vector<std::vector<T>>> mat3(int rows, int columns, int depth, T input[]) {
-            std::vector<std::vector<std::vector<T>>> new3DMatrix{{{}}};
-            for(unsigned int i = 0; i < rows; i++)
-                for(unsigned int j = 0; j < columns; j++)
-                    for(unsigned int k = 0; k < depth; k++)
-                        new3DMatrix[i][j][k].push_back(input[i]);
-            return new3DMatrix;
+        Matrix(const int rows = 1, const int columns = 1, std::vector<std::vector<T>> &data={}) 
+            :m_Rows(rows), m_Columns(columns)
+        {
+            assert(rows > 0 && columns > 0);
+            if((data.size() * data[0].size()) != (m_Rows * m_Columns))
+                FillMatrix(data);
         }
-            // Add 4D matrix
-        // -------------------------------------------------------------------------------------------------------------------------------------
 
-            // Math | Vector Based
-        template<typename T>
-        std::vector<std::vector<T>> addmat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2) { // Fix
-            std::vector<std::vector<int>> resultMatrix = {{}};
-            if(m1.size() != m2.size()) {
-                std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.size() << " AND " << m2.size() << " | Must be equal";
-                exit(1);
-            }
-            else {
-                int sum = 0;
-                for(unsigned int i = 0; i < m1.size(); i++) {
-                    for(unsigned int j = 0; j < m1.size(); j++) {
-                        sum = m1[i][j] + m2[i][j];
-                    }
-                }
-            }
-        }
-        template<typename T>
-        std::vector<std::vector<T>> addmat(Matrix &m1, Matrix &m2) {
-            std::vector<std::vector<int>> resultMatrix = {{}};
-            if(m1.size() != m2.size()) {
-                std::cerr << "Babbage Error:-\nINVALID Matrix SIZE'S OF: " << m1.size() << " AND " << m2.size() << " | Must be equal";
-                exit(1);
-            }
-            else {
-                int sum = 0;
-                for(unsigned int i = 0; i < m1.s_Matrix.size(); i++) {
-                    for(unsigned int j = 0; j < m1.s_Matrix.size(); j++) {
-                    }
-                }
-            }
-        }
-        template<typename T>
-        std::vector<std::vector<T>> submat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2) {
-        }
-        template<typename T>
-        std::vector<std::vector<T>> multmat(std::vector<std::vector<T>> &m1, std::vector<std::vector<T>> &m2) {
-        }
-            // Extra
-        void pmat(Matrix &matrix) const {
-            for(unsigned int i = 0; i < matrix.s_Matrix.size(); i++) {
-                for(unsigned int j = 0; j < matrix.s_Matrix.size(); j++)
-                    std::cout << matrix.s_Matrix[i][j] << ", ";
-                std::cout << '\n';
-            }
-        }
-        template<typename T>
-        void pmat(std::vector<std::vector<T>> &m) const {
-            for(unsigned int i = 0; i < m.size(); i++)
-                for(unsigned int j = 0; j < m.size(); j++)
-                    std::cout << m[i][j] << ", ";
-                std::cout << '\n';
-        }
-        inline void getRows() const { return m_Rows; }
-        inline void getColumns() const { return m_Columns; }
-        inline void delMat(Matrix m) { delete &m; }
+        void FillMatrix(std::vector<std::vector<T>> &data);
+        void ResizeMatrix();
 
-            // Math | Object based
-        Matrix addmat(Matrix &m1, Matrix &m2) { // Optimise!
-            Matrix newMatrix;
-            if(m1.size() != m2.size()) {
-                std::cerr << "Babbage Error:- INVALID MATRIX SIZE, MUST MATCH [ADDITION]!n";
-                exit(1);
-            }
-            else {
-                for(unsigned int i = 0; i < m1.size(); i++) {
-                    for(unsigned int j = 0; j < m1[0].size(); j++) {
-                        newMatrix.s_Matrix.push_back(m1[i][j] += m2[i][j]); // Check!
-                    }
+        void PrintMatrix() const {
+            for(unsigned int i = 0; i < m_Rows; i++) {
+                for(unsigned int j = 0; j < m_Columns; j++) {
+                    std::cout << matrix[i][j] << ", ";
                 }
+                putchar('\n');
             }
-            return newMatrix;
         }
-        Matrix submat(Matrix &m1, Matrix &m2) {
-            Matrix newMatrix;
-            if(m1.size() != m2.size()) {
-                std::cerr << "Babbage Error:- INVALID MATRIX SIZE, MUST MATCH! [SUBTRACTION]n";
-                exit(1);
-            }
-            else {
-                return;
-            }
-            return newMatrix;
-        }
-        Matrix multmat(Matrix &m1, Matrix &m2) {
-            Matrix newMatrix;
-            if(m1.size() != m2.size()) {
-                std::cerr << "Babbage Error:- INVALID MATRIX SIZE, MUST MATCH! [MULTIPLY]n";
-                exit(1);
-            }
-            else {
-                return;
-            }
-            return newMatrix;
-        }
-        Matrix invmat(Matrix &m1) { // Inverse
-            return;
-        } 
+        ~Matrix() {}
     };
+
+    template<typename T>
+    void Matrix<T>::FillMatrix(std::vector<std::vector<T>> &data) {
+        if((m_Rows * m_Columns) != (data.size() * data[0].size())) {
+            std::cerr << "Babbage Error: Data does not match size of matrix! In 'FillMatrix(data)' | CANNOT FILL\n";
+            return;
+        }
+        for(unsigned int i = 0; i < data.size(); i++) {
+            for(unsigned int j = 0; j < data[0].size(); j++) {
+                matrix[i][j] = data[i][j];
+            }
+        }
+    }
+
+    template<typename T>
+    Matrix<T>* AddMatrix(Matrix<T> &m1, Matrix<T> &m2) { // Type check, string + int for example
+        Matrix<T> *newMatrix = new Matrix<T>(m1.m_Rows, m1.m_Columns, 0);
+        if((m1.m_Rows * m1.m_Columns) != (m2.m_Rows * m2.m_Columns)) {
+            std::cerr << "Babbage Error: Matrix sizes do not match! In 'AddMatrix(m1, m2)' | CANNOT ADD\n";
+            return newMatrix;
+        }
+        for(unsigned int i = 0; i < m1.m_Rows; i++) {
+            for(unsigned int j = 0; j < m1.m_Columns; j++) {
+                newMatrix->matrix[i][j] = m1.matrix[i][j] + m2.matrix[i][j];
+            }
+        } 
+        return newMatrix;
+    }
+
+    template<typename T>
+    Matrix<T> SubMatrix(Matrix<T> &m1, Matrix<T> &m2) {
+        Matrix<T> *newMatrix = new Matrix<T>(m1.m_Rows, m1.m_Columns, 0);
+        if((m1.m_Rows * m1.m_Columns) != (m2.m_Rows * m2.m_Columns)) {
+            std::cerr << "Babbage Error: Matrix sizes do not match! In 'SubMatrix(m1, m2)' | CANNOT SUBTRACT\n";
+            return newMatrix;
+        }
+        for(unsigned int i = 0; i < m1.m_Rows; i++) {
+            for(unsigned int j = 0; j < m1.m_Columns; j++) {
+                newMatrix->matrix[i][j] = m1.matrix[i][j] - m2.matrix[i][j];
+            }
+        } 
+        return newMatrix;
+    }
+
+    template<typename T>
+    Matrix<T> MultMatrix(Matrix<T> &m1, Matrix<T> &m2) { // Check!
+        Matrix<T> *newMatrix = new Matrix<T>(m1.m_Rows, m2.m_Columns, 0);
+        if(m1.m_Columns == m2.m_Rows) {
+            std::cerr << "Babbage Error: Columns of m1 do not match with Rows of m2! In 'MultMatrix(m1, m2)' | CANNOT MULTIPLY\n";
+            return newMatrix;
+        }
+        newMatrix[0][0] = (m1.matrix[1][1] * m2.matrix[1][1]) + (m1.matrix[2][1] * m2.matrix[1][2]);
+        for(int i = 0; i < m1.m_Rows; i++) {
+            for(int j = 0; j < m2.m_Columns; j++) {
+                newMatrix->matrix[i][j] = m1.matrix[i][j] * m2.matrix[i][j];
+            }
+        }
+    }
+
+    // Operator Overloading
+    template<typename T>
+    Matrix<T> operator+(Matrix<T> &m1, Matrix<T> &m2) { AddMatrix(m1, m2); }
+    template<typename T>
+    Matrix<T> operator-(Matrix<T> &m1, Matrix<T> &m2) { SubMatrix(m1, m2); }
+    template<typename T>
+    Matrix<T> operator*(Matrix<T> &m1, Matrix<T> &m2) { MultMatrix(m1, m2); }
 }
+
 #endif
