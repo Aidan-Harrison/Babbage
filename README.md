@@ -1,14 +1,8 @@
 # Babbage
-Custom C/C++ library
-Line Count: 1000+
-
-A general purpose library/language. Intending to include most langauge features and beyond. High performance with vast documentation to be used as a portfolio piece and for small projects.
+Custom C/C++ general purpose library
 
 To-Do-List:
-> Custom DSA implementation
-> Graphics (Simple)
-> External language intergration | Possible use with languages other than C/C++
-> General optimisations and improvements
-> Add more definitions and conversions
-> Add function templating
-> Add custom datatype definitions
+  > Custom DSA implementation (WIP)
+  > Graphics (Simple) | Console screen buffer based
+  > External language intergration | Possible use with languages other than C/C++ (Language conversion libraries are in progress (Rust + Python))
+  > Add custom datatype definitions (Might scrap)
