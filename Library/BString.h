@@ -12,12 +12,12 @@ namespace bstring {
     }
     std::string capStr(std::string &message) {
         for(unsigned int i = 0; i < message.length(); i++)
-            toupper(message[i]);
+            std::toupper(message[i]);
         return message;
     }
     std::string lowStr(std::string &message) {
         for(unsigned int i = 0; i < message.length(); i++)
-            tolower(message[i]);
+            std::tolower(message[i]);
         return message;
     }
 }

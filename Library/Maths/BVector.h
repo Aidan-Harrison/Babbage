@@ -3,6 +3,8 @@
 
 #include <cassert>
 #include <algorithm>
+#include <cmath>
+#include <tuple>
 // Add printing
 
 namespace bvector {

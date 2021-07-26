@@ -105,11 +105,11 @@ namespace bmatrix {
 
     // Operator Overloading
     template<typename T>
-    Matrix<T> operator+(Matrix<T> &m1, Matrix<T> &m2) { AddMatrix(m1, m2); }
+    Matrix<T> operator+(Matrix<T> &m1, Matrix<T> &m2) { return AddMatrix(m1, m2); }
     template<typename T>
-    Matrix<T> operator-(Matrix<T> &m1, Matrix<T> &m2) { SubMatrix(m1, m2); }
+    Matrix<T> operator-(Matrix<T> &m1, Matrix<T> &m2) { return SubMatrix(m1, m2); }
     template<typename T>
-    Matrix<T> operator*(Matrix<T> &m1, Matrix<T> &m2) { MultMatrix(m1, m2); }
+    Matrix<T> operator*(Matrix<T> &m1, Matrix<T> &m2) { return MultMatrix(m1, m2); }
 }
 
 #endif

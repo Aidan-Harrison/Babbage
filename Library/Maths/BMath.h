@@ -3,9 +3,10 @@
 
 #include <iostream>
 #include <vector> 
-#include <tuple> // Utilise
-#include <cmath> // Override most functions
+#include <tuple>
+#include <cmath>
 #include <cassert>
+#include <unordered_map>
 
 #include "BMatrix.h"
 #include "BVector.h"
@@ -18,7 +19,7 @@
 
 namespace bmath {
     // Basic
-    template<typename T> // Improve?
+    template<typename T> 
         inline T add(T a, T b) { return a + b; }
     template<typename T>
         inline T sub(T a, T b) { return a - b; }
@@ -39,8 +40,9 @@ namespace bmath {
         }
 
     // Advanced
-    inline int floor(float value)  { return static_cast<int>(value); }
-    inline int floor(double value) { return static_cast<int>(value); }
+    inline int   floor(float value)  { return static_cast<int>(value); }
+    inline short Sfloor(float value) { return static_cast<int>(value); }
+    inline int   floor(double value) { return static_cast<int>(value); }
     // Do
     template<typename T>
     float round(T value, float roundTo) { // 'roundTo' refers to the the digit to round to, similar to floor but with user control
@@ -50,6 +52,7 @@ namespace bmath {
             case 100:   break;
             case 1000:  break;
         }
+        return 0.0f;
     }
 
     template<typename T>
@@ -67,35 +70,40 @@ namespace bmath {
         inline T Max(const T a, const T b) { return (a < b) ? b : a; }
     template<typename T>
         inline T Min(const T a, const T b) { return (a > b) ? a : b; }
-    template<typename T>
-    inline bool Equal(const T a, const T b) {
-        if(a == b) return true;
-        return false;
-    }
     template<typename T> // Do vector overload?
-    inline T* Average(T values[], int size) {
-        std::sort(values); // Check!
-        int amount = 0;
-        for(unsigned int i = 0; i <= size; i++ ) {
-            return;
+    T Average(T values[], int size) {
+        int current = 0; 
+        int max = 0;
+        std::unordered_map<int, int>  m;
+        for(auto i : values)
+            m[i]++;
+        for(unsigned int i = 0; i < size; i++) {
+            current = m.count(i);
+            if(m.count(i) > max)
+                max = current;
         }
-        return;
+        return max;
+    }
+    template<typename T>
+    T Average(const std::vector<int> &values) {
+        int current = 0;
+        int max = 0;
+        std::unordered_map<int,int> m;
+        for(auto i : values)
+            m[i]++;
+        for(unsigned int i = 0; i < values.size(); i++) {
+            current = m.count(i);
+            if(m.count(i) > max)
+                max = current;
+        }
+        return max;
     }
 
     // Conversions -------------------------------------------------
     inline int toASC(char value) { 
         return static_cast<int>(value); 
     }
-    std::vector<int> toASC(const char* string, const int size) { // Convert to C array for performance | Check const!
-        int charNum = 0;
-        std::vector<int> numbers = {};
-        for(unsigned int i = 0; i < size; i++) {
-            charNum = static_cast<int>(string[i]);
-            numbers.push_back(charNum);
-        }
-        return numbers;
-    }
-    std::vector<int> toASC(std::string string) { // std::string overload | Pass by reference?
+    std::vector<int> toASCArray(const std::string &&string) { 
         int charNum = 0;
         std::vector<int> numbers = {};
         for(unsigned int i = 0; i < string.length(); i++) {
@@ -104,6 +112,12 @@ namespace bmath {
         }
         return numbers;
     }
+    std::string toASC(std::string &&str) {
+        for(unsigned int i = 0; i < str.length(); i++) 
+            static_cast<int>(str[i]);
+        return str;
+    }
+
         /* Angles/Rotation */
             // Degrees
     inline float convDegToRad(float deg)     { deg * PI / 180; return deg; }
@@ -168,7 +182,7 @@ namespace bmath {
     inline float convHourtoMin(float sec)    { sec * 60;  return sec; } 
     inline float convHourtoSec(float sec)    { sec * 3600;return sec; } 
     inline float convHourtoDay(float sec)    { sec * 24;  return sec; } 
-    inline float convHourtoDay(float sec)    { sec / 168; return sec; } 
+    inline float convHourtoDayDiv(float sec)    { sec / 168; return sec; } // Check!
     inline float convHourtoMonth(float sec)  { sec / 730; return sec; } 
     inline float convHourtoYear(float sec)   { sec / 8760;return sec; } 
         /* Energy */
@@ -185,13 +199,11 @@ namespace bmath {
             // Wattage
     inline float convAVtoWatt(float amps, float volts) { return amps * volts; }
 
-    // Other 
-
     // Graphics and Geometry
-    class Point { // Pixel based
+    class Point {
     private:
         int pos[2] = {0,0};
-        int col[3] = {0,0,0};
+        // Add color if needed
     public:
         Point(const int xPos = 0, const int yPos = 0) 
         {
@@ -200,30 +212,144 @@ namespace bmath {
         }
         inline int getX() const { return pos[0]; }
         inline int getY() const { return pos[1]; }
-        // DO BOTH RETURN
-        void setPos(int x, int y) { 
-            pos[0] = x; 
-            pos[y] = y;
+
+        std::tuple<int,int> GetPos() const {
+            std::tuple<int,int> position;
+            std::get<0>(position) = pos[0];
+            std::get<1>(position) = pos[1];
+            return position;
         }
+
+        inline void setX(const int x) { pos[0] = x;}
+        inline void setY(const int y) { pos[1] = y;}
+        inline void setPos(int x, int y) { 
+            pos[0] = x; 
+            pos[1] = y;
+        }
+
+        ~Point() {}
+    };
+
+    struct Line {
+        float m_Length = 1.0f;
+        Point* points[2];
+        Line(const float length = 1.0f) 
+            :m_Length(length)
+        {
+            assert(length < FLT_MAX); // Check!
+        }
+
+        Line(Line &&line) noexcept 
+            :m_Length(line.m_Length)
+        {
+            points[0] = line.points[0];
+            points[1] = line.points[1];
+        }
+
+        inline float getLength() const {return m_Length;}
+        inline Point* getFPoint() const {return points[0];}
+        inline Point* getSPoint() const {return points[1];}
+
+        ~Line() {}
+    };
+    
+    class Triangle { // Standard tri with total freedom (Scalene)
+    private:
+        float m_a, m_b, m_c;
+        float sides[3] = {m_a, m_b, m_c};
+        float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
+        bool isEquilateral = false, isIsocoles = false, isScalene = false, isRightAngled = false;
+    public:
+        Triangle(const float a = 1, const float b = 1, const float c = 1)
+            : m_a(a), m_b(b), m_c(c)
+        {
+            assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
+            check(); // Runs initially see to if their is a match
+        }
+
+        void check() { // Checks what type of triangle it is
+            if(m_a == m_b && m_a == m_c) isEquilateral = true;
+            else if(m_a == m_b || m_a == m_c || m_b == m_c) isIsocoles = true;
+            else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) isRightAngled = true;
+            else isScalene = true;
+        } 
+
+        float calcAngles() {
+            return 0.0f;
+        }
+
+        inline float calcMedianA() { return sqrt(2 * m_b * m_b + 2 * m_c * m_c - m_a * m_a / 4); } // Check all! Then make universal
+        inline float calcMedianB() { return sqrt(2 * m_a * m_a + 2 * m_c * m_c - m_b * m_b / 4); }
+        inline float calcMedianC() { return sqrt(2 * m_a * m_a + 2 * m_b * m_b - m_c * m_c / 4); }
+        float inradius() {
+            return 0.0f;
+        }
+
+        inline float getA() const { return m_a; }
+        inline float getB() const { return m_b; }
+        inline float getC() const { return m_c; }
+
+        std::tuple<float,float,float> getSides() const { // Check const!
+            std::tuple<float,float,float> sides;
+            std::get<0>(sides) = m_a;
+            std::get<1>(sides) = m_b;
+            std::get<2>(sides) = m_c;
+            return sides;
+        }
+
+        inline float getAngleA() const { return m_AngleA; }
+        inline float getAngleB() const { return m_AngleB; }
+        inline float getAngleC() const { return m_AngleC; }
+        std::tuple<float,float,float> getAngles() const { // Check const!
+            std::tuple<float,float,float> angles;
+            std::get<0>(angles) = m_AngleA;
+            std::get<1>(angles) = m_AngleB;
+            std::get<2>(angles) = m_AngleC;
+            return angles;
+        }
+        bool getType() {
+            if(isEquilateral)      return isEquilateral;
+            else if(isIsocoles)    return isIsocoles;
+            else if(isScalene)     return isScalene;
+            else if(isRightAngled) return isRightAngled;
+        }
+        float gamma() { // Calculates angle | Continue | Do standard overload outside this class
+            float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
+            return gamma;
+        }
+        double TPer() {
+            if(m_a + m_b > m_c) return m_a + m_b + m_c;
+            else
+                std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
+        }
+        double semiTPer() {
+            if(m_a + m_b > m_c) return m_a + m_b + m_c / 2;
+            else
+                std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
+        }
+        // Chainable Functions
+
+        ~Triangle() {};
     };
 
     class Shape2D { // Allow for more then Quad
     private:
-        int amountOfSides = 4; // Defaults to a Quad, if 3 create a triangle object, deletes this | Possibly allow for lines and points
+        std::vector<int> m_Sides{};
+        std::vector<Line*> m_SidesR{};
     public:
-        float m_Width, m_Height;
+        float m_Width = 0.1f, m_Height = 0.1f;
         Shape2D(const int sides = 4, const float width = 1.0f, const float height = 1.0f) 
-            :amountOfSides(sides), m_Width(width), m_Height(height)
+            :m_Width(width), m_Height(height)
         {
-            assert(amountOfSides != 0 && m_Width != 0 && m_Height != 0);
-            if(amountOfSides == 3)
+            assert(sides != 0 && m_Width != 0 && m_Height != 0);
+            m_Sides.resize(sides);
+            if(m_Sides.size() == 3)
                 Triangle *t = new Triangle(0.0f, 0.0f, 0.0f);
         }
         // Move Constructor | Fix
         Shape2D(Shape2D &&shape) noexcept
             :m_Width(shape.m_Width), m_Height(shape.m_Height)
         {
-            m_Width = 0, m_Height = 0; // Check!
         }
         // Move assignment | Fix!
         Shape2D& operator=(Shape2D &&shape) noexcept {
@@ -238,52 +364,54 @@ namespace bmath {
             m_Height = shape.m_Height;
             return *this;
         }
-        std::string GetType() const { // Pointless!
-            switch(amountOfSides) { 
-                case 4: return "Quad"; break;
-                case 5: return "Pent"; break;
-                case 6: return "Hex";  break;
-                case 7: return "Hept"; break;
-                case 8: return "Oct";  break;
-            }
-        }
-        inline float getSides()  const { return amountOfSides; }
+
+        inline float getSideAmount()  const { return m_Sides.size(); }
         inline float getWidth()  const { return m_Width; }
         inline float getHeight() const { return m_Height; }
         inline float getPer()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
         inline float getArea()   const {return m_Width * 2 + m_Height * 2; }
 
+        std::tuple<float,float,float,float> getSides() const {
+            std::tuple<float,float,float,float> sides;
+            std::get<0>(sides) = m_SidesR[0]->getLength();
+            std::get<1>(sides) = m_SidesR[1]->getLength();
+            std::get<2>(sides) = m_SidesR[2]->getLength();
+            std::get<3>(sides) = m_SidesR[3]->getLength();
+            return sides;
+        }
+
         // Chainable functions
         Shape2D& getPerC() {m_Width + m_Width + m_Height + m_Height; return *this; }
         Shape2D& getAreaC() {m_Width * 2 + m_Height; return *this; }
-        Shape2D& changeSidesC(int sides) {amountOfSides = sides; return *this; } // Possibly add safety?
+        Shape2D& changeSideCount(const int sides) {m_Sides.resize(sides); return *this; } // Add safety?
 
         ~Shape2D() {}
     };
-        // Overloads | CHECK ALL OF THESE! | both syntatics and formulas | Reference return?
+
+        // Overload
     Shape2D operator+(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width); }
     Shape2D operator-(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width); }
     Shape2D operator*(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width); }
 
     class Shape3D { // In Meters
     private:
+        int numberOfFaces = 0;
         bool isPrism = false; // Alters formulas
         bool isPyramid = false; // (Right-Rectangular Pyramid only!) | Allow for tri based?
     public:
         float m_Width, m_Height, m_Depth;
-        Shape3D(int width = 1, int height = 1, int depth = 1, const std::string &type = "Default") 
-            :m_Width(width), m_Height(height), m_Depth(depth)
+        Shape3D(const int width = 1, const int height = 1, const int depth = 1, int nFaces = 6, const std::string &type = "Default") 
+            :m_Width(width), m_Height(height), m_Depth(depth), numberOfFaces(nFaces)
         {
-            assert(m_Width <= 0 && m_Height <= 0 && m_Depth <= 0);
+            assert(m_Width <= 0 && m_Height <= 0 && m_Depth <= 0 && numberOfFaces != 0);
             if(type == "prism")
                 isPrism = true;
             else if(type == "pyramid")
                 isPyramid = true;
         }
-        Shape3D(Shape3D && shape) noexcept 
+        Shape3D(Shape3D &&shape) noexcept 
             :m_Width(shape.m_Width), m_Height(shape.m_Height), m_Depth(shape.m_Depth)
         {
-            m_Width = 0, m_Height = 0, m_Depth = 0;
         }
         Shape3D& operator=(Shape3D &&shape) noexcept {
             if(&shape == this)
@@ -292,7 +420,8 @@ namespace bmath {
             delete &m_Height;
             delete &m_Depth;
             m_Width = shape.m_Width;
-            m_Width = shape.m_Height;
+            m_Height = shape.m_Height;
+            m_Depth = shape.m_Depth;
             return *this;
         }
 
@@ -305,14 +434,22 @@ namespace bmath {
                 return "Default";
         }
 
+        inline int getFaceCount() const { return numberOfFaces; }
+
         // Take into account shapes (Prism, pyramid etc.)
         inline float getWidth() const { return m_Width; }
         inline float getHeight()const { return m_Height; }
         inline float getDepth() const { return m_Depth; }
-        inline float getPer()   const { return m_Width + m_Width + m_Height + m_Height; } // Square only for now
-        inline float getArea()  const {
+
+        inline void setWidth(const float val) { m_Width = val; }
+        inline void setHeight(const float val) { m_Height = val; }
+        inline void setDepth(const float val) { m_Depth = val; }
+
+        inline float getPer() const { return m_Width + m_Width + m_Height + m_Height; } 
+        inline Shape3D& getPerC() { m_Width + m_Width + m_Height + m_Height; return *this; } 
+        inline float getArea() const {
             if(isPrism)
-                return;
+                return 0.0f;
             else if(isPyramid)
                 return m_Width * m_Depth + m_Width * pow(sqrt((m_Depth / 2)), 2) + pow(m_Height,2) + m_Depth; // Check!
             else 
@@ -320,7 +457,7 @@ namespace bmath {
         }
         inline float getVol() const { 
             if(isPrism)
-                return;
+                return 0.0f;
             else if(isPyramid)
                 return m_Width * m_Height * m_Depth / 3;
             else 
@@ -355,7 +492,6 @@ namespace bmath {
     private:
         float m_Radius, m_Circumfrence;
     public:
-        Circle() = default;
         Circle(int radius = 1)
             :m_Radius(radius),  m_Circumfrence(2 * PI * radius) // Check!
         {
@@ -389,10 +525,10 @@ namespace bmath {
         Circle& getCircumfrenceC() {m_Radius *= 2 * PI; return *this; }
         Circle& getRadiusC() {m_Circumfrence /= 2 * PI; return *this; }
 
-        ~Circle() = default;
+        ~Circle() {};
     };
 
-    class Ellipse : public Circle { // Check!
+    class Ellipse : public Circle {
     private:
         Point first_Foci, second_Foci;
     public:
@@ -402,27 +538,30 @@ namespace bmath {
             assert(radius > 0);
         }
         // ADD FUNCTIONS | MARK BASE AS VIRTUAL!
-        ~Ellipse() = default;
+        ~Ellipse() {};
     };
 
     // General, object independent | Fix returns!?
     template<typename T>
     double* circArea(T radius) {
-        if(sizeof(radius) != int8_t)
-            std::cerr << "Not int!\n";
+        // if(sizeof(radius) != int8_t)
+            // std::cerr << "Not int!\n";
         radius *= radius * PI;
         return &radius; 
     }
+
     template<typename T>
     double* circumfrence(T radius) {
         radius *= radius * 2 * PI;
         return &radius;
     }
+
     template<typename T>
     double* diameter(T radius) { 
         radius *= 2;
         return &radius; 
     }
+
     template<typename T>
     double* radius(T cir) { 
         cir = cir / 2 * PI;
@@ -430,79 +569,6 @@ namespace bmath {
     }
 
     // Triangle Math ==============================================================================================
-    class Triangle { // Standard tri with total freedom (Scalene)
-    private:
-        float m_a, m_b, m_c;
-        float sides[3] = {m_a, m_b, m_c};
-        float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
-        bool isEquilateral = false, isIsocoles = false, isScalene = false, isRightAngled = false;
-    public:
-        Triangle() {}
-        Triangle(const float a, const float b, const float c)
-            :m_a(a), m_b(b), m_c(c)
-        {
-            assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
-            check(); // Runs initially see to if their is a match
-        }
-        void check() { // Checks what type of triangle it is
-            if(m_a == m_b && m_a == m_c) isEquilateral = true;
-            else if(m_a == m_b || m_a == m_c || m_b == m_c) isIsocoles = true;
-            else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) isRightAngled = true;
-            else isScalene = true;
-        } 
-        float calcAngles() {
-            return;
-        }
-        inline float calcMedianA() { return sqrt(2 * m_b * m_b + 2 * m_c * m_c - m_a * m_a / 4); } // Check all! Then make universal
-        inline float calcMedianB() { return sqrt(2 * m_a * m_a + 2 * m_c * m_c - m_b * m_b / 4); }
-        inline float calcMedianC() { return sqrt(2 * m_a * m_a + 2 * m_b * m_b - m_c * m_c / 4); }
-        float inradius() {
-            return;
-        }
-        inline float getA() const { return m_a; }
-        inline float getB() const { return m_b; }
-        inline float getC() const { return m_c; }
-        float* getSides() const { // Check const!
-            float sides[3];
-            sides[0] = m_a;
-            sides[1] = m_b;
-            sides[2] = m_c;
-            return sides;
-        }
-        inline float getAngleA() const { return m_AngleA; }
-        inline float getAngleB() const { return m_AngleB; }
-        inline float getAngleC() const { return m_AngleC; }
-        float* getAngles() const { // Check const!
-            float angles[3];
-            angles[0] = m_AngleA;
-            angles[1] = m_AngleB;
-            angles[2] = m_AngleC;
-            return angles;
-        }
-        bool getType() {
-            if(isEquilateral)      return isEquilateral;
-            else if(isIsocoles)    return isIsocoles;
-            else if(isScalene)     return isScalene;
-            else if(isRightAngled) return isRightAngled;
-        }
-        float gamma() { // Calculates angle | Continue | Do standard overload outside this class
-            float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
-            return gamma;
-        }
-        double TPer() {
-            if(m_a + m_b > m_c) return m_a + m_b + m_c;
-            else
-                std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
-        }
-        double semiTPer() {
-            if(m_a + m_b > m_c) return m_a + m_b + m_c / 2;
-            else
-                std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
-        }
-        // Chainable Functions
-
-        ~Triangle() {};
-    };
 
     class ITriangle : public Triangle { // Isosceles
     private:
@@ -514,7 +580,7 @@ namespace bmath {
             assert(m_Height <= 0 && m_Base <= 0);
         }
         float calcAngles(ITriangle &t) {
-            return;
+            return 0.0f;
         }
         inline float getBase() const { return m_Base; }
         inline float getHeight() const { return m_Height; }
@@ -529,7 +595,7 @@ namespace bmath {
             else
                 std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
         }
-        ~ITriangle() = default;
+        ~ITriangle() {};
     };
 
     class ETriangle : public Triangle { // Equilateral | Angle always = 60
@@ -559,6 +625,7 @@ namespace bmath {
     private:
         float m_Opposite, m_Adjacent, m_Hypotenuse;
         const float m_RightAngle = 90; // Change!
+        // Add other two angles
     public:
         RTriangle() = default;
         RTriangle(float oppSize, float adjSize, float hypSize)
@@ -567,20 +634,20 @@ namespace bmath {
             assert(m_Opposite <= 0 && m_Adjacent <= 0 && m_Hypotenuse <= 0);
         }
         float calcAngles(RTriangle &t) {
-            return;
+            return 0.0f;
         }
         inline float getOpp() const { return m_Opposite; }
         inline float getAdj() const { return m_Adjacent; }
         inline float getHyp() const { return m_Hypotenuse; }
-        float* getSides() const {
-            float sides[3];
-            sides[0] = m_Opposite;
-            sides[1] = m_Adjacent;
-            sides[2] = m_Hypotenuse;
+        std::tuple<float,float,float> getSides() const {
+            std::tuple<float,float,float> sides;
+            std::get<0>(sides) = m_Opposite;
+            std::get<1>(sides) = m_Adjacent;
+            std::get<2>(sides) = m_Hypotenuse;
             return sides;
         }
         float* getAngles() const {
-            float angles[3]; // Possibly change to global?
+            float angles[3];
             angles[0] = m_RightAngle;
             return angles;
         }
@@ -588,7 +655,7 @@ namespace bmath {
         float pythag(const char side = 's') { // Object overload
             switch(side) {
                 case 's': float c = m_Opposite * m_Opposite + m_Adjacent * m_Adjacent; return sqrt(c);
-                case 'l': float c = m_Opposite * m_Opposite - m_Adjacent * m_Adjacent; return sqrt(c);
+                case 'l': float d = m_Opposite * m_Opposite - m_Adjacent * m_Adjacent; return sqrt(d);
             }
             if(side != 's' || side != 'l')
                 std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 's' (int) or 'l' (long) (Defaults to int)" << std::endl;
@@ -597,7 +664,8 @@ namespace bmath {
         inline double sin() { return m_Opposite / m_Hypotenuse; }
         inline double cos() { return m_Adjacent / m_Hypotenuse; }
         inline double tan() { return m_Opposite / m_Adjacent; }
-        ~RTriangle() = default;
+
+        ~RTriangle() {};
     };
 
     // General | Object Independent
@@ -616,19 +684,19 @@ namespace bmath {
             std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl; // Check need for exit status!
     }
         // Area
-    double* tArea(double height, double base) { 
+    double tArea(double height, double base) { 
         height *= base / 2;
-        return &height; 
+        return height; 
     }
-    double* tArea(double a) {
+    double tArea(double a) {
         a = sqrt(3) / 4 * a * a;
-        return &a;                     
+        return a;                     
     } // Equilateral without object
     // Pythagoras
     float pythag(float a, float b, char side = 's') {
         switch(side) {
-            case 's': float c = a * a + b * b; return sqrt(c);
-            case 'l': float c = a * a - b * b; return sqrt(c);
+            case 's': float c = a * a + b * b; return sqrt(c); break;
+            case 'l': float d = a * a - b * b; return sqrt(d); break;
         }
         if(side != 's' || side != 'l')
             std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 's' (int) or 'l' (long) (Defaults to int)" << std::endl;
@@ -645,21 +713,22 @@ namespace bmath {
     inline double cot(double adjacent, double opposite)   { return adjacent / opposite; }   // Cotangent
 
     // Do other triangles
-
     class Quaternion {
     private:
-        float i{0.0f}, j{0.0f}, k{0.0f}, w{0.0f}; 
         float magnitude = 0.0f;
     public:
+        float i{0.0f}, j{0.0f}, k{0.0f}, w{0.0f}; 
         Quaternion(float a = 0.0f, float b = 0.0f, float c = 0.0f, float d = 0.0f)
             :i(a), j(b), k(c), w(d)
         { // Assert all elements exist
         }
+
         // Move constructor
         Quaternion(Quaternion &&quat) noexcept
             :i(quat.i), j(quat.j), k(quat.k), w(quat.w)
         {    
         } 
+
         // Move assignment
         Quaternion& operator=(Quaternion &&quat) noexcept {
                 // Self detection
@@ -677,13 +746,12 @@ namespace bmath {
             w = quat.w;
             return *this;
         }
-        // Operator Overloads
 
-        // Math
         float qMag() {
             float mag = sqrt(w * w + i * i + j * j + k * k);
             return mag;
         }
+
         float qNorm() {
             magnitude = qMag();
             w /= magnitude;
@@ -692,25 +760,29 @@ namespace bmath {
             k /= magnitude;
             return magnitude;
         }
-        Quaternion& qMult(Quaternion &q1, Quaternion &q2) { // CHeck return (Reference?)
-            Quaternion resultQuat;
-            resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
-            resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
-            resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
-            resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
-            return resultQuat;
-        }
-        Quaternion& qAdd(Quaternion &q1, Quaternion &q2) { // Check return
-            Quaternion resultQuat;
-            resultQuat.i = q1.i + q2.w;
-            resultQuat.j = q1.j + q2.j;
-            resultQuat.k = q1.k + q2.k;
-            resultQuat.w = q1.w + q2.w;
-            return resultQuat;
-        }
 
-        ~Quaternion() = default;
+        ~Quaternion() {}
     };
+
+    Quaternion qMult(Quaternion &q1, Quaternion &q2) { // CHeck return (Reference?)
+        Quaternion resultQuat;
+        resultQuat.i = q1.i * q2.w + q1.k * q2.k - q1.k * q2.j + q1.w * q2.i;
+        resultQuat.j = q1.i * q2.k + q1.w * q2.w + q1.k * q2.i + q1.w * q2.j;
+        resultQuat.k = q1.i * q2.j - q1.i * q2.i + q1.k * q2.w + q1.w * q2.k;
+        resultQuat.w = q1.i * q2.j - q1.j * q2.j - q1.k * q2.k + q1.w * q2.w;
+        return resultQuat;
+    }
+    Quaternion qAdd(Quaternion &q1, Quaternion &q2) { // Check return
+        Quaternion resultQuat;
+        resultQuat.i = q1.i + q2.w;
+        resultQuat.j = q1.j + q2.j;
+        resultQuat.k = q1.k + q2.k;
+        resultQuat.w = q1.w + q2.w;
+        return resultQuat;
+    }
+
+    Quaternion operator*(Quaternion &q1, Quaternion &q2) {return qMult(q1,q2); } // Check!
+    Quaternion operator+(Quaternion &q1, Quaternion &q2) {return qAdd(q1,q2); }
 }
 
 #endif
