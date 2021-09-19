@@ -7,6 +7,8 @@
 #include <cmath>
 #include <cassert>
 #include <unordered_map>
+#include <map>
+#include <limits>
 
 #include "BMatrix.h"
 #include "BVector.h"
@@ -63,6 +65,12 @@ namespace bmath {
 
     void FastDiv(int m) {
 
+    }
+
+    template<typename T>    
+    std::tuple<float, float> distance(T &obj1, T&obj2) { // Takles two objects and gets the distance away from each other
+        std::tuple<float, float> dist;
+        return dist;
     }
 
     // Comparisons
@@ -203,7 +211,6 @@ namespace bmath {
     class Point {
     private:
         int pos[2] = {0,0};
-        // Add color if needed
     public:
         Point(const int xPos = 0, const int yPos = 0) 
         {
@@ -213,7 +220,7 @@ namespace bmath {
         inline int getX() const { return pos[0]; }
         inline int getY() const { return pos[1]; }
 
-        std::tuple<int,int> GetPos() const {
+        std::tuple<int,int> GetPos() const { // ?
             std::tuple<int,int> position;
             std::get<0>(position) = pos[0];
             std::get<1>(position) = pos[1];
@@ -227,16 +234,18 @@ namespace bmath {
             pos[1] = y;
         }
 
+
         ~Point() {}
     };
 
     struct Line {
         float m_Length = 1.0f;
+        std::tuple<float, float> localRotation;
         Point* points[2];
         Line(const float length = 1.0f) 
             :m_Length(length)
         {
-            assert(length < FLT_MAX); // Check!
+            assert(length < std::numeric_limits<float>::max()); // Check!
         }
 
         Line(Line &&line) noexcept 
@@ -249,24 +258,25 @@ namespace bmath {
         inline float getLength() const {return m_Length;}
         inline Point* getFPoint() const {return points[0];}
         inline Point* getSPoint() const {return points[1];}
+        inline std::tuple<Point, Point> GetPoints() {
+            std::tuple<Point, Point> pointsTup;
+            std::get<0>(pointsTup) = *points[0];
+            std::get<1>(pointsTup) = *points[1];
+            return pointsTup;
+        }
 
         ~Line() {}
     };
-    
+
     class Triangle { // Standard tri with total freedom (Scalene)
     private:
         float m_a, m_b, m_c;
         float sides[3] = {m_a, m_b, m_c};
+        std::tuple<float, float> rotation;
+        std::tuple<float, float> translation;
         float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
         bool isEquilateral = false, isIsocoles = false, isScalene = false, isRightAngled = false;
     public:
-        Triangle(const float a = 1, const float b = 1, const float c = 1)
-            : m_a(a), m_b(b), m_c(c)
-        {
-            assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
-            check(); // Runs initially see to if their is a match
-        }
-
         void check() { // Checks what type of triangle it is
             if(m_a == m_b && m_a == m_c) isEquilateral = true;
             else if(m_a == m_b || m_a == m_c || m_b == m_c) isIsocoles = true;
@@ -274,20 +284,56 @@ namespace bmath {
             else isScalene = true;
         } 
 
-        float calcAngles() {
-            return 0.0f;
+        Triangle(const float a = 1, const float b = 1, const float c = 1)
+            : m_a(a), m_b(b), m_c(c)
+        {
+            assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
+            check();
         }
 
-        inline float calcMedianA() { return sqrt(2 * m_b * m_b + 2 * m_c * m_c - m_a * m_a / 4); } // Check all! Then make universal
+        void calcAngles() {
+            if(isEquilateral) {
+               m_AngleA = 60; 
+               m_AngleB = 60; 
+               m_AngleC = 60; 
+            }
+            else if(isRightAngled) {
+                m_AngleB = 90;
+            }
+            else if(isIsocoles) {
+
+            }
+        }
+
+        inline float calcMedianA() { return sqrt(2 * m_b * m_b + 2 * m_c * m_c - m_a * m_a / 4); }
         inline float calcMedianB() { return sqrt(2 * m_a * m_a + 2 * m_c * m_c - m_b * m_b / 4); }
         inline float calcMedianC() { return sqrt(2 * m_a * m_a + 2 * m_b * m_b - m_c * m_c / 4); }
         float inradius() {
             return 0.0f;
         }
 
+        void setRotation(const float x, const float y) {
+            std::get<0>(rotation) = x;
+            std::get<1>(rotation) = y;
+        }
+        void setTranslation(const float x, const float y) {
+            std::get<0>(translation) = x;
+            std::get<1>(translation) = y;
+        }
+
         inline float getA() const { return m_a; }
         inline float getB() const { return m_b; }
         inline float getC() const { return m_c; }
+
+        inline void setA(const float a) { m_a = a; }
+        inline void setB(const float b) { m_b = b; }
+        inline void setC(const float c) { m_c = c; }
+
+        void setAll(const float a, const float b, const float c) {
+            sides[0] = a;
+            sides[1] = b;
+            sides[2] = c;
+        }
 
         std::tuple<float,float,float> getSides() const { // Check const!
             std::tuple<float,float,float> sides;
@@ -332,19 +378,25 @@ namespace bmath {
         ~Triangle() {};
     };
 
-    class Shape2D { // Allow for more then Quad
+    class Shape2D {
     private:
-        std::vector<int> m_Sides{};
-        std::vector<Line*> m_SidesR{};
+        std::map<unsigned int, Line> m_Edges{};
     public:
         float m_Width = 0.1f, m_Height = 0.1f;
+        std::tuple<float, float> rotation;
+        std::tuple<float, float> translation;
         Shape2D(const int sides = 4, const float width = 1.0f, const float height = 1.0f) 
             :m_Width(width), m_Height(height)
         {
-            assert(sides != 0 && m_Width != 0 && m_Height != 0);
-            m_Sides.resize(sides);
-            if(m_Sides.size() == 3)
-                Triangle *t = new Triangle(0.0f, 0.0f, 0.0f);
+            assert(sides > 2 && m_Width != 0 && m_Height != 0);
+            for(unsigned int i = 0; i <= sides; i++) {
+                Line *newLine = new Line;
+                // m_Edges.insert(std::pair<unsigned int, Line>(i, newLine)); // Fix!
+            } 
+            if(sides == 3) // Create triangle
+                std::cout << "Triangle";
+            else
+                std::cout << "Other";
         }
         // Move Constructor | Fix
         Shape2D(Shape2D &&shape) noexcept
@@ -365,25 +417,30 @@ namespace bmath {
             return *this;
         }
 
-        inline float getSideAmount()  const { return m_Sides.size(); }
+        inline float getSideCount() { return m_Edges.size(); }
         inline float getWidth()  const { return m_Width; }
         inline float getHeight() const { return m_Height; }
         inline float getPer()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
         inline float getArea()   const {return m_Width * 2 + m_Height * 2; }
 
-        std::tuple<float,float,float,float> getSides() const {
-            std::tuple<float,float,float,float> sides;
-            std::get<0>(sides) = m_SidesR[0]->getLength();
-            std::get<1>(sides) = m_SidesR[1]->getLength();
-            std::get<2>(sides) = m_SidesR[2]->getLength();
-            std::get<3>(sides) = m_SidesR[3]->getLength();
-            return sides;
+        void setRotation(const float x, const float y) {
+            std::get<0>(rotation) = x;
+            std::get<1>(rotation) = y;
+        }
+
+        std::vector<Line> GetEdges() { // Returns edges in vector format | Pointer?
+            std::vector<Line> lines{};
+            for(std::map<unsigned int, Line>::iterator it = m_Edges.begin(); it != m_Edges.end(); it++)
+                lines.push_back(it->second);
+            return lines;
         }
 
         // Chainable functions
         Shape2D& getPerC() {m_Width + m_Width + m_Height + m_Height; return *this; }
         Shape2D& getAreaC() {m_Width * 2 + m_Height; return *this; }
-        Shape2D& changeSideCount(const int sides) {m_Sides.resize(sides); return *this; } // Add safety?
+        Shape2D& changeSideCount(const int sides) {
+            return *this; 
+        } // Add safety?
 
         ~Shape2D() {}
     };
@@ -393,7 +450,7 @@ namespace bmath {
     Shape2D operator-(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width); }
     Shape2D operator*(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width); }
 
-    class Shape3D { // In Meters
+    class Shape3D {
     private:
         int numberOfFaces = 0;
         bool isPrism = false; // Alters formulas
@@ -646,16 +703,12 @@ namespace bmath {
             std::get<2>(sides) = m_Hypotenuse;
             return sides;
         }
-        float* getAngles() const {
-            float angles[3];
-            angles[0] = m_RightAngle;
-            return angles;
-        }
+        // Add etAngles()
         double calcSize() { return m_Opposite * m_Adjacent * m_Hypotenuse; } // Check!
         float pythag(const char side = 's') { // Object overload
             switch(side) {
-                case 's': float c = m_Opposite * m_Opposite + m_Adjacent * m_Adjacent; return sqrt(c);
-                case 'l': float d = m_Opposite * m_Opposite - m_Adjacent * m_Adjacent; return sqrt(d);
+                case 's': { float c = m_Opposite * m_Opposite + m_Adjacent * m_Adjacent; return sqrt(c); break; }
+                case 'l': { float d = m_Opposite * m_Opposite - m_Adjacent * m_Adjacent; return sqrt(d); break; }
             }
             if(side != 's' || side != 'l')
                 std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 's' (int) or 'l' (long) (Defaults to int)" << std::endl;
@@ -695,8 +748,8 @@ namespace bmath {
     // Pythagoras
     float pythag(float a, float b, char side = 's') {
         switch(side) {
-            case 's': float c = a * a + b * b; return sqrt(c); break;
-            case 'l': float d = a * a - b * b; return sqrt(d); break;
+            case 's': { float c = a * a + b * b; return sqrt(c); break; }
+            case 'l': { float d = a * a - b * b; return sqrt(d); break; }
         }
         if(side != 's' || side != 'l')
             std::cerr << "Babbage Error:- Invalid dictation of side to find, must be either: 's' (int) or 'l' (long) (Defaults to int)" << std::endl;

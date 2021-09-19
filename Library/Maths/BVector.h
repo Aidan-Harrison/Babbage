@@ -184,6 +184,7 @@ namespace bvector {
         Vector3i dotProd3(Vector3i &v1, Vector3i &v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
         Vector3i crossProd(Vector3i &v1, Vector3i &v2) { // Continue
             // return v1.getMag() * v2.getMag();
+            return *this;
         }
         ~Vector3i() {};
     };
@@ -234,6 +235,7 @@ namespace bvector {
         Vector3f dotProd3(Vector3f &v1, Vector3f &v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
         Vector3f crossProd(Vector3f &v1, Vector3f &v2) { // Continue
             // return v1.getMag() * v2.getMag();
+            return *this;
         }
         ~Vector3f() {};
     };

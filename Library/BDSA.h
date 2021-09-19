@@ -259,7 +259,7 @@ namespace bDataStruct {
     };
 
     template<typename T>
-    class bTree {
+    class BSTree {
     private:
         treeNode<T>* root;
         // System level functions
@@ -305,7 +305,7 @@ namespace bDataStruct {
                 return nullptr; // Return nothing if leaf is equal to nothing
         }
     public:
-        bTree() {};
+        BSTree() {};
         // user functions
         void bTree<T>::insert(T key) {
             if(root != nullptr)
@@ -320,7 +320,7 @@ namespace bDataStruct {
         treeNode<T>* bTreeSearch(T key) { return search(key, root); }
         void destroyTree() { return destroyTree(root); }
 
-        ~bTree() { destroyTree(); }
+        ~BSTree() { destroyTree(); }
     };
 }
 
