@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <unordered_map>
 #include <map>
+#include <array>
+
+// & or * for vector construction?
 
 namespace bDataStruct {
     template<typename T>
@@ -18,10 +21,6 @@ namespace bDataStruct {
         // Singly-Linked List
     template<typename T>
     struct SLinkedList {
-        SLinkedList() {}
-        SLinkedList(SLinkedList<T> *other) 
-        {
-        }
         struct Node {
             T data;
             Node* next;
@@ -29,68 +28,144 @@ namespace bDataStruct {
             Node(T x) :data(x), next(nullptr) {}
             Node(T x, Node *n) :data(x), next(n) {}
         };
+
+        Node *head = nullptr;
+        int size = 0;
+
+        SLinkedList() {}
+        SLinkedList(SLinkedList<T> *other) 
+        {
+        }
+        SLinkedList(std::vector<T> &vector) 
+        {
+            std::vector<Node*> tempVector{};
+            for(auto i : vector) {
+                Node *newNode = new Node(i);
+                tempVector.push_back(newNode);
+            }
+            for(unsigned int i = 0; i < tempVector.size()-1; i++)
+                tempVector[i]->next = tempVector[i+1];
+        }
+
         void PrintList(Node *n) {
             while(n != nullptr) {
                 std::cout << n->data << ' ';
                 n = n->next;
             }
         }
+
         Node* addNode(Node* prevNode, T data) {
             Node *newNode = new Node(data);
             newNode->next = prevNode->next;
             prevNode->next = newNode;
             return newNode;
         }
-        inline void deleteNode(Node *n) { 
+
+        void delList(node *n) { // Change!
+            if(n != nullptr) {
+                delete n->data;
+                n = n->next;
+                if(n->next == nullptr)
+                    delete n;
+            }
+        }
+
+        inline void deleteNode(Node *n) {
+            if(n == nullptr)
+                std::cerr << "Babbage Error: 'deleteNode()' was passed an invalid argument of, 'nullptr'\n";
             n->next = n->next->next; 
         }   
+        void deleteNodeRAW(Node *n) { // Deletes memory of node as well
+            
+        }
 
-        ~SLinkedList() {}
+        ~SLinkedList() {
+            delList(head);
+        }
     };
 
         // Doubly-Linked List
     template<typename T>
     struct DLinkedList {
-        DLinkedList() {}
-        DLinkedList(DLinkedList<T> *other) 
-        { 
-        }
-
         struct dNode {
             T data;
             dNode* prev;
             dNode* next;
             dNode() :data(0), prev(nullptr), next(nullptr) {}
             dNode(T x) :data(x), prev(nullptr), next(nullptr) {}
+            dNode(T x, dNode *n) :data(x), next(n) {}
             dNode(T x, dNode *p) :data(x), prev(p), next(nullptr) {}
             dNode(T x, dNode *p, dNode *n) :data(x), prev(p), next(n) {}
         };
+
+        dNode *head = nullptr;
+        int size = 0;
+
+        DLinkedList() {}
+        DLinkedList(DLinkedList<T> *other) // Do!
+        { 
+            head = other->head;
+            while(other->head != nullptr) {
+                other->head = other->head->next;
+                addNode(other->head->prev, other->head->data);
+            }
+        }
+        DLinkedList(std::vector<T> &vector) 
+        {
+            std::vector<dNode*> tempVector{};
+            for(auto i : vector) {
+                dNode *newNode = new dNode(i);
+                tempVector.push_back(newNode);
+            }
+            for(unsigned int i = 1; i < tempVector.size()-1; i++) {
+                tempVector[i]->prev = tempVector[i-1];
+                tempVector[i]->next = tempVector[i+1];
+            }
+        }
+        DLinkedList(const int s) 
+            :size(s)
+        {
+            for(unsigned int i = 0; i < size; i++) {
+                dNode *nullNode = new dNode;
+            }
+        }
+
         void PrintList(dNode *n) {
             while(n != nullptr) {
                 std::cout << n->data << ' ';
                 n = n->next;
             }
         }
-        dNode* addNode(dNode *prevNode, T data) {
+
+        dNode* addNode(dNode *prevNode, T data) { // Return?
             dNode *newNode = new dNode(data);
             newNode->next = prevNode->next;
             newNode->prev = prevNode;
             prevNode->next = newNode;
             return newNode;
+            size++;
         }
+
         void delNode(dNode *n) {
             n->prev = n->next;
+            size--;
         }
-        void delList(dNode *n) {
+
+        void delList(dNode *n) { // Check!
             if(n != nullptr) {
                 if(n->prev != nullptr)
                     delete n->prev;
                 delete n->data;
                 n = n->next;
+                if(n->next == nullptr)
+                    delete n;
             }
         }
 
-        ~DLinkedList() {}
+        ~DLinkedList() 
+        {
+            delList(head);
+        }
     };
 
     template<typename T>
@@ -103,6 +178,15 @@ namespace bDataStruct {
         {
             while(GetSize() <= other->GetSize())
                 Push(other->Pop());
+        }
+        bStack(const int size)
+        {
+            items.resize(size);
+        }
+        bStack(std::vector<T> &vector) 
+        {
+            while(!vector.empty())
+                Push(vector.pop_back());
         }
 
         inline bool IsFull() {
@@ -135,6 +219,7 @@ namespace bDataStruct {
                 return item;
             }
         }
+
         inline int GetSize() { return top; }
         inline T Peek() { return items[top]; }
 
@@ -149,16 +234,33 @@ namespace bDataStruct {
     template<typename T>
     class bQueue {
         private:
+            int MAXSIZE = 0;
         public:
             std::vector<T> items{};
             int rear = -1;
             int front = 0;
-            int MAXSIZE = 0; // Used for re-sizing
 
-            bQueue() {}
-            bQueue(const int size) 
+            bQueue(bQueue<T> *other) 
             {
-                SetMax(size);
+                if(other->MAXSIZE == 0 || other->rear == -1)
+                    std::cerr << "Babbage Error: Expected a size greater then 0, got " << other->rear << " instead\n";
+                while(GetSize() <= other->GetSize()) {
+                    Enqueue(other->Dequeue());
+                }
+            }
+            bQueue(const int size)
+            {
+                switch (size) { // Test
+                    case 0: std::cerr << "Babbage Error: Expected a size greater then 0, got " << size << " instead\n"; break;
+                }
+                MAXSIZE = size;
+            }
+            bQueue(std::vector<T> &vector) 
+            {
+                if(vector.empty())
+                    std::cerr << "Babbage Error: Expected a non-empty vector in 'Queue' construction | At address: " << this << '\n';
+                while(!vector.empty())
+                    Enqueue(vector.pop_back());
             }
 
             inline bool IsFull() {
@@ -253,15 +355,15 @@ namespace bDataStruct {
     template<typename T>
     struct treeNode {
         T key_Value;
-        treeNode *left;
-        treeNode *right;
+        treeNode *left = nullptr;
+        treeNode *right = nullptr;
         treeNode(T value) :key_Value(value) {}
     };
 
     template<typename T>
     class BSTree {
     private:
-        treeNode<T>* root;
+        treeNode<T> *root;
         // System level functions
         void destroyTree(treeNode<T>* leaf) { 
             if(leaf != nullptr) { // If leaf exists, remove left and right children, then delete current node
@@ -273,13 +375,10 @@ namespace bDataStruct {
 
         void insert(T key, treeNode<T>* leaf) {
             if(key < leaf->key_Value) {
-                if(leaf->left != nullptr) // If lead does exist, add
+                if(leaf->left != nullptr) // If leaf does exist, add
                     insert(key, leaf->left);
                 else { // Else add leaf
                     leaf->left = new treeNode<T>(key);
-                    leaf->left->key_Value = key;
-                    leaf->left->left = nullptr;
-                    leaf->left->right = nullptr;
                 }
             }
             else if(key >= leaf->key_Value) {
@@ -287,9 +386,6 @@ namespace bDataStruct {
                     insert(key, leaf->right);
                 else {
                     leaf->right = new treeNode<T>(key);
-                    leaf->right->key_Value = key;
-                    leaf->right->left = nullptr;
-                    leaf->right->right = nullptr;
                 }
             }
         } 
@@ -302,12 +398,12 @@ namespace bDataStruct {
                     return search(key, leaf->right);
             }
             else 
-                return nullptr; // Return nothing if leaf is equal to nothing
+                return nullptr;
         }
     public:
         BSTree() {};
         // user functions
-        void bTree<T>::insert(T key) {
+        void insert(T key) {
             if(root != nullptr)
                 insert(key, root);
             else {
@@ -320,30 +416,85 @@ namespace bDataStruct {
         treeNode<T>* bTreeSearch(T key) { return search(key, root); }
         void destroyTree() { return destroyTree(root); }
 
-        ~BSTree() { destroyTree(); }
+        void Print(treeNode *leaf) {
+            if(leaf != nullptr) {
+                std::cout << leaf->key_value << '-';
+                Print(leaf->left);
+                Print(leaf->right);
+            }
+        }
+
+        ~BSTree() 
+        {
+            destroyTree(root); 
+        }
+    };
+
+    class bTrie { // Currently only strings/characters
+    private:
+    public:
+        struct trieNode {
+            char data = 'a';
+            bool terminal = false;
+
+            std::array<trieNode*, 26> children;
+
+            trieNode(const char ch) : data(ch) 
+            {
+                for(unsigned int i = 0; i < children.size(); i++)
+                    children[i] = nullptr;
+            }
+            ~trieNode() {}
+        };
+
+        trieNode *root;
+
+        bTrie() 
+        {
+            root = new trieNode('0');
+        }
+
+        trieNode* CreateNode(const char c) {
+            trieNode *newNode = new trieNode(c);
+            return newNode;
+        }
+
+        void Insert(const std::string &str) {
+            if(root == nullptr)
+                root = CreateNode('0');
+            trieNode *tempNode = root;
+            for(unsigned int i = 0; i < str.length(); i++) {
+                if(tempNode->children[i] == nullptr) {
+                    tempNode->children[i] = CreateNode('0');
+                }
+                tempNode = tempNode->children[i];
+            }
+        }
+
+        ~bTrie() {}
     };
 }
 
 namespace bAlgorithms {
     template<typename T>
-    bool findDup(std::vector<T> &arr) {
-        std::unordered_map<int,T> uMap;
-        for(auto i : arr) {
-            if(uMap.find(uMap[i]) == uMap.end())
-                uMap[arr[i]]++;
-            else
+    bool findDup(std::vector<int> &arr) { // Add support for object of any-type
+        std::unordered_map<int,int> uMap;
+        for(int i = 0; i < arr.size(); i++)
+            uMap.insert(std::pair<int,int>(i, arr[i]));
+        for(auto &value : uMap)
+            if(value.second > 1)
                 return true;
-            return false;
-        }
+        return false;
     }
 
-    bool palin(std::string &str) {
+    bool palin(std::string &str, bool stateError = false) { // Re-do
         int p1 = 0, p2 = str.length()-1;
         while(p1 < p2) {
             if(!isalnum(str[p1])) p1++; // Ignore symbols
             else if(!isalnum(str[p2])) p2--;
             else if(tolower(str[p1]) != tolower(str[p2])) { // Ignore case
-                std::cerr << "Babbage:-\n\tNOT PALINDROME\n";
+                if(stateError)
+                    std::cerr << "Babbage:-\n\tNOT PALINDROME\n";
                 return false;
             }
             else { p1++; p2--; } // Move pointers regardless
@@ -351,10 +502,11 @@ namespace bAlgorithms {
         return true;
     }
     
-    bool anag(const std::string &s, const std::string &t) {
+    bool anag(const std::string &s, const std::string &t, bool stateError = false) {
         if(s.length() != t.length()) {
-            std::cerr << "Babbage Error:-\n\tINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|"
-                      << "Both must be equal in length\n"; 
+            if(stateError)
+                std::cerr << "Babbage Error:-\n\tINVALID STRING LENGTHS OF: " << s.length() << " AND " << t.length() << " FOR |ANAGRAM|"
+                        << "Both must be equal in length\n"; 
             return false;
         }
         std::map<char,int> mapS;

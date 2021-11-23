@@ -53,6 +53,7 @@
         "deque": "cpp",
         "stack": "cpp",
         "fstream": "cpp",
-        "sstream": "cpp"
+        "sstream": "cpp",
+        "array": "cpp"
     }
 }

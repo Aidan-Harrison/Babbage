@@ -5,7 +5,7 @@
 #include <vector>
 #include <cassert>
 namespace bmatrix {
-    template<typename T> // Check!
+    template<typename T>
     class Matrix {
     private:
     public:

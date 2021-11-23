@@ -19,6 +19,8 @@
 #define Euler 2.71828
 #define Radian 57.2958
 
+// Remove non-chainable??
+
 namespace bmath {
     // Basic
     template<typename T> 
@@ -68,8 +70,10 @@ namespace bmath {
     }
 
     template<typename T>    
-    std::tuple<float, float> distance(T &obj1, T&obj2) { // Takles two objects and gets the distance away from each other
-        std::tuple<float, float> dist;
+    bvector::Vector2f distance(T &obj1, T&obj2) { // Takles two objects and gets the distance away from each other
+        bvector::Vector2f dist;
+        dist.x = obj1.translation.x - obj2.translation.x;
+        dist.y = obj1.translation.y - obj2.translation.y;
         return dist;
     }
 
@@ -211,7 +215,7 @@ namespace bmath {
     class Point {
     private:
         int pos[2] = {0,0};
-    public:
+    public:   
         Point(const int xPos = 0, const int yPos = 0) 
         {
             pos[0] = xPos;
@@ -233,7 +237,6 @@ namespace bmath {
             pos[0] = x; 
             pos[1] = y;
         }
-
 
         ~Point() {}
     };
@@ -283,6 +286,7 @@ namespace bmath {
             else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) isRightAngled = true;
             else isScalene = true;
         } 
+
 
         Triangle(const float a = 1, const float b = 1, const float c = 1)
             : m_a(a), m_b(b), m_c(c)
@@ -439,6 +443,7 @@ namespace bmath {
         Shape2D& getPerC() {m_Width + m_Width + m_Height + m_Height; return *this; }
         Shape2D& getAreaC() {m_Width * 2 + m_Height; return *this; }
         Shape2D& changeSideCount(const int sides) {
+            int size = m_Edges.size();    
             return *this; 
         } // Add safety?
 
@@ -457,6 +462,7 @@ namespace bmath {
         bool isPyramid = false; // (Right-Rectangular Pyramid only!) | Allow for tri based?
     public:
         float m_Width, m_Height, m_Depth;
+        Shape3D() {}
         Shape3D(const int width = 1, const int height = 1, const int depth = 1, int nFaces = 6, const std::string &type = "Default") 
             :m_Width(width), m_Height(height), m_Depth(depth), numberOfFaces(nFaces)
         {
@@ -492,6 +498,7 @@ namespace bmath {
         }
 
         inline int getFaceCount() const { return numberOfFaces; }
+        inline void setFaceCount(int faces) { numberOfFaces = faces; }
 
         // Take into account shapes (Prism, pyramid etc.)
         inline float getWidth() const { return m_Width; }
@@ -503,7 +510,6 @@ namespace bmath {
         inline void setDepth(const float val) { m_Depth = val; }
 
         inline float getPer() const { return m_Width + m_Width + m_Height + m_Height; } 
-        inline Shape3D& getPerC() { m_Width + m_Width + m_Height + m_Height; return *this; } 
         inline float getArea() const {
             if(isPrism)
                 return 0.0f;
@@ -530,6 +536,17 @@ namespace bmath {
                 m_Width * m_Height * m_Depth; 
             return *this; 
         }
+        inline Shape3D& getPerC() { m_Width + m_Width + m_Height + m_Height; return *this; } 
+
+        std::vector<float> getALL() {
+            std::vector<float> data;
+            data.push_back(m_Width);
+            data.push_back(m_Height);
+            data.push_back(m_Depth);
+            data.push_back(getPer());
+            data.push_back(getArea());
+            return data;
+        }
 
         ~Shape3D() {};
     };
@@ -540,17 +557,22 @@ namespace bmath {
     // General | Object Independent
     inline int   genArea(int a, int b)       { return (a * a) + (b * b); } // Only certain shapes
     inline float genArea(float a, float b)   { return (a * a) + (b * b); }
+    inline float genArea(double a, double b)   { return (a * a) + (b * b); }
     inline int   genPer(int a, int b, int c = 0, int d = 0) { return a + b + c + d; } // Check!
     inline float genPer(float a, float b)    { return a + a + b + b; }
+    inline float genPer(double a, double b)    { return a + a + b + b; }
     inline int   genVol(int a, int b, int c) { return a * b * c; }
     inline float genVol(float a, float b, float c) { return a * b * c; }
+    inline float genVol(double a, double b, double c) { return a * b * c; }
+
     // Circle Math ================================================================================================
     class Circle {
     private:
         float m_Radius, m_Circumfrence;
     public:
-        Circle(int radius = 1)
-            :m_Radius(radius),  m_Circumfrence(2 * PI * radius) // Check!
+        Circle() {}
+        Circle(float radius = 1.0f)
+            :m_Radius(radius),  m_Circumfrence(2 * PI * radius)
         {
             assert(m_Radius > 0);
         }
@@ -575,6 +597,20 @@ namespace bmath {
         inline float getDiameter() { return m_Radius * 2; }
         inline float calcCircumfrence() { return 2 * PI * m_Radius; } // Assuming circumfrence has not been initialised | Make better?
         inline float calcRadius() { return m_Circumfrence / 2 * PI; } // Assuming radius has not been initialized | Make better?
+
+        std::vector<float> GetALL() {
+            std::vector<float> data;
+            data.push_back(m_Radius);        
+            data.push_back(m_Circumfrence);
+            data.push_back(getArea());        
+            data.push_back(getDiameter());        
+            return data;
+        }
+
+        inline void setRadius(const float rad) {
+            m_Radius = rad;
+            m_Circumfrence = 2 * PI * m_Radius; // Saves a function call
+         }
 
         // Chainable functions
         Circle& getAreaC() {m_Radius *= m_Radius * PI; return *this; }
@@ -642,16 +678,28 @@ namespace bmath {
         inline float getBase() const { return m_Base; }
         inline float getHeight() const { return m_Height; }
         double TArea() { return m_Base * m_Height * 2 / 2; } // Check!
-        double TPer() { // Overload for Isosceles
+        double TPer(bool stateError = true) { // Overload for Isosceles
             if(m_Height < m_Base) return m_Height * 2 + m_Base;
             else
-                std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
+                if(stateError)
+                    std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
         }
-        double semiTPer() {
+        double semiTPer(bool stateError = true) {
             if(m_Height < m_Base) return m_Height * 2 + m_Base / 2;
             else
-                std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
+                if(stateError)
+                    std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
         }
+
+        std::vector<float> GetALL() {
+            std::vector<float> data;
+            data.push_back(m_Base);        
+            data.push_back(m_Height);
+            data.push_back(TArea());        
+            data.push_back(TPer());        
+            return data;
+        }
+
         ~ITriangle() {};
     };
 
@@ -781,6 +829,15 @@ namespace bmath {
             :i(quat.i), j(quat.j), k(quat.k), w(quat.w)
         {    
         } 
+
+        std::tuple<float, float, float, float> getQuat() {
+            std::tuple<float,float,float,float> data;
+            std::get<0>(data) = i;
+            std::get<1>(data) = j;
+            std::get<2>(data) = k;
+            std::get<3>(data) = w;
+            return data;
+        }
 
         // Move assignment
         Quaternion& operator=(Quaternion &&quat) noexcept {
