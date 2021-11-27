@@ -14,12 +14,6 @@
 #include "BVector.h"
 #include "BHelper.h"
 
-// Definitions
-    // General
-#define PI 3.14159
-#define Euler 2.71828
-#define Radian 57.2958
-
 // Remove non-chainable??
 
 namespace bmath {
@@ -43,6 +37,10 @@ namespace bmath {
                 newAmount *= a * a;
             return newAmount;
         }
+
+    inline int abs(const int value) { if(value < 0) return -value; }
+    inline int abs(const float value) { if(value < 0.0) return -value; }
+    inline int abs(const double value) { if(value < 0.0) return -value; }
 
     // Advanced
     inline int   floor(float value)  { return static_cast<int>(value); }
