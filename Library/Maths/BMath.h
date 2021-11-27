@@ -12,6 +12,7 @@
 
 #include "BMatrix.h"
 #include "BVector.h"
+#include "BHelper.h"
 
 // Definitions
     // General

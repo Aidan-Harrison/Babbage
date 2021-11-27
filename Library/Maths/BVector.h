@@ -5,11 +5,16 @@
 #include <algorithm>
 #include <cmath>
 #include <tuple>
-// Add printing
+#include <array>
+
+// Convert tuple returns to standard C arrays
 
 namespace bvector {
-
-    struct Vector1i {
+    class Vector1i {
+    private:
+        const int ID = 0;
+        int const GetID() const { return ID; }
+    public:
         int x;
         int vec1[1]{x};
         Vector1i(int cX = 0)
@@ -23,11 +28,16 @@ namespace bvector {
             else if(x < -1) x = -1;
         }
         inline int getVector() const { return vec1[0]; }
+        void PrintVec() const {std::cout << vec1[0];}
         inline void deleteVec() { delete this; }
 
         ~Vector1i() {};
     };
-    struct Vector1f {
+    class Vector1f {
+    private:
+        const int ID = 1;
+        int const GetID() const { return ID; } 
+    public:
         float x;
         float vec1[1]{x};
         Vector1f(float cX = 0.0f)
@@ -42,11 +52,16 @@ namespace bvector {
             else if(x < -1) x = -1;
         }
         inline float getVector() const { return vec1[0]; }
+        void PrintVec() const {std::cout << vec1[0];}
         inline void deleteVec() { delete this; }
 
         ~Vector1f() {};
     };
-    struct Vector2i {
+    class Vector2i {
+    private:
+        const int ID = 2;
+        int const GetID() const { return ID; }  
+    public:
         int x, y;
         int vec2[2]{x,y};
         Vector2i(int cX = 0, int cY = 0)
@@ -62,10 +77,17 @@ namespace bvector {
             if(y > 1)       y = 1;
             else if(y < -1) y = -1;
         }
-        std::tuple<int, int> getVector() const {
-            std::tuple<int,int> coords;
-            std::get<0>(coords) = vec2[0];
-            std::get<1>(coords) = vec2[1];
+        // Possibly combine using templating and parse argument?? | std::is_same! ~ Defined in header <type_traits> | Compares two types!
+        std::array<int, 2> getVectorAsArray() const {
+            std::array<int, 2> coords{};
+            coords[0] = vec2[0];
+            coords[1] = vec2[1];
+            return coords;
+        }
+        std::vector<int> getVectorAsVector() const {
+            std::vector<int> coords{};
+            coords.push_back(vec2[0]);
+            coords.push_back(vec2[1]);
             return coords;
         }
         inline int getX() const { return vec2[0]; }
@@ -86,13 +108,18 @@ namespace bvector {
             return vec;
         }
         int dotProd(Vector2i &v1, Vector2i &v2) { return v1.x * v2.x + v1.y * v2.y; }
+        void PrintVec() const {std::cout << vec2[0] << ',' << vec2[1];}
 
         ~Vector2i() {};
     };
 
     Vector2i operator+(Vector2i &v1, Vector2i &v2) { return v1.x + v2.x + v1.y + v2.y;} // Check!
 
-    struct Vector2f {
+    class Vector2f {
+    private:
+        const int ID = 3;
+        int const GetID() const { return ID; }  
+    public:
         float x, y;
         float vec2[2]{x,y};
         Vector2f(float cX = 0.0f, float cY = 0.0f)
@@ -133,6 +160,7 @@ namespace bvector {
             return vec;
         }
         float dotProd(Vector2f &v1, Vector2f &v2) { return v1.x * v2.x + v1.y * v2.y; }
+        void PrintVec() const {std::cout << vec2[0] << ',' << vec2[1];}
         
         ~Vector2f() {};
     };
@@ -141,6 +169,8 @@ namespace bvector {
 
     class Vector3i {
     private:
+        const int ID = 4;
+        int const GetID() const { return ID; }   
         int x, y, z;
     public:
         int vec3[3]{x,y,z};
@@ -186,11 +216,16 @@ namespace bvector {
             // return v1.getMag() * v2.getMag();
             return *this;
         }
+
+        void PrintVec() const {std::cout << vec3[0] << ',' << vec3[1] << ',' << vec3[2];}
+
         ~Vector3i() {};
     };
 
     class Vector3f {
     private:
+        const int ID = 5;
+        int const GetID() const { return ID; }  
         float x, y, z;
     public:
         float vec3[3]{x,y,z};
@@ -237,11 +272,16 @@ namespace bvector {
             // return v1.getMag() * v2.getMag();
             return *this;
         }
+
+        void PrintVec() const {std::cout << vec3[0] << ',' << vec3[1] << ',' << vec3[2];}
+
         ~Vector3f() {};
     };
 
     class Vector4i {
     private:
+        const int ID = 6;
+        int const GetID() const { return ID; }  
         int x, y, z, w;
     public:
         int vec4[4]{x,y,z,w};
@@ -281,6 +321,8 @@ namespace bvector {
 
     class Vector4f {
     private:
+        const int ID = 7;
+        int const GetID() const { return ID; }  
         float x, y, z, w;
     public:
         float vec4[4]{x,y,z,w};
@@ -318,5 +360,50 @@ namespace bvector {
 
         ~Vector4f() {};
     };
+
+    // Clone Functions
+    template<typename T>
+    T* CloneVector(T &vec) {
+        if(T.GetID() == 0) {
+            Vector1i *newVector = new Vector1i();
+            newVector->x = vec.x;
+            return newVector;
+        }
+        else if(T.GetID() == 1) {
+            Vector1f *newVector = new Vector1f();
+            newVector->x = vec.x;
+            return newVector;
+        }
+        else if(T.GetID() == 2) {
+            Vector2i *newVector = new Vector2i();
+            newVector->x = vec.x; newVector->y = vec.y;
+            return newVector;
+        }
+        else if(T.GetID() == 3) {
+            Vector2f *newVector = new Vector2f();
+            newVector->x = vec.x; newVector->y = vec.y;
+            return newVector;
+        }
+        else if(T.GetID() == 4) {
+            Vector3i *newVector = new Vector3i();
+            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
+            return newVector;
+        }
+        else if(T.GetID() == 5) {
+            Vector3f *newVector = new Vector3f();
+            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
+            return newVector;
+        }
+        else if(T.GetID() == 6) {
+            Vector4i newVector = new Vector4i();
+            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
+            return newVector;
+        }
+        else if(T.GetID() == 7) {
+            Vector4f *newVector = new Vector4f();
+            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
+            return newVector;
+        }
+    }
 }
 #endif

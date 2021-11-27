@@ -365,7 +365,7 @@ namespace bDataStruct {
     private:
         treeNode<T> *root;
         // System level functions
-        void destroyTree(treeNode<T>* leaf) { 
+        void destroyTree(treeNode<T> *leaf) { 
             if(leaf != nullptr) { // If leaf exists, remove left and right children, then delete current node
                 destroyTree(leaf->left);
                 destroyTree(leaf->right);
@@ -373,9 +373,9 @@ namespace bDataStruct {
             }
         }
 
-        void insert(T key, treeNode<T>* leaf) {
+        void insert(T key, treeNode<T> *leaf) {
             if(key < leaf->key_Value) {
-                if(leaf->left != nullptr) // If leaf does exist, add
+                if(leaf->left != nullptr) // If leaf does exist, recursivelly call until available slot
                     insert(key, leaf->left);
                 else { // Else add leaf
                     leaf->left = new treeNode<T>(key);
