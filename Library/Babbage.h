@@ -1,7 +1,6 @@
 #ifndef Babbage_h
 #define Babbage_h
 
-#define WAIT std::cin.get()
 
 // Add general typedefs and byte compatability
 

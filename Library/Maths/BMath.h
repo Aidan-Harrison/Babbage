@@ -220,13 +220,12 @@ namespace bmath {
             pos[0] = xPos;
             pos[1] = yPos;
         }
-        inline int getX() const { return pos[0]; }
-        inline int getY() const { return pos[1]; }
-
-        std::tuple<int,int> GetPos() const { // ?
-            std::tuple<int,int> position;
-            std::get<0>(position) = pos[0];
-            std::get<1>(position) = pos[1];
+        inline int x() const { return pos[0]; }
+        inline int y() const { return pos[1]; }
+        std::vector<int> GetPosAsVector() const {
+            std::vector<int> position;
+            position.push_back(pos[0]);
+            position.push_back(pos[1]);
             return position;
         }
 
