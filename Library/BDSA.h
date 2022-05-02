@@ -10,10 +10,38 @@
 
 // & or * for vector construction?
 
-namespace bDataStruct {
+namespace bstructres {
     template<typename T>
-    struct bHash { // ?
-        std::vector<std::pair<T,T>> table{};
+    struct bPair { // Check!
+        T * first = nullptr;
+        T * second = nullptr;
+
+        bPair(T f, T s) 
+            :first(&f), second(&s)
+        {
+        }
+
+        void clear() {
+            // Do values!
+            first = nullptr;
+            second = nullptr;
+        }
+
+        ~bPair() {}
+    };
+
+    template<typename T>
+    struct bHash {
+        std::vector<bPair> table{};
+
+        bool contains(T key) const {
+            for(int i = 0; i < table.size(); i++) {
+                if(table[i].first == key)
+                    return true;
+            }
+            return false;
+        }
+
         bHash() {}
         ~bHash() {}
     };
@@ -68,6 +96,9 @@ namespace bDataStruct {
                 if(n->next == nullptr)
                     delete n;
             }
+        }
+        void getMiddle(node *n) {
+            
         }
 
         inline void deleteNode(Node *n) {
@@ -170,7 +201,7 @@ namespace bDataStruct {
 
     template<typename T>
     struct bStack {
-        std::vector<T> items{};
+        std::vector<T> items{}; // Replace with custom vector!
         int top = -1;
 
         bStack() {}
@@ -183,34 +214,26 @@ namespace bDataStruct {
         {
             items.resize(size);
         }
+
         bStack(std::vector<T> &vector) 
         {
             while(!vector.empty())
                 Push(vector.pop_back());
         }
 
-        inline bool IsFull() {
-            if(top == items.size()-1)
-                return true;
-            return false;
-        }
+        inline bool full() { return top == items.size(); }
+        inline bool empty(){ return top == -1; }
 
-        inline bool IsEmpty() {
-            if(top == -1)
-                return true;
-            return false;
-        }
-
-        void Push(T data) {
-            if(IsFull())
+        void push(T data) {
+            if(full())
                 std::cerr << "Babbage Error: Stack is full!\n";
             else {
                 top++;
                 items[top] = data;
             }
         }
-        T Pop() {
-            if(IsEmpty())
+        T pop() {
+            if(empty())
                 std::cerr << "Babbage Error: Stack is empty!\n";
             else {
                 T item = items[top];
@@ -220,7 +243,7 @@ namespace bDataStruct {
             }
         }
 
-        inline int GetSize() { return top; }
+        inline int size() { return top; }
         inline T Peek() { return items[top]; }
 
         inline void Print() const {
@@ -228,18 +251,17 @@ namespace bDataStruct {
                 std::cout << i << ", ";
         }
 
-        ~bStack() {}
+        virtual ~bStack() {}
     };
 
     template<typename T>
     class bQueue {
         private:
             int MAXSIZE = 0;
-        public:
-            std::vector<T> items{};
             int rear = -1;
             int front = 0;
-
+            std::vector<T> items{};
+        public:
             bQueue(bQueue<T> *other) 
             {
                 if(other->MAXSIZE == 0 || other->rear == -1)
@@ -279,6 +301,8 @@ namespace bDataStruct {
                 if(IsFull())
                     std::cerr << "Babbage Error: Queue is full!\n";
                 else { 
+                    if(front == -1)
+                        front++;
                     rear++;
                     items[rear] = data;
                 }
@@ -287,16 +311,20 @@ namespace bDataStruct {
                 if(IsEmpty())
                     std::cerr << "Babbage Error: Queue is empty!\n";
                 else {
-                    T item = items[rear];
-                    items[rear] = 0;
-                    rear--;
-                    return item;
+                    T element = queue[front];
+                    if(front >= rear) {
+                        front = -1;
+                        rear = -1;
+                    }
+                    else
+                        front++;
+                    return element;
                 }
+                return 0;
             }
 
-            inline void SetMax(int size) {
-                MAXSIZE = size;
-            }
+            inline auto front() const { return items[front]; }
+            inline void SetMax(int size) { MAXSIZE = size; }
 
             inline void Print() const {
                 for(auto i : items)
@@ -309,42 +337,46 @@ namespace bDataStruct {
         // Graph & Trees
     template<typename T>
     struct Graph { // Re-do partially! | Check templating!
-        int vertexCount = 0;
-        std::vector<std::vector<int>> adjMatrix{};
-        bool *isVisited;
+        int vertexCount = 0, edgeCount = 0;
+        std::vector<std::vector<T>> graph{};
+        std::vector<std::vector<bool>> visited{};
 
         Graph(const int vertices) 
             :vertexCount(vertices)
         {
-            isVisited = new bool[vertices];
+            visited.resize(graph.size());
+            for(int i = 0; i < graph.size(); i++)
+                visited[i].resize(graph[0].size());
         }
 
-        template<typename V>
-        struct Vertex { // Check templating
-            V m_Key;
-            Vertex(const V key = 'A') :m_Key(key) {}
-
-            void FindVertex(const V input);
-            inline void DeleteVertex(Vertex &v) { delete &v; } // Check!
-
-            ~Vertex() {}
-        };
-
-        Vertex<T>* AddVertex(T input) {
-            Vertex<T> *newVertex =  new Vertex<T>(input);
-            return newVertex;
+        void AddEdge(const int src, const int dest, bool isDirected = false) {
+            if(src == dest) {
+                std::cerr << "BABBAGE ERROR: Source and destination are the same value\n";
+                return;
+            }
+            else if(graph[src][dest] && isDirected) {
+                std::cerr << "BABBAGE ERROR: Vertex already occupies space\n";
+                return;
+            }
+            if(!isDirected)
+                graph[dest][src] = 1;
+            graph[src][dest] = 1;
         }
 
-        void AddEdge(int src, int dest) {
-            adjMatrix[src][dest] = 1;
-            adjMatrix[dest][src] = 1;
+        void DeleteEdge(const int src, const int dest) {
+            if(graph[src][dest] == 0) {
+                std::cerr << "BABBAGE ERROR: No vertex exists!\n";
+                return;
+            }
+            graph[src][dest] = 0;
+            if(graph[dest][src] == 1)
+                graph[dest][src] == 0
         }
         
         void PrintGraph() {
             for(unsigned int i = 0; i < vertexCount; i++) {
-		        for(unsigned int j = 0; j < vertexCount; j++) {
-			        std::cout << adjMatrix[i][j] << ", ";
-		        }
+		        for(unsigned int j = 0; j < vertexCount; j++)
+		            std::cout << graph[i][j] << ", ";
 		        putchar('\n');
 	        }
         }
@@ -472,6 +504,35 @@ namespace bDataStruct {
         }
 
         ~bTrie() {}
+    };
+
+    class rBuffer { // Fix compile
+    public:
+        int rear = 0;
+        int front = 0;
+        int size = 10;
+        int elementCount = 0;
+
+        bool full() const { return elementCount == size ? true : false; }
+        bool empty() const { return elementCount == 0 ? true : false; }
+
+        void enqueue(const int data) {
+            if(full())
+                return;
+            queue[rear] = data;
+            rear = (rear + 1) % size;
+            elementCount++;            
+        }
+        int dequeue() {
+            if(empty())
+                return INT_MIN;
+            int result = queue[front];
+            front = (front + 1) % size;
+            elementCount--;
+            return result;
+        }
+    private:
+        std::array<int, size> queue{};
     };
 }
 
@@ -615,6 +676,26 @@ namespace bAlgorithms {
         *b = temp;
     }
 
+    template<typename T>
+    void VisualiseSort(std::vector<T> &arr, const int left, const int right, const char character) {
+        std::vector<std::string> visual{};
+        for(unsigned int i = 0; i < arr.size(); i++)
+            visual.push_back(std::string(arr[i]/10, character));
+        for(int i = 0; i < visual.size(); i++) {
+            std::cout << visual[i];
+            if(i == left) {
+                std::cout << "\t<----L\n";
+                continue;
+            }
+            if(i == right) {
+                std::cout << "\t<----R\n";
+                continue;
+            }
+            else
+                putchar('\n');
+        }
+    }
+
     // Bubble Sort =====================================================================
     template<typename T>
     std::vector<T> bSort(std::vector<T> &arr) {
@@ -734,19 +815,40 @@ namespace bAlgorithms {
         return nullptr;
     }
 
+    // Graph Algorithms
     template<typename T>
-    T bBinarySearchRecursive(std::vector<T> &arr, int left, int right, T target) {
-        if(arr.size() == 0) {
-            std::cerr << "Babbage Error: Vector is empty in 'bBinarySearchRecursive(std::vector<T> &arr, int left, int right, T target)\n";
-            return nullptr;
+    void DFS(bstructres::Graph<T> &g, int x = 0, int y = 0) {
+        int w = g.graph[0].size();
+        int h = g.graph.size();
+        std::vector<BDataStruct::bPair> directions{}; // Do with custom!
+        std::vector<std::vector<bool>> visited{};
+        auto inside =[&](int x, int y) { return 0 <= x && x <= w && 0 <= y && y <= h; };
+        for(int row = 0; row < g.graph.size(); row++) {
+            for(int col = 0; col < g.graph[0].size(); col++) {
+                if(g.graph[row][col] == 1) {
+                    BDataStruct::bStack stack;
+                    BDataStruct::bPair initial(row, col);
+                    stack.push(initial);
+                    visited[row][col] = true;
+                    while(!stack.empty()) {
+                        BDataStruct::bPair pos = stack.pop();
+                        for(BDataStruct::bPair dir : directions) {
+                            int new_row = row + dir.first;
+                            int new_col = col + dir.second;
+                            if(!visited[new_row][new_col] && inside(new_row, new_col) && g.graph[new_row][new_col] == 1) {
+                                stack.push(BDataStruct::bPair new(new_row,new_col));
+                                visited[new_row][new_col] = true;
+                            }
+                        }
+                    }
+                }
+            }
         }
-        if(left < right) {
-            int mid = left + (right - left) / 2-1;
-            if(arr[mid] == target) return arr[mid];
-            else if(arr[mid] < target) return bBinarySearchRecursive(arr, left = mid + 1, right, target);
-            else return bBinarySearchRecursive(arr, left, right = mid - 1, target);
-        }
-        return nullptr; // Check!
+    }
+
+    template<typename T>
+    void BFS(bstructres::Graph<T> &g) {
+
     }
 }
 

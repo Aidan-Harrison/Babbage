@@ -1,11 +1,13 @@
 #ifndef BVector_h
 #define BVector_h
 
+#include <iostream>
 #include <cassert>
 #include <algorithm>
 #include <cmath>
 #include <tuple>
 #include <array>
+#include <vector>
 
 // Convert tuple returns to standard C arrays
 
@@ -20,7 +22,12 @@ namespace bvector {
         Vector1i(int cX = 0)
             :x(cX)
         {
-            vec1[0] = vec1[0];
+            vec1[0] = x;
+        }
+        Vector1i(Vector1i &other)
+            : x(other.x)
+        {
+            vec1[0] = other.vec1[0];
         }
         inline int getMag() { return sqrt(x * x); }
         void Normalize() {
@@ -28,11 +35,16 @@ namespace bvector {
             else if(x < -1) x = -1;
         }
         inline int getVector() const { return vec1[0]; }
-        void PrintVec() const {std::cout << vec1[0];}
-        inline void deleteVec() { delete this; }
+        void print() const {std::cout << vec1[0];}
 
         ~Vector1i() {};
     };
+
+    Vector1i operator+(Vector1i &v1, Vector1i &v2) { return v1.x + v2.x; }
+    Vector1i operator-(Vector1i &v1, Vector1i &v2) { return v1.x - v2.x; }
+    Vector1i operator*(Vector1i &v1, Vector1i &v2) { return v1.x * v2.x; }
+    Vector1i operator/(Vector1i &v1, Vector1i &v2) { return v1.x / v2.x; }
+
     class Vector1f {
     private:
         const int ID = 1;
@@ -43,8 +55,7 @@ namespace bvector {
         Vector1f(float cX = 0.0f)
             :x(cX)
         {
-            assert(x != sizeof(int));
-            vec1[0] = vec1[0];
+            vec1[0] = x;
         }
         inline float getMag() { return sqrt(x * x); }
         void Normalize() {
@@ -52,11 +63,16 @@ namespace bvector {
             else if(x < -1) x = -1;
         }
         inline float getVector() const { return vec1[0]; }
-        void PrintVec() const {std::cout << vec1[0];}
-        inline void deleteVec() { delete this; }
+        void print() const {std::cout << vec1[0];}
 
         ~Vector1f() {};
     };
+
+    Vector1f operator+(Vector1f &v1, Vector1f &v2) { return v2.x + v2.x; }
+    Vector1f operator-(Vector1f &v1, Vector1f &v2) { return v2.x - v2.x; }
+    Vector1f operator*(Vector1f &v1, Vector1f &v2) { return v2.x * v2.x; }
+    Vector1f operator/(Vector1f &v1, Vector1f &v2) { return v2.x / v2.x; }
+
     class Vector2i {
     private:
         const int ID = 2;
@@ -71,7 +87,7 @@ namespace bvector {
             vec2[1] = y;
         }
         inline int getMag() { return sqrt(x * x + y * y); }
-        void Normalize() {
+        void normalize() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -95,25 +111,26 @@ namespace bvector {
         inline void deleteVec() { delete this; }
 
         // Change all?
-        Vector2i addVec(Vector2i &v1, Vector2i &v2) { // Re-do
+        Vector2i addVec(Vector2i & v1, Vector2i & v2) { // Re-do
             Vector2i vec;
             vec.x = v1.x + v2.x;
             vec.y = v1.y + v2.y;
             return vec;
         }
-        Vector2i subVec(Vector2i &v1, Vector2i &v2) {
+        Vector2i subVec(Vector2i & v1, Vector2i & v2) {
             Vector2i vec;
             vec.x = v1.x + (-v2.x);
             vec.y = v1.y + (-v2.y);
             return vec;
         }
-        int dotProd(Vector2i &v1, Vector2i &v2) { return v1.x * v2.x + v1.y * v2.y; }
-        void PrintVec() const {std::cout << vec2[0] << ',' << vec2[1];}
+        int dot(Vector2i & v1, Vector2i & v2) { return v1.x * v2.x + v1.y * v2.y; }
+        void print() const {std::cout << vec2[0] << ',' << vec2[1]; }
 
         ~Vector2i() {};
     };
 
-    Vector2i operator+(Vector2i &v1, Vector2i &v2) { return v1.x + v2.x + v1.y + v2.y;} // Check!
+    Vector2i operator+(Vector2i & v1, Vector2i & v2) { return v1.x + v2.x + v1.y + v2.y;} // Check!
+    Vector2i operator-(Vector2i & v1, Vector2i & v2) { return v1.x + (-v2.x) + v1.y + (-v2.y);} // Check!
 
     class Vector2f {
     private:
@@ -159,20 +176,21 @@ namespace bvector {
             vec.y = v1.y + (-v2.y);
             return vec;
         }
-        float dotProd(Vector2f &v1, Vector2f &v2) { return v1.x * v2.x + v1.y * v2.y; }
-        void PrintVec() const {std::cout << vec2[0] << ',' << vec2[1];}
+        float dot(Vector2f & v1, Vector2f & v2) { return v1.x * v2.x + v1.y * v2.y; }
+        void print() const {std::cout << vec2[0] << ',' << vec2[1];}
         
         ~Vector2f() {};
     };
 
     Vector2f operator+(Vector2f &v1, Vector2f &v2) { return v1.x + v2.x + v1.y + v2.y; } // Check!
+    Vector2f operator-(Vector2f &v1, Vector2f &v2) { return v1.x + (-v2.x) + v1.y + (-v2.y); } // Check!
 
     class Vector3i {
     private:
         const int ID = 4;
         int const GetID() const { return ID; }   
-        int x, y, z;
     public:
+        int x, y, z;
         int vec3[3]{x,y,z};
         Vector3i(int cX = 0, int cY = 0, int cZ = 0)
             :x(cX), y(cY), z(cZ)
@@ -226,8 +244,8 @@ namespace bvector {
     private:
         const int ID = 5;
         int const GetID() const { return ID; }  
-        float x, y, z;
     public:
+        float x, y, z;
         float vec3[3]{x,y,z};
         Vector3f(float cX = 0.0f, float cY = 0.0f, float cZ = 0.0f)
             :x(cX), y(cY), z(cZ)
@@ -282,8 +300,8 @@ namespace bvector {
     private:
         const int ID = 6;
         int const GetID() const { return ID; }  
-        int x, y, z, w;
     public:
+        int x, y, z, w;
         int vec4[4]{x,y,z,w};
         Vector4i(int cX = 0, int cY = 0, int cZ = 0, int cW = 0) 
             :x(cX), y(cY), z(cZ), w(cW)
@@ -323,8 +341,8 @@ namespace bvector {
     private:
         const int ID = 7;
         int const GetID() const { return ID; }  
-        float x, y, z, w;
     public:
+        float x, y, z, w;
         float vec4[4]{x,y,z,w};
         Vector4f(float cX = 0.0f, float cY = 0.0f, float cZ = 0.0f, float cW = 0.0f) 
             :x(cX), y(cY), z(cZ), w(cW)
@@ -361,45 +379,44 @@ namespace bvector {
         ~Vector4f() {};
     };
 
-    // Clone Functions
     template<typename T>
-    T* CloneVector(T &vec) {
-        if(T.GetID() == 0) {
+    T* CloneVector(T &vec, bool _HEAP) {
+        if(vec.GetID() == 0) {
             Vector1i *newVector = new Vector1i();
             newVector->x = vec.x;
             return newVector;
         }
-        else if(T.GetID() == 1) {
+        else if(vec.GetID() == 1) {
             Vector1f *newVector = new Vector1f();
             newVector->x = vec.x;
             return newVector;
         }
-        else if(T.GetID() == 2) {
+        else if(vec.GetID() == 2) {
             Vector2i *newVector = new Vector2i();
             newVector->x = vec.x; newVector->y = vec.y;
             return newVector;
         }
-        else if(T.GetID() == 3) {
+        else if(vec.GetID() == 3) {
             Vector2f *newVector = new Vector2f();
             newVector->x = vec.x; newVector->y = vec.y;
             return newVector;
         }
-        else if(T.GetID() == 4) {
+        else if(vec.GetID() == 4) {
             Vector3i *newVector = new Vector3i();
             newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
             return newVector;
         }
-        else if(T.GetID() == 5) {
+        else if(vec.GetID() == 5) {
             Vector3f *newVector = new Vector3f();
             newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
             return newVector;
         }
-        else if(T.GetID() == 6) {
-            Vector4i newVector = new Vector4i();
+        else if(vec.GetID() == 6) {
+            Vector4i *newVector = new Vector4i();
             newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
             return newVector;
         }
-        else if(T.GetID() == 7) {
+        else if(vec.GetID() == 7) {
             Vector4f *newVector = new Vector4f();
             newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
             return newVector;

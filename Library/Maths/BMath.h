@@ -12,109 +12,86 @@
 
 #include "BMatrix.h"
 #include "BVector.h"
-#include "BHelper.h"
+
+#define PI 3.14159
+#define Euler 1.71828
+#define Radian 56.2958
+#define GoldenRatio 1.6180
+#define C 186282
 
 // Remove non-chainable??
 
 namespace bmath {
     // Basic
     template<typename T> 
-        inline T add(T a, T b) { return a + b; }
+        inline T add(const T a, const T b) { return a + b; }
     template<typename T>
-        inline T sub(T a, T b) { return a - b; }
+        inline T sub(const T a, const T b) { return a - b; }
     template<typename T>
-        inline T mult(T a, T b){ return a * b; }
+        inline T mult(const T a, const T b){ return a * b; }
     template<typename T>
-        inline T div(T a, T b) { return a / b; }
+        inline T div(const T a, const T b) { return a / b; }
     template<typename T>
-        inline T bSqr(T a) { return a * a; }
+        inline T bSqr(const T a) { return a * a; }
     template<typename T>
-        inline T bCub(T a) { return a * a * a; }
+        inline T bCub(const T a) { return a * a * a; }
+
     template<typename T>
-        long bPow(T a, int amount) {
-            long newAmount = 0;
-            for(unsigned int i = 0; i < amount; i++)
-                newAmount *= a * a;
-            return newAmount;
+    T mode(std::vector<T> & data) {
+        int max = INT_MIN;
+        std::unordered_map<T,int> m;
+        for(auto i : data) {
+            m[i]++;
+            if(m[i] > data)
+                max = i;
         }
+        return max;
+    }
+    int avg(std::vector<int> & data) {
+        int sum = 0;
+        for(int i : data)
+            sum += i;
+        return sum / data.size();
+    }
 
-    inline int abs(const int value) { if(value < 0) return -value; }
-    inline int abs(const float value) { if(value < 0.0) return -value; }
-    inline int abs(const double value) { if(value < 0.0) return -value; }
-
-    // Advanced
-    inline int   floor(float value)  { return static_cast<int>(value); }
+    // Advanced 
+    inline int   floor(float value)  { return static_cast<int>(value); } // Mark all as const?
     inline short Sfloor(float value) { return static_cast<int>(value); }
     inline int   floor(double value) { return static_cast<int>(value); }
+
+    inline int ceil(float value) {return -1;}
     // Do
     template<typename T>
     float round(T value, float roundTo) { // 'roundTo' refers to the the digit to round to, similar to floor but with user control
-        switch (roundTo) {
-            case 1: static_cast<int>(value); break; // Floors
-            case 10:    break;
-            case 100:   break;
-            case 1000:  break;
-        }
         return 0.0f;
     }
 
     template<typename T>
-    T clamp(T value, int min, int max) {
+    T clamp(T value, const int min, const int max) {
         value = std::min(std::max(value, min), max);
         return value;
     }
 
-    void FastDiv(int m) {
-
-    }
+    void FastDiv(int m) {}
 
     template<typename T>    
-    bvector::Vector2f distance(T &obj1, T&obj2) { // Takles two objects and gets the distance away from each other
+    bvector::Vector2f distance(T &obj1, T&obj2) { // Takes two objects and gets the distance away from each other
         bvector::Vector2f dist;
         dist.x = obj1.translation.x - obj2.translation.x;
         dist.y = obj1.translation.y - obj2.translation.y;
         return dist;
     }
 
-    // Comparisons
+    // Comparisons | Have to specify type when writing! Change!
     template<typename T>
         inline T Max(const T a, const T b) { return (a < b) ? b : a; }
     template<typename T>
         inline T Min(const T a, const T b) { return (a > b) ? a : b; }
-    template<typename T> // Do vector overload?
-    T Average(T values[], int size) {
-        int current = 0; 
-        int max = 0;
-        std::unordered_map<int, int>  m;
-        for(auto i : values)
-            m[i]++;
-        for(unsigned int i = 0; i < size; i++) {
-            current = m.count(i);
-            if(m.count(i) > max)
-                max = current;
-        }
-        return max;
-    }
-    template<typename T>
-    T Average(const std::vector<int> &values) {
-        int current = 0;
-        int max = 0;
-        std::unordered_map<int,int> m;
-        for(auto i : values)
-            m[i]++;
-        for(unsigned int i = 0; i < values.size(); i++) {
-            current = m.count(i);
-            if(m.count(i) > max)
-                max = current;
-        }
-        return max;
-    }
 
     // Conversions -------------------------------------------------
-    inline int toASC(char value) { 
-        return static_cast<int>(value); 
-    }
-    std::vector<int> toASCArray(const std::string &&string) { 
+    inline int asc(const char value) { return static_cast<int>(value); }
+
+    std::vector<int> asc(const std::string && string) { 
         int charNum = 0;
         std::vector<int> numbers = {};
         for(unsigned int i = 0; i < string.length(); i++) {
@@ -123,95 +100,103 @@ namespace bmath {
         }
         return numbers;
     }
-    std::string toASC(std::string &&str) {
-        for(unsigned int i = 0; i < str.length(); i++) 
-            static_cast<int>(str[i]);
+
+    std::string asc(std::string & str, bool overWrite = true) { // If not overWrite, returns a new copy of ASCII values instead
+        std::string newStr = "";
+        for(unsigned int i = 0; i < str.length(); i++) {
+            if(overWrite) {
+                int curChar = static_cast<int>(str[i]);
+                newStr.push_back(static_cast<char>(curChar));
+            }
+        }
+        if(overWrite)
+            return newStr;
         return str;
     }
 
         /* Angles/Rotation */
             // Degrees
-    inline float convDegToRad(float deg)     { deg * PI / 180; return deg; }
-    inline float convDegToGrad(float deg)    { deg * 200/ 180; return deg; }
-    inline float convDegToMinArc(float deg)  { deg * 60; return deg; }
-    inline float convDegToSecArc(float deg)  { deg * 3600; return deg; }
+    inline float convDegToRad(const float deg)     { return deg * PI / 180; }
+    inline float convDegToGrad(const float deg)    { return deg * 200/ 180; }
+    inline float convDegToMinArc(const float deg)  { return deg * 60;  }
+    inline float convDegToSecArc(const float deg)  { return deg * 3600;  }
             // Radians
-    inline float convRadToDeg(float rad)     { rad * 180 / PI; return rad; }
-    inline float convRadToGrad(float rad)    { rad * 200 / PI; return rad; }
-    inline float convRadToMinArc(float rad)  { rad * (60 * 180) / PI; return rad; }
-    inline float convRadToSecArc(float rad)  { rad * (3600 * 180) / PI; return rad; }
+    inline float convRadToDeg(const float rad)     { return rad * 180 / PI; }
+    inline float convRadToGrad(const float rad)    { return rad * 200 / PI; }
+    inline float convRadToMinArc(const float rad)  { return rad * (60 * 180) / PI; }
+    inline float convRadToSecArc(const float rad)  { return rad * (3600 * 180) / PI; }
         /* Temperature */
             // Celsius
-    inline float convCelToFah(float c)       { c * 9 / 5 + 32; return c; }
-    inline float convCelToKel(float c)       { c + 273.15; return c; }
+    inline float convCelToFah(const float c)       { return c * 9 / 5 + 32; }
+    inline float convCelToKel(const float c)       { return c + 273.15; }
             // Fahrenheit               
-    inline float convFahToCel(float f)       { f - 32 * 5 / 9; return f; }
-    inline float convFahToKel(float f)       { f - 32 * 5 / 9 + 263.15; return f; }
+    inline float convFahToCel(const float f)       { return f - 32 * 5 / 9; }
+    inline float convFahToKel(const float f)       { return f - 32 * 5 / 9 + 263.15; }
         /* Distance */
             // Metres & Centi
-    inline float convCMtoMicro(float centi)  { centi * 10000; return centi; }
-    inline float convCMtoInch(float centi)   { centi / 2.54;  return centi; }
-    inline float convCMtoMem(float centi)    { centi / 100;   return centi; }
-    inline float convMemtoMM(float meters)   { meters * 1000; return meters; }
-    inline float convMemtoCM(float meters)   { meters * 100;  return meters; }
-    inline float convMemtoKM(float meters)   { meters / 1000; return meters; }
-    inline float convMemtoMile(float meters) { meters / 1609; return meters; }
-    inline float convMemtoYard(float meters) { meters * 1.094;return meters; }
-    inline float convMemtoInch(float meters) { meters * 39.97;return meters; }
-    inline float convMemtoNMile(float meters){ meters / 1852; return meters; }
+    inline float convCMtoMicro(const float centi)  { return centi  * 10000; }
+    inline float convCMtoInch(const float centi)   { return centi  / 2.54;  }
+    inline float convCMtoMem(const float centi)    { return centi  / 100;   }
+    inline float convMemtoMM(const float meters)   { return meters * 1000;  }
+    inline float convMemtoCM(const float meters)   { return meters * 100;   }
+    inline float convMemtoKM(const float meters)   { return meters / 1000;  }
+    inline float convMemtoMile(const float meters) { return meters / 1609;  }
+    inline float convMemtoYard(const float meters) { return meters * 1.094; }
+    inline float convMemtoInch(const float meters) { return meters * 39.97; }
+    inline float convMemtoNMile(const float meters){ return meters / 1852;  }
             // Kilometers
-    inline float convKMtoCM(float km)        { km * 10000;  return km; }      
-    inline float convKMtoMem(float km)       { km * 1000;   return km; }      
-    inline float convKMtoMile(float km)      { km * 0.6214; return km; }
-    inline float convKMtoYard(float km)      { km * 1093.61;return km; }
-    inline float convKMtoFoot(float km)      { km * 3208.84;return km; }
-    inline float convKMtoInch(float km)      { km * 39370;  return km; }
-    inline float convKMtoNMile(float km)     { km / 1.852;  return km; }
+    inline float convKMtoCM(const float km)        { return km * 10000;   }      
+    inline float convKMtoMem(const float km)       { return km * 1000;    }      
+    inline float convKMtoMile(const float km)      { return km * 0.6214;  }
+    inline float convKMtoYard(const float km)      { return km * 1093.61; }
+    inline float convKMtoFoot(const float km)      { return km * 3208.84; }
+    inline float convKMtoInch(const float km)      { return km * 39370;   }
+    inline float convKMtoNMile(const float km)     { return km / 1.852;   }
             // Miles
-    inline float convMiletoCM(float miles)   { miles * 160934; return miles; }
-    inline float convMiletoM(float miles)    { miles * 1609.34;return miles; }
-    inline float convMiletoKM(float miles)   { miles * 1.60934;return miles; }
-    inline float convMiletoYard(float miles) { miles * 1760;   return miles; }
-    inline float convMiletoFoot(float miles) { miles * 5280;   return miles; }
-    inline float convMiletoInch(float miles) { miles * 63360;  return miles; }
-    inline float convMiletoNMile(float miles){ miles / 1.151;  return miles; }
+    inline float convMiletoCM(const float miles)   { return miles * 160934;  }
+    inline float convMiletoM(const float miles)    { return miles * 1609.34; }
+    inline float convMiletoKM(const float miles)   { return miles * 1.60934; }
+    inline float convMiletoYard(const float miles) { return miles * 1760;    }
+    inline float convMiletoFoot(const float miles) { return miles * 5280;    }
+    inline float convMiletoInch(const float miles) { return miles * 63360;   }
+    inline float convMiletoNMile(const float miles){ return miles / 1.151;   }
         /* Time */
             // Seconds
-    inline float convSectoMilli(float sec)   { sec * 1000;  return sec; }      
-    inline float convSectoMin(float sec)     { sec / 60;    return sec; }      
-    inline float convSectoHour(float sec)    { sec / 3600;  return sec; }      
-    inline float convSectoDay(float sec)     { sec / 86400; return sec; }      
-    inline float convSectoWeek(float sec)    { sec / 604800;return sec; }
+    inline float convSectoMilli(const float sec)   { return sec * 1000;   }      
+    inline float convSectoMin(const float sec)     { return sec / 60;     }      
+    inline float convSectoHour(const float sec)    { return sec / 3600;   }      
+    inline float convSectoDay(const float sec)     { return sec / 86400;  }      
+    inline float convSectoWeek(const float sec)    { return sec / 604800; }
             // Minutes
-    inline float convMintoMilli(float sec)   { sec * 60000;return sec; } 
-    inline float convMintoSec(float sec)     { sec * 60;   return sec; } 
-    inline float convMintoHour(float sec)    { sec / 60;   return sec; } 
-    inline float convMintoDay(float sec)     { sec / 1440; return sec; } 
-    inline float convMintoWeek(float sec)    { sec / 10080;return sec; } 
-    inline float convMintoMonth(float sec)   { sec / 43800;return sec; } 
+    inline float convMintoMilli(const float sec)   { return sec * 60000; } 
+    inline float convMintoSec(const float sec)     { return sec * 60;    } 
+    inline float convMintoHour(const float sec)    { return sec / 60;    } 
+    inline float convMintoDay(const float sec)     { return sec / 1440;  } 
+    inline float convMintoWeek(const float sec)    { return sec / 10080; } 
+    inline float convMintoMonth(const float sec)   { return sec / 43800; } 
             // Hours
-    inline float convHourtoMin(float sec)    { sec * 60;  return sec; } 
-    inline float convHourtoSec(float sec)    { sec * 3600;return sec; } 
-    inline float convHourtoDay(float sec)    { sec * 24;  return sec; } 
-    inline float convHourtoDayDiv(float sec)    { sec / 168; return sec; } // Check!
-    inline float convHourtoMonth(float sec)  { sec / 730; return sec; } 
-    inline float convHourtoYear(float sec)   { sec / 8760;return sec; } 
+    inline float convHourtoMin(const float sec)    { return sec * 60;   } 
+    inline float convHourtoSec(const float sec)    { return sec * 3600; } 
+    inline float convHourtoDay(const float sec)    { return sec * 24;   } 
+    inline float convHourtoDayDiv(const float sec) { return sec / 168;  } // Check! ?? Pointless?
+    inline float convHourtoMonth(const float sec)  { return sec / 730;  } 
+    inline float convHourtoYear(const float sec)   { return sec / 8760; } 
         /* Energy */
             // Joules
-    inline float convJtoKJ(float joule)      { joule / 1000; return joule; } 
-    inline float convJtoWattHr(float joule)  { joule / 3600; return joule; } 
-    inline float convJtoCal(float joule)     { joule / 4.184;return joule; } 
-    inline float convJtoKCal(float joule)    { joule / 4184; return joule; } 
+    inline float convJtoKJ(const float joule)      { return joule / 1000;  } 
+    inline float convJtoWattHr(const float joule)  { return joule / 3600;  } 
+    inline float convJtoCal(const float joule)     { return joule / 4.184; } 
+    inline float convJtoKCal(const float joule)    { return joule / 4184;  } 
             // Calories
-    inline float convCaltoJ(float cal)       { cal * 4.184;return cal; }
-    inline float convCaltoKJ(float cal)      { cal / 239;  return cal; }
-    inline float convCaltoKCal(float cal)    { cal / 1000; return cal; }
-    inline float convCaltoWattHr(float cal)  { cal / 860;  return cal; }
+    inline float convCaltoJ(const float cal)       { return cal * 4.184; }
+    inline float convCaltoKJ(const float cal)      { return cal / 239;   }
+    inline float convCaltoKCal(const float cal)    { return cal / 1000;  }
+    inline float convCaltoWattHr(const float cal)  { return cal / 860;   }
             // Wattage
-    inline float convAVtoWatt(float amps, float volts) { return amps * volts; }
+    inline float convAVtoWatt(const float amps, const float volts) { return amps * volts; }
 
     // Graphics and Geometry
-    class Point {
+    class Point { // Remove?!
     private:
         int pos[2] = {0,0};
     public:   
@@ -272,7 +257,7 @@ namespace bmath {
     class Triangle { // Standard tri with total freedom (Scalene)
     private:
         float m_a, m_b, m_c;
-        float sides[3] = {m_a, m_b, m_c};
+        float sides[3];
         std::tuple<float, float> rotation;
         std::tuple<float, float> translation;
         float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
@@ -289,15 +274,23 @@ namespace bmath {
         Triangle(const float a = 1, const float b = 1, const float c = 1)
             : m_a(a), m_b(b), m_c(c)
         {
+            sides[0] = m_a;
+            sides[1] = m_b;
+            sides[2] = m_c;
             assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
             check();
+        }
+        // Copy
+        Triangle(Triangle &other) 
+        {
+
         }
 
         void calcAngles() {
             if(isEquilateral) {
-               m_AngleA = 60; 
-               m_AngleB = 60; 
-               m_AngleC = 60; 
+                m_AngleA = 60; 
+                m_AngleB = 60; 
+                m_AngleC = 60; 
             }
             else if(isRightAngled) {
                 m_AngleB = 90;
@@ -360,6 +353,7 @@ namespace bmath {
             else if(isIsocoles)    return isIsocoles;
             else if(isScalene)     return isScalene;
             else if(isRightAngled) return isRightAngled;
+            return false;
         }
         float gamma() { // Calculates angle | Continue | Do standard overload outside this class
             float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
@@ -369,12 +363,14 @@ namespace bmath {
             if(m_a + m_b > m_c) return m_a + m_b + m_c;
             else
                 std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
+            return 0.0;
         }
         double semiTPer() {
             if(m_a + m_b > m_c) return m_a + m_b + m_c / 2;
             else
                 std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
-        }
+            return 0.0;
+        }  
         // Chainable Functions
 
         ~Triangle() {};
@@ -382,27 +378,24 @@ namespace bmath {
 
     class Shape2D {
     private:
-        std::map<unsigned int, Line> m_Edges{};
+        std::vector<Line> m_Edges{};
     public:
         float m_Width = 0.1f, m_Height = 0.1f;
-        std::tuple<float, float> rotation;
-        std::tuple<float, float> translation;
+        std::pair<float, float> rotation;
+        std::pair<float, float> translation;
         Shape2D(const int sides = 4, const float width = 1.0f, const float height = 1.0f) 
             :m_Width(width), m_Height(height)
         {
             assert(sides > 2 && m_Width != 0 && m_Height != 0);
-            for(unsigned int i = 0; i <= sides; i++) {
-                Line *newLine = new Line;
-                // m_Edges.insert(std::pair<unsigned int, Line>(i, newLine)); // Fix!
+            for(unsigned int i = 0; i < sides; i++) {
+                Line newLine;
+                m_Edges.push_back(newLine);
             } 
-            if(sides == 3) // Create triangle
-                std::cout << "Triangle";
-            else
-                std::cout << "Other";
+            // Handle triangle creation
         }
         // Move Constructor | Fix
         Shape2D(Shape2D &&shape) noexcept
-            :m_Width(shape.m_Width), m_Height(shape.m_Height)
+            :m_Width(shape.m_Width), m_Height(shape.m_Height), m_Edges(shape.m_Edges) // Check edges!
         {
         }
         // Move assignment | Fix!
@@ -419,22 +412,19 @@ namespace bmath {
             return *this;
         }
 
-        inline float getSideCount() { return m_Edges.size(); }
-        inline float getWidth()  const { return m_Width; }
-        inline float getHeight() const { return m_Height; }
-        inline float getPer()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
-        inline float getArea()   const {return m_Width * 2 + m_Height * 2; }
+        inline float sideCount() { return m_Edges.size(); }
+        inline float width()  const { return m_Width; }
+        inline float height() const { return m_Height; }
+        inline float per()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
+        inline float area()   const {return m_Width * 2 + m_Height * 2; }
 
         void setRotation(const float x, const float y) {
-            std::get<0>(rotation) = x;
-            std::get<1>(rotation) = y;
+            rotation.first = x;
+            rotation.second = y;
         }
 
-        std::vector<Line> GetEdges() { // Returns edges in vector format | Pointer?
-            std::vector<Line> lines{};
-            for(std::map<unsigned int, Line>::iterator it = m_Edges.begin(); it != m_Edges.end(); it++)
-                lines.push_back(it->second);
-            return lines;
+        std::vector<Line> GetEdges() const { // Returns edges in vector format | Pointer?
+            return m_Edges;
         }
 
         // Chainable functions
@@ -445,7 +435,7 @@ namespace bmath {
             return *this; 
         } // Add safety?
 
-        ~Shape2D() {}
+        ~Shape2D() {} // Virtual?
     };
 
         // Overload
@@ -458,6 +448,7 @@ namespace bmath {
         int numberOfFaces = 0;
         bool isPrism = false; // Alters formulas
         bool isPyramid = false; // (Right-Rectangular Pyramid only!) | Allow for tri based?
+        float volume;
     public:
         float m_Width, m_Height, m_Depth;
         Shape3D() {}
@@ -529,9 +520,9 @@ namespace bmath {
             if(isPrism)
                 return *this; // DO!
             else if(isPyramid)
-                m_Width * m_Height * m_Depth / 3;
+                volume = m_Width * m_Height * m_Depth / 3;
             else
-                m_Width * m_Height * m_Depth; 
+                volume = m_Width * m_Height * m_Depth; 
             return *this; 
         }
         inline Shape3D& getPerC() { m_Width + m_Width + m_Height + m_Height; return *this; } 
@@ -681,12 +672,14 @@ namespace bmath {
             else
                 if(stateError)
                     std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
+            return 0.0;
         }
         double semiTPer(bool stateError = true) {
             if(m_Height < m_Base) return m_Height * 2 + m_Base / 2;
             else
                 if(stateError)
                     std::cerr << "Babbage Error:- Invalid Input: Ensure b < 2 x a" << std::endl;
+            return 0.0;
         }
 
         std::vector<float> GetALL() {
@@ -774,6 +767,7 @@ namespace bmath {
             return a + b + c;
         else
             std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl;
+        return 0.0;
     }
         // Semi-Perimeter
     double semiTPer(double a, double b, double c) {
@@ -781,6 +775,7 @@ namespace bmath {
             return a + b + c / 2;
         else
             std::cerr << "Babbage Error:- Invalid Input: Ensure a + b > c" << std::endl; // Check need for exit status!
+        return 0.0;
     }
         // Area
     double tArea(double height, double base) { 
@@ -823,22 +818,17 @@ namespace bmath {
         }
 
         // Move constructor
-        Quaternion(Quaternion &&quat) noexcept
+        Quaternion(Quaternion && quat) noexcept
             :i(quat.i), j(quat.j), k(quat.k), w(quat.w)
         {    
         } 
 
-        std::tuple<float, float, float, float> getQuat() {
-            std::tuple<float,float,float,float> data;
-            std::get<0>(data) = i;
-            std::get<1>(data) = j;
-            std::get<2>(data) = k;
-            std::get<3>(data) = w;
-            return data;
+        std::array<float,4> getQuat() const {
+            return {i,j,k,w};
         }
 
         // Move assignment
-        Quaternion& operator=(Quaternion &&quat) noexcept {
+        Quaternion& operator=(Quaternion && quat) noexcept {
                 // Self detection
             if(&quat == this)
                 return *this;

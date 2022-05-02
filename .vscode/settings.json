@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "cmath": "cpp"
+        "cmath": "cpp",
+        "algorithm": "cpp",
+        "iosfwd": "cpp",
+        "typeinfo": "cpp"
     }
 }

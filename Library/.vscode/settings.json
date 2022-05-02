@@ -54,6 +54,10 @@
         "stack": "cpp",
         "fstream": "cpp",
         "sstream": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "__threading_support": "cpp",
+        "clocale": "cpp",
+        "ctime": "cpp",
+        "locale": "cpp"
     }
 }

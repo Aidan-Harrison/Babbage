@@ -8,10 +8,10 @@ namespace bmatrix {
     template<typename T>
     class Matrix {
     private:
-    public:
         int m_Rows = 0, m_Columns = 0;
+    public:
         std::vector<std::vector<T>> matrix{};
-        Matrix(const int rows = 1, const int columns = 1, T fill = 0)
+        Matrix(int rows = 1, int columns = 1, T fill = 0)
             :m_Rows(rows), m_Columns(columns)
         {
             assert(rows > 0 && columns > 0);
@@ -23,16 +23,38 @@ namespace bmatrix {
                 }
             }
         }
-        Matrix(const int rows = 1, const int columns = 1, std::vector<std::vector<T>> &data={}) 
+        Matrix(int rows = 1, int columns = 1, std::vector<std::vector<T>> &data={}) 
             :m_Rows(rows), m_Columns(columns)
         {
             assert(rows > 0 && columns > 0);
             if((data.size() * data[0].size()) != (m_Rows * m_Columns))
                 FillMatrix(data);
         }
+        // Copy Constructor
+        Matrix(Matrix &other) 
+            :m_Rows(other.m_Rows), m_Columns(other.m_Columns) // Check!, private members from object but in constructor
+        {
+            // Do vector, should alaredy have a copy constructor
+        }
 
         void FillMatrix(std::vector<std::vector<T>> &data);
         void ResizeMatrix();
+
+        int GetRows() const { return m_Rows; }
+        int GetColumns() const { return m_Columns; }
+
+        int * GetRowColumn() const {
+            int values[2];
+            values[0] = m_Rows;
+            values[1] = m_Columns;
+            return values;
+        }
+        std::vector<int> GetRowColumnAsVector() const {
+            std::vector<int> values;
+            values.push_back(m_Rows);
+            values.push_back(m_Columns);
+            return values;
+        }
 
         void PrintMatrix() const {
             for(unsigned int i = 0; i < m_Rows; i++) {
@@ -40,6 +62,14 @@ namespace bmatrix {
                     std::cout << matrix[i][j] << ", ";
                 }
                 putchar('\n');
+            }
+        }
+        
+        void ClearMatrix() {
+            for (unsigned int i = 0; i < m_Rows; i++) {
+                for (unsigned int i = 0; i < m_Columns; i++) {
+                    
+                }  
             }
         }
         ~Matrix() {}
