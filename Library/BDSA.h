@@ -10,7 +10,45 @@
 
 // & or * for vector construction?
 
+// Helper functions
+template<typename T>
+void swap(T * x, T * y) {
+    T temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
 namespace bstructres {
+    template<typename T>
+    class bArray {
+    private:
+        T * arr[];
+        unit64_t size{};
+        unit64_t maxSize = 1;
+        void resize() {
+
+        }
+
+        void push() {
+            if(full()) {
+                T newVec[maxSize++];
+                // Copy contents
+                delete[] arr;
+            }
+        }
+        
+        T pop() {
+            T result = arr[size];
+            // resize()
+            return NULL;
+        }
+    public:
+        const inline bool full()  const {return size == maxSize; }
+        const inline bool empty() const {return size == 0; }
+        const unsigned int size() const {return size; }
+
+    };
+
     template<typename T>
     struct bPair { // Check!
         T * first = nullptr;
@@ -18,6 +56,14 @@ namespace bstructres {
 
         bPair(T f, T s) 
             :first(&f), second(&s)
+        {
+        }
+        bPair(bPair & b) 
+            :first(b.first), second(b.second)
+        {
+        }
+        bPair(bPair && b) noexcept
+            :first(b.first), second(b.second)
         {
         }
 
@@ -42,6 +88,8 @@ namespace bstructres {
             return false;
         }
 
+        // Write hash function
+
         bHash() {}
         ~bHash() {}
     };
@@ -51,13 +99,14 @@ namespace bstructres {
     struct SLinkedList {
         struct Node {
             T data;
-            Node* next;
+            Node * next;
             Node() :data(0), next(nullptr) {}
             Node(T x) :data(x), next(nullptr) {}
             Node(T x, Node *n) :data(x), next(n) {}
         };
 
-        Node *head = nullptr;
+        Node * head = nullptr;
+        Node * tail = nullptr;
         int size = 0;
 
         SLinkedList() {}
@@ -75,14 +124,23 @@ namespace bstructres {
                 tempVector[i]->next = tempVector[i+1];
         }
 
-        void PrintList(Node *n) {
+        void push(Node * newNode) {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        Node * pop() { // Set one previous to tail to null, return tail
+
+        };
+        node * peek() const { return tail; };
+
+        void print(std::string sepChar = "->", Node * n = nullptr) const {
             while(n != nullptr) {
                 std::cout << n->data << ' ';
                 n = n->next;
             }
         }
 
-        Node* addNode(Node* prevNode, T data) {
+        Node * addNode(Node* prevNode, T data) {
             Node *newNode = new Node(data);
             newNode->next = prevNode->next;
             prevNode->next = newNode;
@@ -97,6 +155,17 @@ namespace bstructres {
                     delete n;
             }
         }
+
+        bool search(T target) const {
+            Node * tNode = head;
+            while(tNode != nullptr) {
+                if(tNode == target)
+                    return true;
+                tNode = tNode->next;
+            }
+            return false;
+        }
+
         void getMiddle(node *n) {
             
         }
@@ -129,7 +198,9 @@ namespace bstructres {
             dNode(T x, dNode *p, dNode *n) :data(x), prev(p), next(n) {}
         };
 
-        dNode *head = nullptr;
+        dNode * head = nullptr;
+        dNode * tail = nullptr;
+
         int size = 0;
 
         DLinkedList() {}
@@ -161,6 +232,16 @@ namespace bstructres {
             }
         }
 
+        void push(dNode * newNode) {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        dNode * pop() {
+            tail->prev->next = nullptr;
+            tail = tail->prev;
+        }
+        dNode * peek() const { return tail; }
+
         void PrintList(dNode *n) {
             while(n != nullptr) {
                 std::cout << n->data << ' ';
@@ -177,7 +258,7 @@ namespace bstructres {
             size++;
         }
 
-        void delNode(dNode *n) {
+        void delete(dNode *n) {
             n->prev = n->next;
             size--;
         }
@@ -207,18 +288,17 @@ namespace bstructres {
         bStack() {}
         bStack(bStack<T> *other)
         {
-            while(GetSize() <= other->GetSize())
-                Push(other->Pop());
+            while(size() <= other->size())
+                push(other->pop());
         }
         bStack(const int size)
         {
             items.resize(size);
         }
-
         bStack(std::vector<T> &vector) 
         {
             while(!vector.empty())
-                Push(vector.pop_back());
+                push(vector.pop_back());
         }
 
         inline bool full() { return top == items.size(); }
@@ -237,16 +317,16 @@ namespace bstructres {
                 std::cerr << "Babbage Error: Stack is empty!\n";
             else {
                 T item = items[top];
-                items[top] = 0;
+                items[top] = -1; // Check with template
                 top--;
                 return item;
             }
         }
 
         inline int size() { return top; }
-        inline T Peek() { return items[top]; }
+        inline T peek() { return items[top]; }
 
-        inline void Print() const {
+        inline void print() const {
             for(auto i : items)
                 std::cout << i << ", ";
         }
@@ -262,6 +342,7 @@ namespace bstructres {
             int front = 0;
             std::vector<T> items{};
         public:
+            bQueue() {}
             bQueue(bQueue<T> *other) 
             {
                 if(other->MAXSIZE == 0 || other->rear == -1)
@@ -285,20 +366,20 @@ namespace bstructres {
                     Enqueue(vector.pop_back());
             }
 
-            inline bool IsFull() {
+            inline bool full() {
                 if(rear == MAXSIZE)
                     return true;
                 return false;
             }
 
-            bool IsEmpty() {
+            bool empty() {
                 if(rear == -1)
                     return true;
                 return false;
             };
 
-            void Enqueue(T data) {
-                if(IsFull())
+            void push(T data) {
+                if(full())
                     std::cerr << "Babbage Error: Queue is full!\n";
                 else { 
                     if(front == -1)
@@ -307,8 +388,8 @@ namespace bstructres {
                     items[rear] = data;
                 }
             }
-            T Dequeue() {
-                if(IsEmpty())
+            T pop() {
+                if(empty())
                     std::cerr << "Babbage Error: Queue is empty!\n";
                 else {
                     T element = queue[front];
@@ -324,6 +405,7 @@ namespace bstructres {
             }
 
             inline auto front() const { return items[front]; }
+            inline T rear() const { return items[rear]; }
             inline void SetMax(int size) { MAXSIZE = size; }
 
             inline void Print() const {
@@ -385,10 +467,246 @@ namespace bstructres {
     };
 
     template<typename T>
+    struct wNode {
+        T data;
+        bool visited = false;
+        std::vector<std::pair<wNode*, int>> children{};
+    };
+
+    template<typename T>
+    class wGraph {
+    private:
+        wNode * root = nullptr;
+        unsigned int size = 0;
+
+        void DFS(bool print = false, char sepChar = '-') {
+            bStack<wNode*> s;
+            s.push(root);
+            root->visited = true;
+            if(print)
+                std::cout << root->data << sepChar;
+            while(!s.empty()) {
+                wNode * curNode = s.pop();
+                for(std::pair<wNode*,int> n : curNode->children) {
+                    if(!n.first->visited) {
+                        s.push(n);
+                        n.first->visited = true;
+                        if(print)
+                            std::cout << n.first->data << sepChar;
+                    }
+                }
+            }
+        }
+
+        void BFS(bool print = false, char sepChar = '-') {
+            bQueue<wNode*> q;
+            q.push(root);
+            root->visited = true;
+            if(print)
+                std::cout << root->data << sepChar;
+            while(!q.empty()) {
+                wNode * curNode = q.pop();
+                for(std::pair<wNode*,int> n : curNode->children) {
+                    if(!n.first->visited) {
+                        q.push(n);
+                        n.first->visited = true;
+                        if(print)
+                            std::cout << n.first->data << sepChar;
+                    }
+                }
+            }
+        }
+    public:
+        void insert(WNode * n, const int data, const int weight) {
+            wNode * newNode = new wNode(data);
+            if(root == nullptr) {
+                root = newNode;
+                size++;
+                return;
+            }
+            n->children.push_back({newNode,weight});
+            size++;
+        }
+
+        // Removes given instance of node
+        void remove(wNode * dN, const int instance) { // Check!
+            // Add option to fix graph if it becomes disconnected?
+            bStack<wNode*> s;
+            s.push(root);
+            root->visited = true;
+            while(!s.empty()) {
+                wNode * curNode = s.pop();
+                if(curNode == dN) { // Check!
+                    delete curNode; // Check!
+                    size--;
+                    return;
+                }
+                for(std::pair<wNode*,int> n : curNode->children) {
+                    if(n.first == dN) {
+                        delete curNode;
+                        size--;
+                        return;
+                    }
+                    if(!n.first->visited) {
+                        s.push(n);
+                        n.first->visited = true;
+                    }
+                }
+            } 
+        }
+
+        bool search(const T target) {
+            bStack<wNode*> s;
+            s.push(root);
+            root->visited = true;
+            while(!s.empty()) {
+                wNode * curNode = s.pop();
+                for(wNode * n : curNode->children) {
+                    if(n->data == target)
+                        return true;
+                    if(!n->visited) {
+                        s.push(n);
+                        n->visited = true;
+                    }
+                }
+            } 
+            return false;
+        }
+
+        unsigned int size() const { return size; }
+
+        void shortestPath() { // Dijstkas Algorithmn
+            std::vector<int> distances{0};
+            distances.resize(size());
+            for(int i = 1; i < distances.size(); i++)
+                distances[i] = INT_MAX;
+            wNode * initialNode = root;
+            for(std::pair<wNode*,int> n : initialNode->children) {
+                int distance = 0;
+                distance += n.second;
+            }
+        }
+
+        void print() const {
+            if(root == nullptr) {
+                std::cerr << "Attempted to print a weighted graph which does not exist!\n";
+                return;
+            }
+            DFS(true);
+        }
+
+        void unvisit() {
+            bStack<wNode*> s;
+            s.push(root);
+            root->visited = false;
+            if(print)
+                std::cout << root->data << '-';
+            while(!s.empty()) {
+                wNode * curNode = s.pop();
+                for(wNode * n : curNode->children) {
+                    if(n->visited) {
+                        s.push(n);
+                        n->visited = false;
+                    }
+                }
+            } 
+        }
+
+        int distance() { // Returns total distance
+            int result = 0;
+            bStack<wNode*> s;
+            s.push(root);
+            root->visited = true;
+            if(print)
+                std::cout << root->data << sepChar;
+            while(!s.empty()) {
+                wNode * curNode = s.pop();
+                for(wNode * n : curNode->children) {
+                    if(!n->visited) {
+                        
+                        s.push(n);
+                        n->visited = true;
+                        if(print)
+                            std::cout << n->data << sepChar;
+                    }
+                }
+            } 
+            return result;
+        }
+    };
+
+    struct wmGraph {
+        std::vector<std::vector<int>> graph{};
+        std::vector<std::vector<int>> weights{};
+
+        void search() {
+
+        }
+
+        void print() const {
+
+        }
+
+        wmGraph() {}
+        ~wmGraph() {}
+    };
+
+    template<typename T>
+    struct wlGraph {
+        std::vector<SLinkedList<T>> graph{};
+        
+        void DFS(const int n) {
+            bStack<T> s;
+            for(unsigned int i = 0; i < graph.size(); i++) {
+                graph[n].visited = true;
+                while(!s.empty()) {
+                    wNode * curNode = s.pop();
+                    wNode * traverseNode = curNode;
+                    while(traverseNode != nullptr) {
+                        if(!traverseNode->visited) {
+                            s.push(traverseNode);
+                            traverNode->visisted = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        void BFS(const int n) {
+            bQueue<T> q;
+            while(!q.empty()) {
+
+            }
+        }
+
+        void clear() {
+
+        }
+
+        bool search(T target) const {
+            for(unsigned int i = 0; i < graph.size(); i++) {
+                if(graph[i].search(T))
+                    return true;
+            }
+            return false;
+        }
+
+        void print(std::string sepChar = "->") const {
+            for(unsigned int i = 0; i < graph.size(); i++) {
+                graph[i].print(sepChar);
+            }
+        }
+
+        wlGraph() {}
+        ~wlGraph() {}
+    }; 
+
+    template<typename T>
     struct treeNode {
         T key_Value;
-        treeNode *left = nullptr;
-        treeNode *right = nullptr;
+        treeNode * left = nullptr;
+        treeNode * right = nullptr;
         treeNode(T value) :key_Value(value) {}
     };
 
@@ -506,24 +824,25 @@ namespace bstructres {
         ~bTrie() {}
     };
 
-    class rBuffer { // Fix compile
+    class rBuffer { // template!
     public:
         int rear = 0;
-        int front = 0;
+        int front = -1;
         int size = 10;
         int elementCount = 0;
 
-        bool full() const { return elementCount == size ? true : false; }
-        bool empty() const { return elementCount == 0 ? true : false; }
+        int size() const { return elementCount; } 
+        inline bool full() const { return elementCount == size ? true : false; }
+        inline bool empty() const { return elementCount == 0 ? true : false; }
 
-        void enqueue(const int data) {
+        void push(const int data) {
             if(full())
                 return;
             queue[rear] = data;
             rear = (rear + 1) % size;
             elementCount++;            
         }
-        int dequeue() {
+        int pop() {
             if(empty())
                 return INT_MIN;
             int result = queue[front];
@@ -531,8 +850,70 @@ namespace bstructres {
             elementCount--;
             return result;
         }
+
+        rBuffer(rBuffer & r) 
+            :elementCount(r.elementCount), rear{r.rear}, front(r.front)
+        {
+        }
+        rBuffer(rBuffer && r) noexcept 
+            :elementCount(r.elementCount), rear{r.rear}, front(r.front)
+        {
+        }
+        rBuffer& operator=(rBuffer && r) noexcept 
+        {
+            if(&r == this)
+                return;
+            delete &rear;
+            delete &front;
+            front = r.front;
+            rear = r.rear;
+            return *this;
+        }
     private:
-        std::array<int, size> queue{};
+        std::vector<int> queue;
+    };
+
+    template<typename T>
+    struct bHeap {
+        std::vector<int> heap{};
+        int size{};
+        bHeap(const int size) 
+            :heap.resize(size)
+        {
+            heap[0] = NULL; // check!
+        }
+
+        T parent(uint32_t i) { return i>>1; }
+        T left(unit32_t i) { return i<<1; }
+        T right(unit32_t i) { return (i<<1) + 1; }
+
+        T getParent(const uint32_t i) const { return heap[(i-1)/2]; }
+        T getLeft(const uint32_t index) const{ return heap[2*i+1]; }
+        T getLeft(const uint32_t index) const{ return heap[2*i+2]; }
+
+        void peek() {
+            return heap[1];
+        }
+
+        void constructMax(std::vector<int> & data) { 
+            for(int i = 0; i < data.size(); i++) {
+                heap.push_back(data[i]);
+                if(heap[i-1/2] > heap[i])
+                    swap(&heap[i-1/2], heap[i]);
+            }
+        }
+
+        void heapify() {
+            int largest = heap[heap.size()-1];
+            for(int i = heap.size(); i >= 0; i--) {
+                if(heap[i-1/2] > largest)
+                    largest = i-1/2;
+                else if()
+                    largest = 2*i+2;
+            }
+        }
+
+        ~heap() {}
     };
 }
 
@@ -579,8 +960,11 @@ namespace bAlgorithms {
     }
     
     template<typename T>
-    std::vector<T> Reverse(std::vector<T>& arr) {
-        int start = 0, end = arr.size()-1;
+    std::vector<T> Reverse(std::vector<T>& arr, unsigned int start = 0, unsigned int end = 0) {
+        if(end != 0) {
+            end = end;
+        else
+            end = arr.size()-1;
         while(start < end) {
             int temp = arr[start];
             arr[start++] = arr[end];
@@ -589,33 +973,29 @@ namespace bAlgorithms {
         return arr;
     }
 
-    template<typename T>   // Overload for custom start and end
-    std::vector<T> Reverse(std::vector<T> &arr, int start, int end) {
-        while(start < end) {
-            int temp = arr[start];
-            arr[start++] = arr[end];
-            arr[end--] = temp;
-        }
-        return arr;
-    }
-
-    std::string Reverse(std::string &str) {
-        if(str.length() == 0) {
-            std::cerr << "Babbage Error: String is empty in 'Reverse(std::string &str)'\n";
-            return str;
-        }
-        int start = 0, end = str.length()-1;
-        while(start < end) {
-            int temp = str[start];
-            str[start++] = str[end];
-            str[end--] = temp;
-        }
+    std::string capitalise(std::string str) {
+        for(char c : str)
+            toupper(c);
         return str;
     }
 
-    std::string Reverse(std::string &str, int start, int end) {
+    std::string lowerise(std::string str) {
+        for(char c : str)
+            tolower(c);
+        return str;
+    }
+
+    std::string Reverse(std::string &str, unsigned int start = 0, unsigned int end = 0) {
+        if(str.length() == 0 || str.length() == 1) {
+            std::cerr << "Babbage Error: String is empty in 'Reverse(std::string &str)'\n";
+            return str;
+        }
+        if(end != 0)
+            end = end;
+        else
+            end = str.length()-1;
         while(start < end) {
-            char temp = str[start];
+            int temp = str[start];
             str[start++] = str[end];
             str[end--] = temp;
         }
@@ -654,7 +1034,7 @@ namespace bAlgorithms {
         std::vector<int> result{};
         if(sizeof(number) != sizeof(int) || sizeof(number) != sizeof(float) || sizeof(number) != sizeof(double)) {
             std::cerr << "Babbage Error:-\nINVALID DATATYPE OF: " << typeid(number).name() << '-'
-                      << "Must be int, float or double" << std::endl;
+                    << "Must be int, float or double" << std::endl;
             return result;
         }
         else {
@@ -666,14 +1046,6 @@ namespace bAlgorithms {
         }
         Reverse(number); // Check!
         return result;
-    }
-
-    // Sorting
-    template<typename T>
-    void Swap(T* a, T* b) {
-        T temp = *a;
-        *a = *b;
-        *b = temp;
     }
 
     template<typename T>
@@ -707,7 +1079,7 @@ namespace bAlgorithms {
         for(unsigned int i = 0; i < arr.size(); i++)
             for(unsigned int j = 0; j < i - 1; j++)
                 if(arr[j] == arr[j+1])
-                    Swap(&arr[j], &arr[j+1]);
+                    swap(&arr[j], &arr[j+1]);
         return arr;
     }
 
@@ -721,7 +1093,7 @@ namespace bAlgorithms {
         for(unsigned int i = 0; i < size; i++)
             for(unsigned int j = 0; j < i - 1; j++)
                 if(arr[j] == arr[j+1])
-                    Swap(&arr[j], &arr[j+1]);
+                    swap(&arr[j], &arr[j+1]);
         return arr;
     }
 
@@ -737,7 +1109,7 @@ namespace bAlgorithms {
                     if(arr[j] < arr[min])
                         min = j;
                 if(min != i)
-                    Swap(&arr[i], &arr[min]);
+                    swap(&arr[i], &arr[min]);
             }
         }
         return arr;
@@ -758,10 +1130,10 @@ namespace bAlgorithms {
                 j = i - 1;
                 while(j > 0 && arr[j] > arr[j-1]) {
                     arr[j+1] = arr[j];
-                    j = j - 1;
+                    j--;
                 }
                 arr[j+1] = x;
-                i = i + 1;
+                i++;
             }
         }
         return arr;
@@ -778,8 +1150,8 @@ namespace bAlgorithms {
         int i = nums[low];
         for(int j = low; j < high; j++)
             if(nums[j] <= pivot)
-                Swap(&nums[i], &nums[j]);
-        Swap(&nums[i + 1], &nums[high]);
+                swap(&nums[i], &nums[j]);
+        swap(&nums[i + 1], &nums[high]);
         return (i + 1); // Return pivot
     }
 
@@ -797,10 +1169,20 @@ namespace bAlgorithms {
 
     // Merge Sort =====================================================================
 
+    // Heap Sort =====================================================================
+
+    // Radix Sort =====================================================================
+
+    // Counting Sort =====================================================================
+
+    // Bucket Sort =====================================================================
+
+    // Rand Sort =====================================================================
+
     // Searching
     template<typename T>
-    T bBinarySearch(std::vector<T> &arr, T target) {
-        if(arr.size() == 0) {
+    T bSearch(std::vector<T> &arr, const T target) {
+        if(arr.size() == 0 || arr.size() == 1) {
             return "Babbage Error: Vector is empty in 'bBinarySearch(std::vector<T> &arr, T target)\n";
             return nullptr;
         }
@@ -848,7 +1230,32 @@ namespace bAlgorithms {
 
     template<typename T>
     void BFS(bstructres::Graph<T> &g) {
-
+        int w = g.graph[0].size();
+        int h = g.graph.size();
+        std::vector<BDataStruct::bPair> directions{}; // Do with custom!
+        std::vector<std::vector<bool>> visited{};
+        auto inside =[&](int x, int y) { return 0 <= x && x <= w && 0 <= y && y <= h; };
+        for(int row = 0; row < g.graph.size(); row++) {
+            for(int col = 0; col < g.graph[0].size(); col++) {
+                if(g.graph[row][col] == 1) {
+                    BDataStruct::bQueue queue;
+                    BDataStruct::bPair initial(row, col);
+                    queue.push(initial);
+                    visited[row][col] = true;
+                    while(!stack.empty()) {
+                        BDataStruct::bPair pos = stack.pop();
+                        for(BDataStruct::bPair dir : directions) {
+                            int new_row = row + dir.first;
+                            int new_col = col + dir.second;
+                            if(!visited[new_row][new_col] && inside(new_row, new_col) && g.graph[new_row][new_col] == 1) {
+                                stack.push(BDataStruct::bPair new(new_row,new_col));
+                                visited[new_row][new_col] = true;
+                            }
+                        }
+                    }
+                }
+            }
+        } 
     }
 }
 

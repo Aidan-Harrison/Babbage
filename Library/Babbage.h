@@ -71,7 +71,9 @@ typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
+
 // Babbage Typedefs
+
 
 // Definitions
 #define mut mutable
@@ -173,11 +175,20 @@ typedef uint64_t u64;
 
 namespace bge {
     // General
+    float randf(const float val) {
+        float remainder = val/10;
+        float result = rand() % (int)val;
+        result += remainder;
+        return result;
+    }
+
     template<typename T>
     inline void prtinp(const std::string & statement, T input) {
         printf("%s", statement);
         std::cin >> input;
     }
+
+    template<typename T>
     inline void prtinp(const std::string && statement, T input) noexcept { // Check!
         printf("%s", statement);
         std::cin >> input;
@@ -190,14 +201,14 @@ namespace bge {
         return result;
     }
     float rand_range(const float a, const float b) {
-        float result = rand() % b;
+        float result = rand() % (int)b;
         if(result < a)
             result = a;
         return result;
     }
 
     template<typename T>
-    T reverse(T con, uint32_t srt = 0, uint32_t end = INT_MAX) {
+    T reverse(T con, uint32_t srt = 0, uint32_t end = INT_MAX) { // Remove?
         if(end == INT_MAX) { // Type match
             if(typeid(con) == typeid(std::string))
                 end = con.length()-1;
@@ -365,7 +376,18 @@ namespace bge {
             }
         }
         else if(_typeName.find("Vector1i")) {
-            std::cout << "DEBUG: Vector bulk allocation";
+            std::cout << "DEBUG: Vector (int) bulk allocation";
+            for(int i = 0; i <= amount; i++) {
+                if(_HEAP)
+                    bvector::Vector1i * newVec = new bvector::Vector1i(fC);
+                    objects.push_back(newVec);
+                else
+                    bvector::Vector1i newVec(fC);
+                    objects.push_back(newVec);
+            }
+        }
+        else if(_typeName.find("Vector1f")) {
+            std::cout << "DEBUG: Vector (float) bulk allocation";
             for(int i = 0; i <= amount; i++) {
                 if(_HEAP)
                     bvector::Vector1i * newVec = new bvector::Vector1i(fC);
@@ -378,7 +400,7 @@ namespace bge {
         return objects;
     }
 
-    inline void DPrint(const std::string str, bool _LINE = true) { // Add r_value?
+    inline void DPrint(const std::string & str, bool _LINE = true) { // Add r_value?
         if(_LINE)
             std::cout << "DEBUG: " << str << '\n';
         else
@@ -451,6 +473,58 @@ namespace bge {
 
 }
 
-using namespace BHelp;
+namespace binj {
+    const bool LexString() {
+
+    }
+
+    const bool LexChar(const char ch) {
+        switch(ch) {
+            case '0': return;
+        }
+    }
+
+    template<typename T>
+    class injStr {
+    private:
+        std::vector<std::tuple<std::string, T>> s{};    
+        uint32_t size = 0;
+        void resize(int * newSize) {
+            s.resize(newSize);
+        }
+    public:
+        injStr() {}
+        injStr(const int _s)
+            :size(s)
+        {
+        }
+        ~injStr() = default;
+    };
+
+    template<typename T>
+    void INJECT(injStr & _inp, bool _DEBUG = false) { 
+        int m = 0;
+        std::vector<T> storage{};
+        while(1) {
+            for(unsigned int i = 0; i < _inp.size(); i++) {
+                if(_inp[i] == "STR:") { // Store
+                    while(_inp[m] != ",") {
+                        storage.push_back(_inp[i+1]);
+                        if(_DEBUG) {
+                            putchar('S');
+                            std::cout << "Mem: : " << sizeof(_inp[i+1]);  
+                        }
+                    }
+                }
+                else if(_inp == "DMP!") {
+                    int CC = LexChar(_inp[i+1]);
+                    for(unsigned int i = 0; i < CC; i++) {
+                        
+                    }
+                }
+            }
+        }
+    }
+}
 
 #endif

@@ -196,14 +196,20 @@ namespace bmath {
     inline float convAVtoWatt(const float amps, const float volts) { return amps * volts; }
 
     // Graphics and Geometry
-    class Point { // Remove?!
+        // Replace with custom data structures
+    class Pointi { 
     private:
         int pos[2] = {0,0};
     public:   
-        Point(const int xPos = 0, const int yPos = 0) 
+        Pointi() {}
+        Pointi(const int xPos = 0, const int yPos = 0) 
         {
             pos[0] = xPos;
             pos[1] = yPos;
+        }
+        Pointi(Pointi & p) 
+            :pos[0](p.pos[0]), pos[1](p.pos[1])
+        {
         }
         inline int x() const { return pos[0]; }
         inline int y() const { return pos[1]; }
@@ -213,15 +219,60 @@ namespace bmath {
             position.push_back(pos[1]);
             return position;
         }
+        std::pair<int,int> GetPosAsPair() const {
+            std::pair<int,int> position;
+            position.first = pos[0];
+            position.second = pos[1];
+            return position;
+        }
 
-        inline void setX(const int x) { pos[0] = x;}
-        inline void setY(const int y) { pos[1] = y;}
-        inline void setPos(int x, int y) { 
+        inline void set(const int x, const int y) { 
             pos[0] = x; 
             pos[1] = y;
         }
+        inline void setX(const int x) { pos[0] = x;}
+        inline void setY(const int y) { pos[1] = y;}
 
-        ~Point() {}
+        ~Pointi() {}
+    };
+
+    class Pointf { // Remove?!
+    private:
+        float pos[2] = {0,0};
+    public:   
+        Pointf() {}
+        Pointf(const float xPos = 0, const float yPos = 0) 
+        {
+            pos[0] = xPos;
+            pos[1] = yPos;
+        }
+        Pointf(Pointf & p) 
+            :pos[0](p.pos[0]), pos[1](p.pos[1])
+        {
+        }
+        inline float x() const { return pos[0]; }
+        inline float y() const { return pos[1]; }
+        std::vector<float> GetPosAsVector() const {
+            std::vector<float> position;
+            position.push_back(pos[0]);
+            position.push_back(pos[1]);
+            return position;
+        }
+        std::pair<float,float> GetPosAsPair() const {
+            std::pair<float,float> position;
+            position.first = pos[0];
+            position.second = pos[1];
+            return position;
+        }
+
+        inline void set(const float x, const float y) { 
+            pos[0] = x; 
+            pos[1] = y;
+        }
+        inline void setX(const float x) { pos[0] = x; }
+        inline void setY(const float y) { pos[1] = y; }
+
+        ~Pointf() {}
     };
 
     struct Line {
@@ -256,20 +307,20 @@ namespace bmath {
 
     class Triangle { // Standard tri with total freedom (Scalene)
     private:
-        float m_a, m_b, m_c;
+        float m_a, m_b, m_c; // Compress below? Might be nice to keep
         float sides[3];
-        std::tuple<float, float> rotation;
-        std::tuple<float, float> translation;
+        float rotation[2], translation[2], scale[2];
         float m_AngleA, m_AngleB, m_AngleC; // Do angle calculation
-        bool isEquilateral = false, isIsocoles = false, isScalene = false, isRightAngled = false;
+        float angles[3];
+        uint8_t type = 0;
+        enum TYPE{EQUILATERAL, ISCOCLES, SCALENE, RIGHT};
     public:
         void check() { // Checks what type of triangle it is
-            if(m_a == m_b && m_a == m_c) isEquilateral = true;
-            else if(m_a == m_b || m_a == m_c || m_b == m_c) isIsocoles = true;
-            else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) isRightAngled = true;
-            else isScalene = true;
+            if(m_a == m_b && m_a == m_c) type = EQUILATERAL;
+            else if(m_a == m_b || m_a == m_c || m_b == m_c) type = ISCOCLES;
+            else if(m_a == 90.0 || m_b == 90.0 || m_c == 90.0) type = RIGHT;
+            else type = SCALENE;
         } 
-
 
         Triangle(const float a = 1, const float b = 1, const float c = 1)
             : m_a(a), m_b(b), m_c(c)
@@ -280,23 +331,35 @@ namespace bmath {
             assert(m_a <= 0 && m_b <= 0 && m_c <= 0);
             check();
         }
-        // Copy
-        Triangle(Triangle &other) 
-        {
 
+        Triangle(Triangle & other) 
+            :m_a(other.m_a), m_b(other.m_b), m_c(other.m_c)
+        {
+            sides[0] = m_a;
+            sides[1] = m_b;
+            sides[2] = m_c;
+            angles[0] = other.angles[0];
+            angles[1] = other.angles[1];
+            angles[2] = other.angles[2];
+        }
+        Triangle(Triangle && b) noexcept
+        {
         }
 
         void calcAngles() {
-            if(isEquilateral) {
-                m_AngleA = 60; 
-                m_AngleB = 60; 
-                m_AngleC = 60; 
-            }
-            else if(isRightAngled) {
-                m_AngleB = 90;
-            }
-            else if(isIsocoles) {
-
+            switch(type) {
+                case EQUILATERAL: {
+                    m_AngleA = 60.0;
+                    m_AngleB = 60.0;
+                    m_AngleC = 60.0;
+                    break;
+                }
+                case ISCOCLES:
+                    break;
+                case RIGHT:
+                    break;
+                case SCALENE:
+                    break;
             }
         }
 
@@ -378,7 +441,10 @@ namespace bmath {
 
     class Shape2D {
     private:
+        enum SHAPE_TYPE{SQUARE, TRIANGLE};
         std::vector<Line> m_Edges{};
+        std::vector<std::pair<float,float>> vertices{};
+        uint8_t type = 0;
     public:
         float m_Width = 0.1f, m_Height = 0.1f;
         std::pair<float, float> rotation;
@@ -391,6 +457,22 @@ namespace bmath {
                 Line newLine;
                 m_Edges.push_back(newLine);
             } 
+            // Vertices:
+            switch(type) {
+                case SQUARE: {
+                    vertices[0].first = -width; vertices[0].second = -height; // Top-left
+                    vertices[1].first = width; vertices[1].second = -height; // Top-Right
+                    vertices[2].first = -width; vertices[2].second = height; // Bot-left
+                    vertices[3].first = width; vertices[3].second = height; // Bot-Right
+                    break;
+                }
+                case TRIANGLE: { // Defaults to equlatrial
+                    vertices[0].first = width/2; vertices[0].second = -height; // Top
+                    vertices[1].first = -width; vertices[1].second = height; // Bot-left
+                    vertices[2].first = width; vertices[2].second = height; // Bot-Right
+                    break;
+                }
+            }
             // Handle triangle creation
         }
         // Move Constructor | Fix
@@ -416,7 +498,7 @@ namespace bmath {
         inline float width()  const { return m_Width; }
         inline float height() const { return m_Height; }
         inline float per()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
-        inline float area()   const {return m_Width * 2 + m_Height * 2; }
+        inline float area()   const {return (m_Width * 2) + (m_Height * 2); }
 
         void setRotation(const float x, const float y) {
             rotation.first = x;
@@ -442,6 +524,46 @@ namespace bmath {
     Shape2D operator+(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height + s2.m_Height + s1.m_Width + s2.m_Width); }
     Shape2D operator-(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height - s2.m_Height - s1.m_Width - s2.m_Width); }
     Shape2D operator*(Shape2D &s1, Shape2D &s2) { return Shape2D(s1.m_Height * s2.m_Height * s1.m_Width * s2.m_Width); }
+
+    namespace Transform2D {
+        template<typename T>
+        void reflect(T & object, bool vertLine = false) {
+            if(!vertLine) {
+                for(std::pair<int,int> v : object.vertices; i++) {
+                    if(v.second > 0)
+                        v.second *= -1;
+                    else
+                        fabs(v.second);
+                }
+                return;
+            }
+            for(std::pair<int,int> v : object.vertices; i++) {
+                if(v.first > 0)
+                    v.first *= -1;
+                else
+                    fabs(v.first);
+            }
+        }
+
+        template<typename T>
+        void rotate(T & object) {
+            
+        }
+
+        template<typename T>
+        void translate(T & object, const float x, const float y, float z = 0.0f) {
+            for(std::pair<int,int> v : object.vertices) {
+                v.first += x;
+                v.second += y;
+            }
+            // Add 3D!
+        }
+
+        template<typename T>
+        void scale(T & object, const float scaleFactor) {
+
+        }
+    }
 
     class Shape3D {
     private:
@@ -599,7 +721,7 @@ namespace bmath {
         inline void setRadius(const float rad) {
             m_Radius = rad;
             m_Circumfrence = 2 * PI * m_Radius; // Saves a function call
-         }
+        }
 
         // Chainable functions
         Circle& getAreaC() {m_Radius *= m_Radius * PI; return *this; }
@@ -620,7 +742,7 @@ namespace bmath {
             assert(radius > 0);
         }
         // ADD FUNCTIONS | MARK BASE AS VIRTUAL!
-        ~Ellipse() {};
+        virtual ~Ellipse() {};
     };
 
     // General, object independent | Fix returns!?
