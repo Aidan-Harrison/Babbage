@@ -5,20 +5,22 @@
 #include <cassert>
 #include <algorithm>
 #include <cmath>
-#include <tuple>
+#include <tuple> // Remove
 #include <array>
 #include <vector>
 
-// Convert tuple returns to standard C arrays
+// Convert/Replace tuple returns to standard C arrays
+// Global functions are at the bottom
 
 namespace bvector {
     class Vector1i {
     private:
         const int ID = 0;
+        const std::string IDENT = "Vector1i";
         int const GetID() const { return ID; }
     public:
         int x;
-        int vec1[1]{x};
+        int vec1[1]{x}; 
         Vector1i(int cX = 0)
             :x(cX)
         {
@@ -30,7 +32,7 @@ namespace bvector {
             vec1[0] = other.vec1[0];
         }
         inline int getMag() { return sqrt(x * x); }
-        void Normalize() {
+        void normalise() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
         }
@@ -48,6 +50,7 @@ namespace bvector {
     class Vector1f {
     private:
         const int ID = 1;
+        const std::string IDENT = "Vector1f";
         int const GetID() const { return ID; } 
     public:
         float x;
@@ -58,7 +61,7 @@ namespace bvector {
             vec1[0] = x;
         }
         inline float getMag() { return sqrt(x * x); }
-        void Normalize() {
+        void normalise() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
         }
@@ -80,14 +83,16 @@ namespace bvector {
     public:
         int x, y;
         int vec2[2]{x,y};
+        int magnitude{}; // Add overloading to force calculation
         Vector2i(int cX = 0, int cY = 0)
             :x(cX), y(cY)
         {
             vec2[0] = x;
             vec2[1] = y;
+            magnitude = sqrt((x * x) + (y * y));
         }
-        inline int getMag() { return sqrt(x * x + y * y); }
-        void normalize() {
+        inline int getMag() { return sqrt((x * x) + (y * y)); }
+        void normalise() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -126,6 +131,8 @@ namespace bvector {
         int dot(Vector2i & v1, Vector2i & v2) { return v1.x * v2.x + v1.y * v2.y; }
         void print() const {std::cout << vec2[0] << ',' << vec2[1]; }
 
+        int &operator[](int i) { if(i<0) return vec2[0]; return vec2[i]; } // Check!
+
         ~Vector2i() {};
     };
 
@@ -147,7 +154,7 @@ namespace bvector {
             vec2[1] = y;
         }
         inline float getMag() { return sqrt(x * x + y * y); }
-        void Normalize() {
+        void normalise() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -200,7 +207,7 @@ namespace bvector {
             vec3[2] = z;
         }
         inline int getMag() { return sqrt(x * x + y * y + z * z); }
-        void Normalize() { // Check! | Optimise?
+        void normalise() { // Check! | Optimise?
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -221,7 +228,7 @@ namespace bvector {
         inline void deleteVec() { delete this; }
 
         // Change all?
-        Vector3i addVec3(Vector3i &v1, Vector3i &v2) { // Check! | Incorrect
+        Vector3i addVec3(Vector3i & v1, Vector3i & v2) { // Check! | Incorrect
             Vector3i vec;
             return ((v1.x + v2.x) + (v1.y - v2.y)  + (v1.z - v2.z));
             vec.x = v1.x + v2.x;
@@ -229,10 +236,10 @@ namespace bvector {
             vec.z = v1.z = v2.z;
             return vec;
         }
-        Vector3i dotProd3(Vector3i &v1, Vector3i &v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
-        Vector3i crossProd(Vector3i &v1, Vector3i &v2) { // Continue
-            // return v1.getMag() * v2.getMag();
-            return *this;
+        Vector3i dot(Vector3i & other) { return x * other.x + y * other.y + z * other.z; }
+        Vector3i cross(Vector3i & other) {
+            Vector3i result(y*other.z - z*other.y, z*other.x - x*other.z, x*other.y = y*other.x);
+            return result;
         }
 
         void PrintVec() const {std::cout << vec3[0] << ',' << vec3[1] << ',' << vec3[2];}
@@ -256,7 +263,7 @@ namespace bvector {
             vec3[2] = z;
         }
         inline float getMag() { return sqrt(x * x + y * y + z * z); }
-        void Normalize() { // Check! | Optimise?
+        void normalise() { // Check! | Optimise?
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -285,9 +292,9 @@ namespace bvector {
             vec.z = v1.z = v2.z;
             return vec;
         }
-        Vector3f dotProd3(Vector3f &v1, Vector3f &v2) { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
-        Vector3f crossProd(Vector3f &v1, Vector3f &v2) { // Continue
-            // return v1.getMag() * v2.getMag();
+        Vector3i dot(Vector3i & other) { return x * other.x + y * other.y + z * other.z; }
+        Vector3f cross(Vector3f & v1, Vector3f & v2) { // Continue
+            
             return *this;
         }
 
@@ -312,7 +319,7 @@ namespace bvector {
             vec4[3] = w;
         }
         inline int getMag() { return sqrt(x * x + y * y + z * z + w * w); }
-        void Normalize() { // Origin ignored
+        void normalise() { // Origin ignored
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -354,7 +361,7 @@ namespace bvector {
             vec4[3] = w;
         }
         inline float getMag() { return sqrt(x * x + y * y + z * z + w * w); }
-        void Normalize() { // Origin ignored
+        void normalise() { // Origin ignored
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -379,47 +386,65 @@ namespace bvector {
         ~Vector4f() {};
     };
 
+    // Global functions
+    template<typename T> // Constrained generics!
+    T addVector(T & v1, T & v2) {
+        if(v1.IDENT == "Vector1i") {
+
+        }
+    }
+
     template<typename T>
-    T* CloneVector(T &vec, bool _HEAP) {
-        if(vec.GetID() == 0) {
-            Vector1i *newVector = new Vector1i();
-            newVector->x = vec.x;
-            return newVector;
-        }
-        else if(vec.GetID() == 1) {
-            Vector1f *newVector = new Vector1f();
-            newVector->x = vec.x;
-            return newVector;
-        }
-        else if(vec.GetID() == 2) {
-            Vector2i *newVector = new Vector2i();
-            newVector->x = vec.x; newVector->y = vec.y;
-            return newVector;
-        }
-        else if(vec.GetID() == 3) {
-            Vector2f *newVector = new Vector2f();
-            newVector->x = vec.x; newVector->y = vec.y;
-            return newVector;
-        }
-        else if(vec.GetID() == 4) {
-            Vector3i *newVector = new Vector3i();
-            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
-            return newVector;
-        }
-        else if(vec.GetID() == 5) {
-            Vector3f *newVector = new Vector3f();
-            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
-            return newVector;
-        }
-        else if(vec.GetID() == 6) {
-            Vector4i *newVector = new Vector4i();
-            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
-            return newVector;
-        }
-        else if(vec.GetID() == 7) {
-            Vector4f *newVector = new Vector4f();
-            newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
-            return newVector;
+    T* CloneVector(T & vec) {
+        switch(vec.ID) {
+            case 0: {
+                Vector1i * newVector = new Vector1i;
+                newVector->x = vec.x;
+                return newVector;
+                break;
+            }
+            case 1: {
+                Vector1f * newVector = new Vector1f;
+                newVector->x = vec.x;
+                return newVector;
+                break;
+            }
+            case 2: {
+                Vector2i * newVector = new Vector2i;
+                newVector->x = vec.x; newVector->y = vec.y;
+                return newVector;
+                break;
+            }
+            case 3: {
+                Vector2f * newVector = new Vector2f;
+                newVector->x = vec.x; newVector->y = vec.y;
+                return newVector;
+                break;
+            }
+            case 4: {
+                Vector3i * newVector = new Vector3i;
+                newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
+                return newVector;
+                break;
+            }
+            case 5: {
+                Vector3f * newVector = new Vector3f;
+                newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z;
+                return newVector;
+                break;
+            }
+            case 6: {
+                Vector4i * newVector = new Vector4i;
+                newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
+                return newVector;
+                break;
+            }
+            case 7: {
+                Vector4f * newVector = new Vector4f;
+                newVector->x = vec.x; newVector->y = vec.y; newVector->z = vec.z; newVector->w = vec.w;
+                return newVector;
+                break;
+            }
         }
     }
 }

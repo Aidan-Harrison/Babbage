@@ -5,6 +5,27 @@
 #include <vector>
 #include <cassert>
 
+// Store width and height as last two values, prevents need to parse seperately
+
+namespace bMatrix {
+    class matrix {
+    private:
+        int SIZE = 4, curSIZE = SIZE;
+    public:
+        int array[];
+        void push(const int value) {
+            array[curSIZE] = value;
+            curSIZE++;
+            if(curSIZE == SIZE) {
+                SIZE += 2;
+                int tmpArray[SIZE];
+                memcpy(array, tmpArray, SIZE);
+            }
+        }
+        
+    };
+}
+
 namespace bmatrix {
     template<typename T>
     class Matrix {
@@ -40,8 +61,15 @@ namespace bmatrix {
             matrix = other.matrix;
         }
 
+        // Improve safety, fill up until valid point?
         void FillMatrix(std::vector<std::vector<T>> &data) {
-
+            if(m_Rows * m_Columns != data.size() * data[0].size())
+                return;
+            for(unsigned int i = 0; i <= rows; i++) {
+                for(unsigned int j = 0; j <= columns; j++) {
+                    matrix[i][j] = data[i][j];
+                }
+            }
         }
 
         void ResizeMatrix(const int newSize) {
@@ -66,11 +94,15 @@ namespace bmatrix {
             return values;
         }
 
-        std::vector<int> GetRowColumnAsVector() const {
+        std::vector<int> GetRowColumn() const {
             std::vector<int> values;
             values.push_back(m_Rows);
             values.push_back(m_Columns);
             return values;
+        }
+
+        std::pair<int,int> GetRowColumn() const {
+            return (m_Rows, m_Columns); // Check!
         }
 
         void PrintMatrix(std::string sepChar = ", ") const {
@@ -87,6 +119,8 @@ namespace bmatrix {
             graph.clear();
         }
         ~Matrix() {}
+
+        Matrix<T> operator=(Matrix<T> && m) noexcept { return FillMatrix(m.matrix); }
     };
 
     template<typename T>
@@ -150,16 +184,11 @@ namespace bmatrix {
 
     // Operator Overloading
     template<typename T>
-    Matrix<T> operator+(Matrix<T> &m1, Matrix<T> &m2) { return AddMatrix(m1, m2); }
+    Matrix<T> operator+(Matrix<T> & m1, Matrix<T> & m2) { return AddMatrix(m1, m2); }
     template<typename T>
-    Matrix<T> operator-(Matrix<T> &m1, Matrix<T> &m2) { return SubMatrix(m1, m2); }
+    Matrix<T> operator-(Matrix<T> & m1, Matrix<T> & m2) { return SubMatrix(m1, m2); }
     template<typename T>
-    Matrix<T> operator*(Matrix<T> &m1, Matrix<T> &m2) { return MultMatrix(m1, m2); }
-    template<typename T>
-    Matrix<T> operator=(Matrix<T> && m) noexcept {
-        // Call constructor
-        
-    }
+    Matrix<T> operator*(Matrix<T> & m1, Matrix<T> & m2) { return MultMatrix(m1, m2); }
 }
 
 #endif

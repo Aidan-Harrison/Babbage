@@ -8,32 +8,41 @@
 #include <map>
 #include <array>
 
+#include "Backend.h"
+
 // & or * for vector construction?
 
 // Helper functions
 template<typename T>
-void swap(T * x, T * y) {
+void swap(T * x, T * y) { 
     T temp = *x;
     *x = *y;
     *y = temp;
 }
 
-namespace bstructres {
+namespace bst {
     template<typename T>
-    class bArray {
+    class bArray { // Dynamic tuple!
     private:
+        int sizeOffset = 5;
         T * arr[];
-        unit64_t size{};
-        unit64_t maxSize = 1;
-        void resize() {
+        uint64_t size{};
+        uint64_t maxSize = (int)sizeOffset; // Check cast
 
+        void resize(const int newSize) {
+            T * newArr[newSize];
+            for(int i = 0; i < size; i++)
+                newArr[i] = arr[i];
+            size += sizeOffset;
+            delete[] arr;
+            arr = newArr;
         }
 
         void push() {
             if(full()) {
                 T newVec[maxSize++];
                 // Copy contents
-                delete[] arr;
+                delete[] arr; // Resize above actual size to avoid deletion every call
             }
         }
         
@@ -42,20 +51,57 @@ namespace bstructres {
             // resize()
             return NULL;
         }
+        void slice(T target) { // Splits an array at the given target
+            std::vector<int> positions{}; // Swap for bArray!
+            for(int i = 0; i < size; i++) {
+                if(arr[i] == target) {
+                    // Mark position
+                    positions = i;
+                }
+            }
+            std::vector<int> result{};
+            for(int i = 0; i < positions.size(); i++) {
+                for(int j = positions[i]; j < positions[i+1]; j++) {
+                    result.push_back(arr[j]);
+                }
+            }
+        }
     public:
         const inline bool full()  const {return size == maxSize; }
         const inline bool empty() const {return size == 0; }
         const unsigned int size() const {return size; }
-
     };
 
-    template<typename T>
-    struct bPair { // Check!
-        T * first = nullptr;
-        T * second = nullptr;
+    struct bStr {
+        int size;
+        char * str;
 
-        bPair(T f, T s) 
-            :first(&f), second(&s)
+        inline int size() const { return size; }
+        void resize();
+        void clear();
+
+        bStr() {}
+        bStr(const char * msg) 
+        {
+            strcpy(str, msg); // Check!
+        }
+
+        bStr operator=(const char * newStr) {
+            
+        }
+        ~bStr() {}
+    };
+
+    template<typename...> struct bPair;
+
+    template<typename A, typename B>
+    struct bPair<A,B> { // Check!
+        T first;
+        T second;
+
+        bPair() {}
+        bPair(A f, B s) 
+            :first(f), second(s)
         {
         }
         bPair(bPair & b) 
@@ -73,25 +119,64 @@ namespace bstructres {
             second = nullptr;
         }
 
+        bPair operator=(bPair & b) {
+        }
+
         ~bPair() {}
     };
 
-    template<typename T>
-    struct bHash {
-        std::vector<bPair> table{};
+    template<typename...> struct bHash;
 
-        bool contains(T key) const {
-            for(int i = 0; i < table.size(); i++) {
+    template<typename A, typename B>
+    struct bHash<A,B> {
+        std::vector<bPair<A,B>> table{}; // Replace with custom array
+
+        bool contains(A key) const {
+            for(unsigned int i = 0; i < table.size(); i++) {
                 if(table[i].first == key)
                     return true;
             }
             return false;
         }
+        void clear() {
+            for(unsigned int i = 0; i < table.size(); i++) {
+                table.erase();
+            }
+        }
+
 
         // Write hash function
+        void hash() {
+        }
 
         bHash() {}
+
+        inline B operator[](const A index) const {
+            // Handle not found!
+            return table[index].second;
+        }
+
         ~bHash() {}
+    };
+
+
+        // Set
+    template<typename T>
+    class set { 
+    private:
+        T data[2];
+        int size = 2, cSize = 0;
+        bool hasDuplicate();
+    public:
+        void append() {
+            cSize++;
+            if(cSize == size) {
+                size += 2;
+                T newData[size];
+                memcpy(data, newData, sizeof(newData))
+            }
+        }
+        T pop() {}
     };
 
         // Singly-Linked List
@@ -117,7 +202,7 @@ namespace bstructres {
         {
             std::vector<Node*> tempVector{};
             for(auto i : vector) {
-                Node *newNode = new Node(i);
+                Node * newNode = new Node(i);
                 tempVector.push_back(newNode);
             }
             for(unsigned int i = 0; i < tempVector.size()-1; i++)
@@ -184,18 +269,17 @@ namespace bstructres {
         }
     };
 
-        // Doubly-Linked List
     template<typename T>
     struct DLinkedList {
         struct dNode {
             T data;
-            dNode* prev;
-            dNode* next;
+            dNode * prev;
+            dNode * next;
             dNode() :data(0), prev(nullptr), next(nullptr) {}
             dNode(T x) :data(x), prev(nullptr), next(nullptr) {}
-            dNode(T x, dNode *n) :data(x), next(n) {}
-            dNode(T x, dNode *p) :data(x), prev(p), next(nullptr) {}
-            dNode(T x, dNode *p, dNode *n) :data(x), prev(p), next(n) {}
+            dNode(T x, dNode * n) :data(x), next(n) {}
+            dNode(T x, dNode * p) :data(x), prev(p), next(nullptr) {}
+            dNode(T x, dNode * p, dNode * n) :data(x), prev(p), next(n) {}
         };
 
         dNode * head = nullptr;
@@ -204,7 +288,7 @@ namespace bstructres {
         int size = 0;
 
         DLinkedList() {}
-        DLinkedList(DLinkedList<T> *other) // Do!
+        DLinkedList(DLinkedList<T> * other) // Do!
         { 
             head = other->head;
             while(other->head != nullptr) {
@@ -212,45 +296,63 @@ namespace bstructres {
                 addNode(other->head->prev, other->head->data);
             }
         }
-        DLinkedList(std::vector<T> &vector) 
+        DLinkedList(std::vector<T> & vector) 
         {
             std::vector<dNode*> tempVector{};
             for(auto i : vector) {
-                dNode *newNode = new dNode(i);
+                dNode * newNode = new dNode(i);
                 tempVector.push_back(newNode);
             }
             for(unsigned int i = 1; i < tempVector.size()-1; i++) {
                 tempVector[i]->prev = tempVector[i-1];
                 tempVector[i]->next = tempVector[i+1];
             }
+            head = tempVector[0];
+            tail = tempVector[tempVector.size()-1];
         }
         DLinkedList(const int s) 
             :size(s)
         {
+            bool assignedHead = false;
+            dNode * hNode = new dNode;
+            dNode * tNode = new dNode;
+            head = hNode;
+            tail = tNode;
+            // Assign head node next to first
             for(unsigned int i = 0; i < size; i++) {
-                dNode *nullNode = new dNode;
+                dNode * prevNode = new dNode;
+                dNode * curNode = prevNode;
+                if(!assignedHead) {
+                    head = prevNode;
+                    assignedHead = true;
+                }
+                prevNode->next = curNode;
+                curNode->prev = prevNode;
             }
+            // Assign last node next to tail
         }
 
         void push(dNode * newNode) {
             tail->next = newNode;
             tail = newNode;
         }
+
         dNode * pop() {
             tail->prev->next = nullptr;
             tail = tail->prev;
         }
-        dNode * peek() const { return tail; }
+        dNode * begin() const { return head; }
+        dNode * end() const { return tail; }
 
-        void PrintList(dNode *n) {
+        void PrintList(dNode * n, char sep = ' ') {
             while(n != nullptr) {
-                std::cout << n->data << ' ';
+                std::cout << n->data << sep;
                 n = n->next;
             }
         }
 
-        dNode* addNode(dNode *prevNode, T data) { // Return?
-            dNode *newNode = new dNode(data);
+        dNode * addNode(dNode * prevNode, T data) { // Return?
+            dNode * newNode = new dNode(data);
             newNode->next = prevNode->next;
             newNode->prev = prevNode;
             prevNode->next = newNode;
@@ -258,12 +360,12 @@ namespace bstructres {
             size++;
         }
 
-        void delete(dNode *n) {
+        void delNode(dNode * n) {
             n->prev = n->next;
             size--;
         }
 
-        void delList(dNode *n) { // Check!
+        void delList(dNode * n) { // Check!
             if(n != nullptr) {
                 if(n->prev != nullptr)
                     delete n->prev;
@@ -286,52 +388,60 @@ namespace bstructres {
         int top = -1;
 
         bStack() {}
-        bStack(bStack<T> *other)
+        bStack(bStack<T> * other)
         {
-            while(size() <= other->size())
+            while(top <= other->size())
                 push(other->pop());
+            delete other; // Check!
         }
         bStack(const int size)
         {
             items.resize(size);
         }
-        bStack(std::vector<T> &vector) 
+        bStack(std::vector<T> & vector) 
+        {
+            while(!vector.empty())
+                push(vector.pop_back());
+        }
+        bStack(std::vector<T> && vector) 
         {
             while(!vector.empty())
                 push(vector.pop_back());
         }
 
-        inline bool full() { return top == items.size(); }
-        inline bool empty(){ return top == -1; }
+        inline bool full() const { return top == items.size(); }
+        inline bool empty() const { return top == -1; }
 
-        void push(T data) {
-            if(full())
-                std::cerr << "Babbage Error: Stack is full!\n";
-            else {
-                top++;
-                items[top] = data;
+        void push(T data, bool debugPrint = false) {
+            if(full()) {
+                if(debugPrint)
+                    std::cerr << "Babbage Error: Stack is full!\n";
+                return;
             }
+            top++;
+            items[top] = data;
         }
+
         T pop() {
-            if(empty())
+            if(empty()) {
                 std::cerr << "Babbage Error: Stack is empty!\n";
-            else {
-                T item = items[top];
-                items[top] = -1; // Check with template
-                top--;
-                return item;
+                return;
             }
+            T item = items[top];
+            items[top] = -1; // Fix default value!
+            top--;
+            return item;
         }
 
-        inline int size() { return top; }
-        inline T peek() { return items[top]; }
+        inline int size() const { return top; }
+        inline T peek() const { return items[top]; }
 
         inline void print() const {
             for(auto i : items)
                 std::cout << i << ", ";
         }
 
-        virtual ~bStack() {}
+        ~bStack() {}
     };
 
     template<typename T>
@@ -643,8 +753,20 @@ namespace bstructres {
 
         }
 
-        void print() const {
+        void DFS() {
 
+        }
+
+        void BFS() {
+
+        }
+
+        void print() const {
+            for(unsigned int i = 0; i < graph.size(); i++) {
+                for(unsigned int j = 0; j < graph[i].size(); j++) 
+                    std::cout << graph[i][j] << '|' << weights[i][j] << ',';
+                putchar('\n');
+            }
         }
 
         wmGraph() {}
@@ -705,6 +827,7 @@ namespace bstructres {
     template<typename T>
     struct treeNode {
         T key_Value;
+        bool isVisited = false;
         treeNode * left = nullptr;
         treeNode * right = nullptr;
         treeNode(T value) :key_Value(value) {}
@@ -723,24 +846,24 @@ namespace bstructres {
             }
         }
 
-        void insert(T key, treeNode<T> *leaf) {
+        void insert(T key, treeNode<T> * leaf) {
             if(key < leaf->key_Value) {
                 if(leaf->left != nullptr) // If leaf does exist, recursivelly call until available slot
                     insert(key, leaf->left);
                 else { // Else add leaf
-                    leaf->left = new treeNode<T>(key);
+                    leaf->left = new treeNode(key); // '<T>'?
                 }
             }
             else if(key >= leaf->key_Value) {
                 if(leaf->right != nullptr)
                     insert(key, leaf->right);
                 else {
-                    leaf->right = new treeNode<T>(key);
+                    leaf->right = new treeNode(key);
                 }
             }
         } 
 
-        treeNode<T>* search(T key, treeNode<T>* leaf) {
+        treeNode<T> * search(T key, treeNode<T>* leaf) {
             if(leaf != nullptr) {
                 if(key == leaf->key_Value) return leaf;
                 if(key < leaf->key_Value) return search(key, leaf->left);
@@ -750,21 +873,21 @@ namespace bstructres {
             else 
                 return nullptr;
         }
+
     public:
         BSTree() {};
-        // user functions
         void insert(T key) {
             if(root != nullptr)
                 insert(key, root);
-            else {
+            else
                 root = new treeNode(key);
-                root->key_Value = key;
-                root->left = nullptr;
-                root->right = nullptr;
-            }
         }
         treeNode<T>* bTreeSearch(T key) { return search(key, root); }
         void destroyTree() { return destroyTree(root); }
+
+        void deleteNode(treeNode * target) { // Check!
+            delete Search(target); 
+        }
 
         void Print(treeNode *leaf) {
             if(leaf != nullptr) {
@@ -773,6 +896,19 @@ namespace bstructres {
                 Print(leaf->right);
             }
         }
+
+        void DFS() {
+            bStack<treeNode*> s;
+            s.push(root);
+            root->isVisited = true;
+            while(!s.empty()) {
+                treeNode * curNode s.pop();
+                if(treeNode->left != nullptr && !treeNode->left->visited) {
+                    
+                }
+            }
+        }
+        void BFS() {}
 
         ~BSTree() 
         {
@@ -1049,7 +1185,7 @@ namespace bAlgorithms {
     }
 
     template<typename T>
-    void VisualiseSort(std::vector<T> &arr, const int left, const int right, const char character) {
+    void VisualiseSort(std::vector<T> &arr, const int left, const int right, char character = '|') {
         std::vector<std::string> visual{};
         for(unsigned int i = 0; i < arr.size(); i++)
             visual.push_back(std::string(arr[i]/10, character));
@@ -1119,7 +1255,8 @@ namespace bAlgorithms {
     template<typename T>
     std::vector<T> InsertionSort(std::vector<T> &arr) {
         if(arr.size() == 0) {
-            std::cerr << "Babbage Error: Vector is empty in 'InsertionSort(std::vector<T> &arr'\n";
+            if(flags::DEBUG_STATE)
+                std::cerr << "Babbage Error: Vector is empty in 'InsertionSort(std::vector<T> &arr)'\n";
             return arr;
         }
         else {
@@ -1143,7 +1280,8 @@ namespace bAlgorithms {
     template<typename T>
     int Partition(std::vector<T>& nums, int low, int high) {
         if(nums.size() <= 1) {
-            std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|" << "Must be greater than '1'" << std::endl;
+            if(flags::DEBUG_STATE)
+                std::cerr << "Babbage Error:-\nINVALID ARRAY (VECTOR) SIZE OF: " << nums.size() << " FOR |QUICKSORT|" << "Must be greater than '1'" << std::endl;
             return -1;
         }
         int pivot = nums[high];
@@ -1168,8 +1306,14 @@ namespace bAlgorithms {
     }
 
     // Merge Sort =====================================================================
+    void MergeSort() {
+
+    }
 
     // Heap Sort =====================================================================
+    void HeapSort() {
+
+    }
 
     // Radix Sort =====================================================================
 
@@ -1177,29 +1321,27 @@ namespace bAlgorithms {
 
     // Bucket Sort =====================================================================
 
-    // Rand Sort =====================================================================
-
     // Searching
     template<typename T>
-    T bSearch(std::vector<T> &arr, const T target) {
+    T bSearch(std::vector<T> &arr, const T target, bool sort = false) {
         if(arr.size() == 0 || arr.size() == 1) {
-            return "Babbage Error: Vector is empty in 'bBinarySearch(std::vector<T> &arr, T target)\n";
-            return nullptr;
+            if(flags::DEBUG_STATE)
+                std::cerr << "Babbage Error: Vector is empty in 'bBinarySearch(std::vector<T> &arr, const T target, bool sort)\n";
+            return -1;
         }
-        int left = 0;
-        int right = arr.size() - 1;
+        int left = 0, right = arr.size() - 1;
         while(left <= right) {
             int mid = left + (right - left) / 2;
             if(arr[mid] == target) return arr[mid];
             else if(arr[mid] < target) left = mid + 1;
             else right = mid - 1;
         }
-        return nullptr;
+        return arr[0];
     }
 
     // Graph Algorithms
     template<typename T>
-    void DFS(bstructres::Graph<T> &g, int x = 0, int y = 0) {
+    void DFS(bst::Graph<T> &g, int x = 0, int y = 0) {
         int w = g.graph[0].size();
         int h = g.graph.size();
         std::vector<BDataStruct::bPair> directions{}; // Do with custom!
@@ -1229,7 +1371,7 @@ namespace bAlgorithms {
     }
 
     template<typename T>
-    void BFS(bstructres::Graph<T> &g) {
+    void BFS(bst::Graph<T> &g) {
         int w = g.graph[0].size();
         int h = g.graph.size();
         std::vector<BDataStruct::bPair> directions{}; // Do with custom!
@@ -1256,6 +1398,13 @@ namespace bAlgorithms {
                 }
             }
         } 
+    }
+
+    void AStar(bst::wGraph & wG) {
+    }
+    void AStar(bst::wmGraph & wG) {
+    }
+    void AStar(bst::wlGraph & wG) {
     }
 }
 

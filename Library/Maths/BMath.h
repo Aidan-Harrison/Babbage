@@ -48,7 +48,7 @@ namespace bmath {
         return max;
     }
     int avg(std::vector<int> & data) {
-        int sum = 0;
+        int sum{};
         for(int i : data)
             sum += i;
         return sum / data.size();
@@ -199,59 +199,84 @@ namespace bmath {
         // Replace with custom data structures
     class Pointi { 
     private:
+        int x{}, y{};
         int pos[2] = {0,0};
     public:   
-        Pointi() {}
-        Pointi(const int xPos = 0, const int yPos = 0) 
+        Pointi(int xPos = 0, int yPos = 0) 
         {
             pos[0] = xPos;
+            x = xPos;
             pos[1] = yPos;
+            y = yPos;
         }
         Pointi(Pointi & p) 
-            :pos[0](p.pos[0]), pos[1](p.pos[1])
+            :x(p.x), y(p.y)
         {
+            pos[0] = p.pos[0];
+            pos[1] = p.pos[1];
         }
-        inline int x() const { return pos[0]; }
-        inline int y() const { return pos[1]; }
+        Pointi(Pointi && p) {
+            if(&p == this)
+                return;
+        }
         std::vector<int> GetPosAsVector() const {
-            std::vector<int> position;
+            std::vector<int> position{};
             position.push_back(pos[0]);
             position.push_back(pos[1]);
             return position;
         }
         std::pair<int,int> GetPosAsPair() const {
-            std::pair<int,int> position;
+            std::pair<int,int> position{};
             position.first = pos[0];
             position.second = pos[1];
             return position;
         }
 
-        inline void set(const int x, const int y) { 
-            pos[0] = x; 
-            pos[1] = y;
+        inline void set(const int _x, const int _y) { 
+            pos[0] = _x; 
+            x = _x;
+            pos[1] = _y;
+            y = _y;
         }
-        inline void setX(const int x) { pos[0] = x;}
-        inline void setY(const int y) { pos[1] = y;}
+        void swap() {
+            float tmp = pos[0];
+            pos[0] = pos[1];
+            x = pos[1];
+            pos[1] = pos[0];
+            y = pos[0];
+        }
+        void inverse() {
+            pos[0] = -pos[0];
+            pos[1] = -pos[1];
+            x = pos[0];
+            y = pos[1];
+        }
+        void multiply(const float m) {
+            pos[0] *= m;
+            pos[1] *= m;
+            x = pos[0];
+            y = pos[1];
+        }
 
         ~Pointi() {}
     };
 
-    class Pointf { // Remove?!
-    private:
+    struct Pointf {
+        float x = 0.0f, y = 0.0f;
         float pos[2] = {0,0};
-    public:   
-        Pointf() {}
-        Pointf(const float xPos = 0, const float yPos = 0) 
+        Pointf(float xPos = 0.0f, float yPos = 0.0f) 
         {
             pos[0] = xPos;
+            x = xPos;
             pos[1] = yPos;
+            y = yPos;
         }
         Pointf(Pointf & p) 
-            :pos[0](p.pos[0]), pos[1](p.pos[1])
+            :x(p.x), y(p.y)
         {
+            pos[0] = p.pos[0];
+            pos[1] = p.pos[1];
         }
-        inline float x() const { return pos[0]; }
-        inline float y() const { return pos[1]; }
         std::vector<float> GetPosAsVector() const {
             std::vector<float> position;
             position.push_back(pos[0]);
@@ -265,27 +290,84 @@ namespace bmath {
             return position;
         }
 
-        inline void set(const float x, const float y) { 
-            pos[0] = x; 
-            pos[1] = y;
+        void set(const float _x, const float _y) { 
+            pos[0] = _x; 
+            pos[1] = _y;
+            x = _x;
+            y = _y;
         }
-        inline void setX(const float x) { pos[0] = x; }
-        inline void setY(const float y) { pos[1] = y; }
+        void swap() {
+            float tmp = pos[0];
+            pos[0] = pos[1];
+            x = pos[1];
+            pos[1] = pos[0];
+            y = pos[0];
+        }
+        void inverse() {
+            pos[0] = -pos[0];
+            pos[1] = -pos[1];
+            x = pos[0];
+            y = pos[1];
+        }
+        void multiply(const float m) {
+            pos[0] *= m;
+            pos[1] *= m;
+            x = pos[0];
+            y = pos[1];
+        }
+
+        Pointf operator=(Pointf & other) {
+            pos[0] = other.pos[0];
+            pos[1] = other.pos[1];
+            x = other.x;
+            y = other.y;
+            return * this; // Check!
+        }
 
         ~Pointf() {}
     };
 
-    struct Line {
+    struct Linei {
+        int m_Length = 1;
+        std::tuple<int, int> localRotation;
+        Pointi * points[2];
+        Linei(const int length = 1) 
+            :m_Length(length)
+        {
+            assert(length < std::numeric_limits<int>::max()); // Check!
+        }
+
+        Linei(Linei && line) noexcept 
+            :m_Length(line.m_Length)
+        {
+            points[0] = line.points[0];
+            points[1] = line.points[1];
+        }
+
+        inline int getLength() const {return m_Length;}
+        inline Pointi * getFPoint() const {return points[0];}
+        inline Pointi * getSPoint() const {return points[1];}
+        std::pair<Pointi*, Pointi*> GetPoints() {
+            std::pair<Pointi*, Pointi*> pointsTup;
+            std::get<0>(pointsTup) = points[0];
+            std::get<1>(pointsTup) = points[1];
+            return pointsTup;
+        }
+
+        ~Linei() {}
+    };
+
+    struct Linef {
         float m_Length = 1.0f;
         std::tuple<float, float> localRotation;
-        Point* points[2];
-        Line(const float length = 1.0f) 
+        Pointf * points[2];
+        Linef(const float length = 1.0f) 
             :m_Length(length)
         {
             assert(length < std::numeric_limits<float>::max()); // Check!
         }
 
-        Line(Line &&line) noexcept 
+        Linef(Linef && line) noexcept 
             :m_Length(line.m_Length)
         {
             points[0] = line.points[0];
@@ -293,16 +375,16 @@ namespace bmath {
         }
 
         inline float getLength() const {return m_Length;}
-        inline Point* getFPoint() const {return points[0];}
-        inline Point* getSPoint() const {return points[1];}
-        inline std::tuple<Point, Point> GetPoints() {
-            std::tuple<Point, Point> pointsTup;
-            std::get<0>(pointsTup) = *points[0];
-            std::get<1>(pointsTup) = *points[1];
+        inline Pointf * getFPoint() const {return points[0];}
+        inline Pointf * getSPoint() const {return points[1];}
+        std::tuple<Pointf, Pointf> GetPoints() {
+            std::tuple<Pointf, Pointf> pointsTup;
+            std::get<0>(pointsTup) = * points[0];
+            std::get<1>(pointsTup) = * points[1];
             return pointsTup;
         }
 
-        ~Line() {}
+        ~Linef() {}
     };
 
     class Triangle { // Standard tri with total freedom (Scalene)
@@ -371,12 +453,12 @@ namespace bmath {
         }
 
         void setRotation(const float x, const float y) {
-            std::get<0>(rotation) = x;
-            std::get<1>(rotation) = y;
+            rotation[0] = x;
+            rotation[1] = y;
         }
         void setTranslation(const float x, const float y) {
-            std::get<0>(translation) = x;
-            std::get<1>(translation) = y;
+            translation[0] = x;
+            translation[1] = y;
         }
 
         inline float getA() const { return m_a; }
@@ -411,13 +493,6 @@ namespace bmath {
             std::get<2>(angles) = m_AngleC;
             return angles;
         }
-        bool getType() {
-            if(isEquilateral)      return isEquilateral;
-            else if(isIsocoles)    return isIsocoles;
-            else if(isScalene)     return isScalene;
-            else if(isRightAngled) return isRightAngled;
-            return false;
-        }
         float gamma() { // Calculates angle | Continue | Do standard overload outside this class
             float gamma = sinf(m_a * 2 / m_a * m_b); // Change to custom sin function
             return gamma;
@@ -442,7 +517,7 @@ namespace bmath {
     class Shape2D {
     private:
         enum SHAPE_TYPE{SQUARE, TRIANGLE};
-        std::vector<Line> m_Edges{};
+        std::vector<Linef> m_Edges{};
         std::vector<std::pair<float,float>> vertices{};
         uint8_t type = 0;
     public:
@@ -454,7 +529,7 @@ namespace bmath {
         {
             assert(sides > 2 && m_Width != 0 && m_Height != 0);
             for(unsigned int i = 0; i < sides; i++) {
-                Line newLine;
+                Linef newLine;
                 m_Edges.push_back(newLine);
             } 
             // Vertices:
@@ -494,7 +569,7 @@ namespace bmath {
             return *this;
         }
 
-        inline float sideCount() { return m_Edges.size(); }
+        inline float sideCount() const { return m_Edges.size(); }
         inline float width()  const { return m_Width; }
         inline float height() const { return m_Height; }
         inline float per()    const {return m_Width + m_Width + m_Height + m_Height;} // Quad only | Change
@@ -505,7 +580,7 @@ namespace bmath {
             rotation.second = y;
         }
 
-        std::vector<Line> GetEdges() const { // Returns edges in vector format | Pointer?
+        std::vector<Linef> GetEdges() const { // Returns edges in vector format | Pointer?
             return m_Edges;
         }
 
@@ -676,6 +751,82 @@ namespace bmath {
     inline float genVol(float a, float b, float c) { return a * b * c; }
     inline float genVol(double a, double b, double c) { return a * b * c; }
 
+    class Transform3D {
+    private:
+    public:
+        float transform[3] = {0.0f,0.0f,0.0f};
+        float x = 0.0f, y = 0.0f, z = 0.0f;
+
+        void clear() {
+            for(int8_t i = 0; i < 3; i++)
+                transform[i] = 0.0f;
+        }
+        inline std::vector<float> toVector() const { return {x,y,z}; }
+        void setByVector(std::vector<float> & inp) { 
+            if(inp.size() > 3)
+                std::cerr << "BABBAGE ERROR: 'bmath::Transform3D.setByVector()' was parsed a vector of size > 3";
+            for(int8_t i = 0; i < 3; i++)
+                transform[i] = inp[i];
+            x = transform[0];
+            x = transform[1];
+            x = transform[2];
+        }
+        void setByArray(float arr[3]) {
+            for(int8_t i = 0; i < 3; i++)
+                transform[i] = arr[i];
+        }
+        void normalise() {
+            floor(transform[0]);
+            floor(transform[1]);
+            floor(transform[2]);
+            x = transform[0];
+            y = transform[1];
+            z = transform[2];
+        }
+        void round() { // Check!
+            roundf(transform[0]);
+            roundf(transform[0]);
+            roundf(transform[0]);
+            x = transform[0];
+            y = transform[1];
+            z = transform[2];
+        }
+
+        float result(char op = '+') const {
+            switch(op) {
+                case '+': return x + y + z; break;
+                case '-': return x - y - z; break;
+                case '*': return x * y * z; break;
+                case '/': return x / y / z; break;
+            }
+            return -1.0f;
+        }
+
+        Transform3D(const float a, const float b, const float c) 
+            :x(a), y(b), z(c)
+        {
+            transform[0] = x;
+            transform[1] = y;
+            transform[2] = z;
+        }
+        Transform3D(float inp[3])
+            :x(inp[0]), y(inp[1]), z(inp[2]) 
+        {
+            transform[0] = x;
+            transform[1] = y;
+            transform[2] = z;
+        }
+        Transform3D(std::vector<float> & inp)
+            :x(inp[0]), y(inp[1]), z(inp[2]) 
+        {
+            if(inp.size() > 3)
+                std::cerr << "BABBAGE ERROR: 'bmath::Transform3D.setByVector()' was parsed a vector of size > 3"; 
+            for(int8_t i = 0; i < 3; i++)
+                transform[i] = inp[i]; 
+        }
+        ~Transform3D() {}
+    };
+
     // Circle Math ================================================================================================
     class Circle {
     private:
@@ -734,7 +885,7 @@ namespace bmath {
 
     class Ellipse : public Circle {
     private:
-        Point first_Foci, second_Foci;
+        Pointi first_Foci, second_Foci;
     public:
         Ellipse(const int radius = 1)
             :Circle(radius) 
@@ -773,7 +924,6 @@ namespace bmath {
     }
 
     // Triangle Math ==============================================================================================
-
     class ITriangle : public Triangle { // Isosceles
     private:
         float m_Height, m_Base; // Height = equal sides | Change!
@@ -928,6 +1078,23 @@ namespace bmath {
     inline double sec(double hypotenuse, double adjacent) { return hypotenuse / adjacent; } // Secant
     inline double cot(double adjacent, double opposite)   { return adjacent / opposite; }   // Cotangent
 
+    // Interpolation Math ==============================================================================================
+    int dist(Pointi & x, Pointi & y) {
+        int distance;
+        
+        return distance;
+    }
+
+    int lerp(Pointi & x, Pointi & y, Pointi & p) {
+        int distance;
+        return distance;
+    }
+
+    int bilerp() {
+        int distance;
+        return distance;
+    }
+
     // Do other triangles
     class Quaternion {
     private:
@@ -1003,6 +1170,106 @@ namespace bmath {
 
     Quaternion operator*(Quaternion &q1, Quaternion &q2) {return qMult(q1,q2); } // Check!
     Quaternion operator+(Quaternion &q1, Quaternion &q2) {return qAdd(q1,q2); }
+
+    // Equation solver
+    void PEDMASS(std::string equation) {
+        bool hasExtended = false;
+        for(unsigned int i = 0; i < equation.length(); i++) {
+            if(equation[i] == '*') {
+                // Search for existing '('
+                int marcher = i;
+                while(marcher >= 0) {
+                    if(equation[marcher] == '(') {
+                        equation.insert(marcher,"(");
+                        hasExtended = true;
+                    }
+                    marcher--;
+                }
+                if(!hasExtended) {
+                    if(isdigit(equation[i-3]))
+                        equation.insert(i-3,"(");
+                    else
+                        equation.insert(i-2,"(");
+                }
+                i+=4;
+                equation.insert(i,")");
+            }
+            hasExtended = false;
+        }
+        std::cout << equation << '\n';
+    }
+
+    // ()()()()
+    // (())()
+    int BracketPair(const std::string & str) {
+        int pairCount{};
+        std::vector<bool> found{};
+        found.resize(str.length());
+        for(unsigned int i = 0; i < str.length(); i++) {
+            if(str[i] == '(') {
+                for(unsigned int j = i; j < str.length(); j++) {
+                    if(str[j] == ')' && !found[j]) {
+                        int marcher = j;
+                        found[marcher] = true;
+                        while(marcher >= 0) {
+                            if(str[marcher] == '(' && !found[i]) {
+                                pairCount++;
+                                break;
+                            }
+                            marcher--;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return pairCount;
+    }
+
+    bool isOperator(const char c) {
+        switch(c) {
+            case '+': return true;
+            case '-': return true;
+            case '*': return true;
+            case '/': return true;
+        }
+        return false;
+    }
+
+    double solve(std::string equation) {
+        double result = 0.00, carryResult = 0.00;
+        std::vector<bool> flags{};
+        std::vector<std::string> values{};
+        std::vector<char> operators{};
+        PEDMASS(equation);
+        auto boundsCheck=[&](const int pos) {
+            return pos > 0 && pos < equation.length();
+        };
+        for(unsigned int i = 0; i < equation.length(); i++) {
+            // Get values
+            std::string value = "";
+            if(isdigit(equation[i])) {
+                int j = i;
+                while(isdigit(equation[j])) {
+                    value += equation[j];
+                    j++;
+                }
+                values.push_back(value);
+            }
+            else if(isOperator(equation[i]))
+                operators.push_back(equation[i]);
+            switch(equation[i]) {
+                case '(':
+                    BracketPair(equation);
+                case '+': {
+                    break;
+                }
+            }
+            //std::cout << lVal << '\n';
+            //std::cout << rVal << '\n';
+        }
+        return result;
+    }
 }
 
 #endif
