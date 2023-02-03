@@ -98,7 +98,6 @@ namespace bvector {
             if(y > 1)       y = 1;
             else if(y < -1) y = -1;
         }
-        // Possibly combine using templating and parse argument?? | std::is_same! ~ Defined in header <type_traits> | Compares two types!
         std::array<int, 2> getVectorAsArray() const {
             std::array<int, 2> coords{};
             coords[0] = vec2[0];
@@ -189,8 +188,8 @@ namespace bvector {
         ~Vector2f() {};
     };
 
-    Vector2f operator+(Vector2f &v1, Vector2f &v2) { return v1.x + v2.x + v1.y + v2.y; } // Check!
-    Vector2f operator-(Vector2f &v1, Vector2f &v2) { return v1.x + (-v2.x) + v1.y + (-v2.y); } // Check!
+    Vector2f operator+(Vector2f &v1, Vector2f &v2) { return v1.x + v2.x + v1.y + v2.y; } 
+    Vector2f operator-(Vector2f &v1, Vector2f &v2) { return v1.x + (-v2.x) + v1.y + (-v2.y); }
 
     class Vector3i {
     private:
@@ -207,7 +206,7 @@ namespace bvector {
             vec3[2] = z;
         }
         inline int getMag() { return sqrt(x * x + y * y + z * z); }
-        void normalise() { // Check! | Optimise?
+        void normalise() {
             if(x > 1)       x = 1;
             else if(x < -1) x = -1;
             if(y > 1)       y = 1;
@@ -238,7 +237,7 @@ namespace bvector {
         }
         Vector3i dot(Vector3i & other) { return x * other.x + y * other.y + z * other.z; }
         Vector3i cross(Vector3i & other) {
-            Vector3i result(y*other.z - z*other.y, z*other.x - x*other.z, x*other.y = y*other.x);
+            Vector3i result(y*other.z - z*other.y, z*other.x - x*other.z, x*other.y - y*other.x);
             return result;
         }
 

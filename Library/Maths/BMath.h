@@ -23,18 +23,10 @@
 
 namespace bmath {
     // Basic
-    template<typename T> 
-        inline T add(const T a, const T b) { return a + b; }
-    template<typename T>
-        inline T sub(const T a, const T b) { return a - b; }
-    template<typename T>
-        inline T mult(const T a, const T b){ return a * b; }
-    template<typename T>
-        inline T div(const T a, const T b) { return a / b; }
-    template<typename T>
-        inline T bSqr(const T a) { return a * a; }
-    template<typename T>
-        inline T bCub(const T a) { return a * a * a; }
+    inline int bSqr(const int a) { return a * a; }
+    inline float bSqr(const float a) { return a * a; }
+    inline int bCub(const int a) { return a * a * a; }
+    inline float bCub(const float a) { return a * a * a; }
 
     template<typename T>
     T mode(std::vector<T> & data) {
@@ -194,6 +186,20 @@ namespace bmath {
     inline float convCaltoWattHr(const float cal)  { return cal / 860;   }
             // Wattage
     inline float convAVtoWatt(const float amps, const float volts) { return amps * volts; }
+
+    // NumPy equivalent
+    class NumArray {
+    private:
+    public:
+        template<typename T>
+        std::vector<T> build(const char amount, int step) {
+            std::vector<T> container(amount);
+            for(uint32_t i = 0; i < amount; i+step) {
+                container[i] = i;
+            }
+            return container;
+        }
+    };
 
     // Graphics and Geometry
         // Replace with custom data structures

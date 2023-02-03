@@ -620,8 +620,6 @@ namespace bge {
                 } 
             }
             SIZE = amount;
-            
-            // Delete old array
         }
 
         void append(T data) {
@@ -898,6 +896,7 @@ namespace binj {
         }
     }
 
+    /*
     const int containsType(std::string & str) {
         std::string curType="";
         for(int k = 0; k < str.length(); k++) {
@@ -926,6 +925,7 @@ namespace binj {
 
     const bool SearchStorage(const std::string & target) { // Checks both storage and buffer for valid value and returns true or false, uses 'HAS' command
     }
+    */
 
     // Push to hash table
     template<typename T>

@@ -1344,7 +1344,7 @@ namespace bAlgorithms {
     void DFS(bst::Graph<T> &g, int x = 0, int y = 0) {
         int w = g.graph[0].size();
         int h = g.graph.size();
-        std::vector<BDataStruct::bPair> directions{}; // Do with custom!
+        std::vector<BDataStruct::bPair> directions{};
         std::vector<std::vector<bool>> visited{};
         auto inside =[&](int x, int y) { return 0 <= x && x <= w && 0 <= y && y <= h; };
         for(int row = 0; row < g.graph.size(); row++) {
